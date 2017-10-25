@@ -3,6 +3,7 @@
     Page.Title = "Home Page";
 
     var guy = string.Empty;
+    var imageUri = string.Empty;
 
     string connectionString = "Server=tcp:casting305.database.windows.net,1433;Initial Catalog=Casting305;Persist Security Info=False;User ID=dbadmin;Password=Baddbpass1;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
@@ -23,6 +24,47 @@
             guy = customerTable.Rows[0].ItemArray[3].ToString();
         }
     }
+
+    List<string> thumbnailUrls = new List<string>();
+
+    // Create storagecredentials object by reading the values from the configuration (appsettings.json)
+    var storageCredentials = new Microsoft.WindowsAzure.Storage.Auth.StorageCredentials("casting305", "TNDeEXG40fZg7FQuGT1MyFue / 4AXHTzsCi0OiQeQrMv17xENp + BO7fvrv / G6HyJ3Lz2P1cVzpAvYtmQVCYv7bQ ==");
+    // Create cloudstorage account by passing the storagecredentials
+    var storageAccount = new Microsoft.WindowsAzure.Storage.CloudStorageAccount(storageCredentials, true);
+
+    // Create blob client
+    var blobClient = storageAccount.CreateCloudBlobClient();
+
+    // Get reference to the container
+    var container = blobClient.GetContainerReference("images");
+
+    // Set the permission of the container to public
+    container.SetPermissions(new Microsoft.WindowsAzure.Storage.Blob.BlobContainerPermissions { PublicAccess = Microsoft.WindowsAzure.Storage.Blob.BlobContainerPublicAccessType.Blob });
+
+    Microsoft.WindowsAzure.Storage.Blob.BlobContinuationToken continuationToken = null;
+
+    Microsoft.WindowsAzure.Storage.Blob.BlobResultSegment resultSegment = null;
+
+    //Call ListBlobsSegmentedAsync and enumerate the result segment returned, while the continuation token is non-null.
+    //When the continuation token is null, the last page has been returned and execution can exit the loop.
+    //do
+    //{
+    //This overload allows control of the page size. You can return all remaining results by passing null for the maxResults parameter,
+    //or by calling a different overload.
+    resultSegment = container.ListBlobsSegmented("", true, Microsoft.WindowsAzure.Storage.Blob.BlobListingDetails.All, 10, continuationToken, null, null);
+
+    foreach (var blobItem in resultSegment.Results)
+    {
+        thumbnailUrls.Add(blobItem.StorageUri.PrimaryUri.ToString());
+    }
+
+    //Get the continuation token.
+    continuationToken = resultSegment.ContinuationToken;
+    //}
+
+    imageUri = resultSegment[0];
+
+    //while (continuationToken != null);
 }
 
 @section featured {
@@ -32,6 +74,7 @@
             <h1>@Page.Title.</h1>
             <h2>Casting Home Page. Hello @guy</h2>
         </hgroup>
+        <img src="@imageUri" />
         <p>
             To learn more about ASP.NET Web Pages, visit
             <a href="http://asp.net/webpages" title="ASP.NET Web Pages Website">http://asp.net/webpages</a>.
