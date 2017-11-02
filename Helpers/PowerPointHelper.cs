@@ -38,7 +38,7 @@ namespace WebApplication1.Helpers
         }
 
         // Insert the specified slide into the presentation at the specified position.
-        public static void InsertNewSlide(PresentationDocument presentationDocument, int position, string slideTitle, string content, bool addImage)
+        public static void InsertNewSlide(PresentationDocument presentationDocument, int position, string slideTitle, string content, bool addImage, string serverPath)
         {
 
             if (presentationDocument == null)
@@ -175,7 +175,7 @@ namespace WebApplication1.Helpers
             newSlideId.RelationshipId = presentationPart.GetIdOfPart(slidePart);
 
             if (addImage)
-                InsertImageInLastSlide(slidePart.Slide, @"C:\Users\sergiou\Desktop\New folder\description\image.png", "image/png");
+                InsertImageInLastSlide(slidePart.Slide, Path.Combine(serverPath, "image.png") , "image/png");
 
             // Save the modified presentation.
             presentationPart.Presentation.Save();

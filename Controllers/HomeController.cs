@@ -23,12 +23,12 @@ namespace WebApplication1.Controllers
             using (PresentationDocument presentationDocument = PresentationDocument.Open(Server.MapPath("/Templates/PresentationCopy.pptx"), true))
             {
                 string c = string.Format("Lora lora {0}Mide: 30{0}Pesa: 50{0}Pelo: Rojo", Environment.NewLine);
-                InsertSlide.InsertNewSlide(presentationDocument, 1, "", c, false);
-                InsertSlide.InsertNewSlide(presentationDocument, 2, "", "", true);
+                InsertSlide.InsertNewSlide(presentationDocument, 1, "", c, false, Server.MapPath("/Templates"));
+                InsertSlide.InsertNewSlide(presentationDocument, 2, "", "", true, Server.MapPath("/Templates"));
 
                 c = string.Format("Lora Moka {0}Mide: 50{0}Pesa: 10{0}Pelo: Negro", Environment.NewLine);
-                InsertSlide.InsertNewSlide(presentationDocument, 3, "", c, false);
-                InsertSlide.InsertNewSlide(presentationDocument, 4, "", "", true);
+                InsertSlide.InsertNewSlide(presentationDocument, 3, "", c, false, Server.MapPath("/Templates"));
+                InsertSlide.InsertNewSlide(presentationDocument, 4, "", "", true, Server.MapPath("/Templates"));
             }
 
             return File(Server.MapPath("/Templates/PresentationCopy.pptx"), "application/vnd.openxmlformats-officedocument.presentationml.presentation");
