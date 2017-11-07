@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Data.SqlClient;
 using WebApplication1.Helpers;
@@ -10,14 +11,28 @@ namespace WebApplication1.Models
     public class ClientModel
     {
         public int ID { get; set; }
+
+        [Required(ErrorMessage = "Company is required.")]
         public string Company { get; set; }
+
+        [Display(Name = "First Name")]
         public string FirstName { get; set; }
+
+        [Display(Name = "Last Name")]
         public string LastName { get; set; }
         public string Country { get; set; }
+
+        [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = "Invalid Email Address")]
         public string Email { get; set; }
         public string Phone { get; set; }
         public string Address { get; set; }
+
+        [Display(Name = "Billing Info")]
         public string BillingInfo { get; set; }
+
+        [Display(Name = "Admin Email")]
+        [EmailAddress(ErrorMessage = "Invalid Email Address")]
         public string AdminEmail { get; set; }
 
         public bool Add()
@@ -46,9 +61,26 @@ namespace WebApplication1.Models
         } 
         public bool Update()
         {
+            string sql = @"UPDATE dbo.Clients SET   
+                             [Company] = @Company
+                            ,[Country] = @Country
+                            ,[Email] = @Email
+                            ,[Phone] = @Phone
+                            ,[Address] = @Address
+                            ,[BillingInfo] = @BillingInfo
+                            ,[AdminEmail] = @AdminEmail
+                            WHERE ID = @ID";
+
             var pl = new List<SqlParameter>();
-            pl.Add(new SqlParameter("ID", this.ID));
-            int r = DatabaseHelper.ExecuteNonQuery("UPDATE dbo.Clients SET ? WHERE ID = @ID", pl);
+            pl.Add(DatabaseHelper.CreateSqlParameter("@ID", this.ID));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Company", this.Company));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Country", this.Country));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Email", this.Email));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Phone", this.Phone));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Address", this.Address));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@BillingInfo", this.BillingInfo));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@AdminEmail", this.AdminEmail));
+            int r = DatabaseHelper.ExecuteNonQuery(sql, pl);
 
             if (r >= 1)
             {

@@ -1,36 +1,38 @@
-﻿@model IEnumerable<WebApplication1.Models.ClientModel>
+﻿@model PagedList.IPagedList<WebApplication1.Models.ClientModel>
+@using PagedList.Mvc;  
+<link href="~/Content/PagedList.css" rel="stylesheet" />  
 
-<p>
-    @Html.ActionLink("Create New", "Add")
-</p>
+<h4>
+    @Html.ActionLink("Add New Client", "Add")
+</h4>
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Company)
+            @Html.ActionLink(Html.DisplayNameFor(model => model[0].Company).ToString(), "Index", new { sortOrder = ViewBag.SortingName })  
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.FirstName)
+            @Html.DisplayNameFor(model => model[0].FirstName)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.LastName)
+            @Html.DisplayNameFor(model => model[0].LastName)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Country)
+            @Html.ActionLink(Html.DisplayNameFor(model => model[0].Country).ToString(), "Index", new { sortOrder = ViewBag.SortingDate })  
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Email)
+            @Html.DisplayNameFor(model => model[0].Email)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Phone)
+            @Html.DisplayNameFor(model => model[0].Phone)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Address)
+            @Html.DisplayNameFor(model => model[0].Address)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.BillingInfo)
+            @Html.DisplayNameFor(model => model[0].BillingInfo)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.AdminEmail)
+            @Html.DisplayNameFor(model => model[0].AdminEmail)
         </th>
         <th></th>
     </tr>
@@ -38,7 +40,7 @@
 @foreach (var item in Model) {
     <tr>
         <td>
-            @Html.DisplayFor(modelItem => item.Company)
+            @Html.ActionLink(item.Company, "Edit", new { id = item.ID })
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.FirstName)
@@ -64,12 +66,10 @@
         <td>
             @Html.DisplayFor(modelItem => item.AdminEmail)
         </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.ID })
-        </td>
     </tr>
 }
-
 </table>
+
+@*Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount*@
+@Html.PagedListPager(Model, Page_No => Url.Action("Index", new { Page_No, Sorting_Order = ViewBag.CurrentSortOrder, Filter_Value = ViewBag.FilterValue }))
+   

@@ -6,13 +6,14 @@
     @Html.AntiForgeryToken()
     
     <div class="form-horizontal">
-        <h4>ClientModel</h4>
-        
-         @Html.EditorFor(model => Model)
+        <h4>Update Client</h4>
+
+        @Html.EditorFor(model => Model)
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Save" class="btn btn-default" />
+                @Html.ActionLink("Delete", "Delete", new { id = Model.ID })
             </div>
         </div>
     </div>

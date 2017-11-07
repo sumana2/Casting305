@@ -243,3 +243,7 @@ C:\Casting305\bin\System.Web.Http.WebHost.xml
 C:\Casting305\bin\System.Web.Http.Owin.xml
 C:\Casting305\bin\DocumentFormat.OpenXml.dll
 C:\Casting305\bin\DocumentFormat.OpenXml.xml
+C:\Casting305\bin\PagedList.dll
+C:\Casting305\bin\PagedList.Mvc.dll
+C:\Casting305\bin\PagedList.xml
+C:\Casting305\bin\PagedList.Mvc.xml

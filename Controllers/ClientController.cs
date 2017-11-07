@@ -4,23 +4,42 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using WebApplication1.Models;
+using PagedList;
 
 public class ClientController : Controller
-{
-
-    // GET: Employee/GetAllEmpDetails    
-    public ActionResult Index()
+{  
+    public ActionResult Index(string sortOrder, int? Page_No)
     {
+        ViewBag.SortingName = String.IsNullOrEmpty(sortOrder) ? "Company" : "";
+        ViewBag.SortingDate = sortOrder == "Date_Enroll" ? "Country" : "";
+
+        var clients = ClientModel.Get();
+        
+        switch (sortOrder)
+        {
+            case "Company":
+                clients = clients.OrderByDescending(x => x.Company).ToList();
+                break;
+            case "Country":
+                clients = clients.OrderBy(x => x.Country).ToList();
+                break;
+            default:
+                clients = clients.OrderBy(stu => stu.Company).ToList();
+                break;
+        }
+
         ModelState.Clear();
-        return View(ClientModel.Get());
+
+        int Size_Of_Page = 4;
+        int No_Of_Page = (Page_No ?? 1);
+        return View(clients.ToPagedList(No_Of_Page, Size_Of_Page));
     }
-    // GET: Employee/AddEmployee    
+  
     public ActionResult Add()
     {
         return View();
     }
 
-    // POST: Employee/AddEmployee    
     [HttpPost]
     public ActionResult Add(ClientModel client)
     {
@@ -43,34 +62,27 @@ public class ClientController : Controller
         }
     }
 
-    // GET: Employee/EditEmpDetails/5    
     public ActionResult Edit(int id)
     {
         return View(ClientModel.Get().Find(x => x.ID == id));
     }
 
-    // POST: Employee/EditEmpDetails/5    
     [HttpPost]
     public ActionResult Edit(int id, ClientModel obj)
     {
         try
         {
-            //EmpRepository EmpRepo = new EmpRepository();
+            obj.Update();
 
-            //EmpRepo.UpdateEmployee(obj);
-
-
-
-
-            return RedirectToAction("GetAllEmpDetails");
+            return RedirectToAction("Index");
         }
-        catch
+        catch(Exception e)
         {
+            ViewBag.Message = "Error!";
             return View();
         }
     }
 
-    // GET: Employee/DeleteEmp/5    
     public ActionResult Delete(int id)
     {
         try
