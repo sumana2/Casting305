@@ -292,12 +292,15 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
-    <Content Include="Views\Client\AddClient.cshtml" />
-    <Content Include="Views\Client\GetClients.cshtml" />
+    <Content Include="Views\Client\Add.cshtml" />
+    <Content Include="Views\Client\Index.cshtml" />
     <Content Include="Templates\Presentation1.pptx" />
+    <Content Include="Views\Shared\EditorTemplates\ClientModel.cshtml" />
+    <Content Include="Views\Client\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Shared\DisplayTemplates\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

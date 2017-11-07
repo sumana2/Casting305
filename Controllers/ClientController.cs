@@ -9,20 +9,20 @@ public class ClientController : Controller
 {
 
     // GET: Employee/GetAllEmpDetails    
-    public ActionResult GetClients()
+    public ActionResult Index()
     {
         ModelState.Clear();
         return View(ClientModel.Get());
     }
     // GET: Employee/AddEmployee    
-    public ActionResult AddClient()
+    public ActionResult Add()
     {
         return View();
     }
 
     // POST: Employee/AddEmployee    
     [HttpPost]
-    public ActionResult AddClient(ClientModel client)
+    public ActionResult Add(ClientModel client)
     {
         try
         {
@@ -38,19 +38,20 @@ public class ClientController : Controller
         }
         catch(Exception e)
         {
+            ViewBag.Message = "Error!";
             return View();
         }
     }
 
     // GET: Employee/EditEmpDetails/5    
-    public ActionResult EditClient(int id)
+    public ActionResult Edit(int id)
     {
         return View(ClientModel.Get().Find(x => x.ID == id));
     }
 
     // POST: Employee/EditEmpDetails/5    
     [HttpPost]
-    public ActionResult EditClient(int id, ClientModel obj)
+    public ActionResult Edit(int id, ClientModel obj)
     {
         try
         {
@@ -70,17 +71,16 @@ public class ClientController : Controller
     }
 
     // GET: Employee/DeleteEmp/5    
-    public ActionResult DeleteClient(int id)
+    public ActionResult Delete(int id)
     {
         try
         {
-            //EmpRepository EmpRepo = new EmpRepository();
-            //if (EmpRepo.DeleteEmployee(id))
-            //{
-            //    ViewBag.AlertMsg = "Employee details deleted successfully";
-
-            //}
-            return RedirectToAction("GetAllEmpDetails");
+            ClientModel c = new ClientModel() { ID = id };
+            if (c.Delete())
+            {
+                //ViewBag.AlertMsg = "Employee details deleted successfully";
+            }
+            return RedirectToAction("Index");
 
         }
         catch

@@ -26,13 +26,13 @@ namespace WebApplication1.Models
                            VALUES (@Company,@Country,@Email,@Phone,@Address,@BillingInfo,@AdminEmail)";
 
             var pl = new List<SqlParameter>();
-            pl.Add(new SqlParameter("@Company", this.Company));
-            pl.Add(new SqlParameter("@Country", this.Country));
-            pl.Add(new SqlParameter("@Email", this.Email));
-            pl.Add(new SqlParameter("@Phone", this.Phone));
-            pl.Add(new SqlParameter("@Address", this.Address));
-            pl.Add(new SqlParameter("@BillingInfo", this.BillingInfo));
-            pl.Add(new SqlParameter("@AdminEmail", this.AdminEmail));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Company", this.Company));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Country", this.Country));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Email", this.Email));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Phone", this.Phone));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Address", this.Address));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@BillingInfo", this.BillingInfo));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@AdminEmail", this.AdminEmail));
             int r = DatabaseHelper.ExecuteNonQuery(sql, pl);
 
             if (r >= 1)
@@ -62,7 +62,7 @@ namespace WebApplication1.Models
         public bool Delete()
         {
             var pl = new List<SqlParameter>();
-            pl.Add(new SqlParameter("ID", this.ID));
+            pl.Add(DatabaseHelper.CreateSqlParameter("ID", this.ID));
             int r = DatabaseHelper.ExecuteNonQuery("DELETE FROM dbo.Clients WHERE ID = @ID", pl);
 
             if (r >= 1)
@@ -85,7 +85,13 @@ namespace WebApplication1.Models
             {
                 var client = new ClientModel();
                 client.ID = Convert.ToInt32(row["Id"]);
-
+                client.Company = Convert.ToString(row["Company"]);
+                client.Country = Convert.ToString(row["Country"]);
+                client.Email = Convert.ToString(row["Email"]);
+                client.Phone = Convert.ToString(row["Phone"]);
+                client.Address = Convert.ToString(row["Address"]);
+                client.BillingInfo = Convert.ToString(row["BillingInfo"]);
+                client.AdminEmail = Convert.ToString(row["AdminEmail"]);
                 list.Add(client);
             }
 

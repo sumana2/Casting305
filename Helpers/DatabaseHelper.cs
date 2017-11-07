@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -78,6 +79,17 @@ namespace WebApplication1.Helpers
             }
 
             return r;
+        }
+
+        public static SqlParameter CreateSqlParameter(string name, object value)
+        {
+            SqlParameter p = new SqlParameter();
+            p.ParameterName = name;
+            p.Value = value == null ? DBNull.Value : value;
+            p.SqlDbType = SqlDbType.VarChar;
+
+
+            return p;
         }
     }
 }

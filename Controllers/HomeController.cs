@@ -14,24 +14,24 @@ namespace WebApplication1.Controllers
     {
         public ActionResult Index()
         {
-            DirectoryInfo dir = new DirectoryInfo(Server.MapPath("/Templates"));
+            //DirectoryInfo dir = new DirectoryInfo(Server.MapPath("/Templates"));
 
-            var files = dir.GetFiles("Presentation1.pptx");
+            //var files = dir.GetFiles("Presentation1.pptx");
 
-            files[0].CopyTo(Server.MapPath("/Templates/PresentationCopy.pptx"), true);
+            //files[0].CopyTo(Server.MapPath("/Templates/PresentationCopy.pptx"), true);
 
-            using (PresentationDocument presentationDocument = PresentationDocument.Open(Server.MapPath("/Templates/PresentationCopy.pptx"), true))
-            {
-                string c = string.Format("Lora lora {0}Mide: 30{0}Pesa: 50{0}Pelo: Rojo", Environment.NewLine);
-                InsertSlide.InsertNewSlide(presentationDocument, 1, "", c, false, Server.MapPath("/Templates"));
-                InsertSlide.InsertNewSlide(presentationDocument, 2, "", "", true, Server.MapPath("/Templates"));
+            //using (PresentationDocument presentationDocument = PresentationDocument.Open(Server.MapPath("/Templates/PresentationCopy.pptx"), true))
+            //{
+            //    string c = string.Format("Lora lora {0}Mide: 30{0}Pesa: 50{0}Pelo: Rojo", Environment.NewLine);
+            //    InsertSlide.InsertNewSlide(presentationDocument, 1, "", c, false, Server.MapPath("/Templates"));
+            //    InsertSlide.InsertNewSlide(presentationDocument, 2, "", "", true, Server.MapPath("/Templates"));
 
-                c = string.Format("Lora Moka {0}Mide: 50{0}Pesa: 10{0}Pelo: Negro", Environment.NewLine);
-                InsertSlide.InsertNewSlide(presentationDocument, 3, "", c, false, Server.MapPath("/Templates"));
-                InsertSlide.InsertNewSlide(presentationDocument, 4, "", "", true, Server.MapPath("/Templates"));
-            }
+            //    c = string.Format("Lora Moka {0}Mide: 50{0}Pesa: 10{0}Pelo: Negro", Environment.NewLine);
+            //    InsertSlide.InsertNewSlide(presentationDocument, 3, "", c, false, Server.MapPath("/Templates"));
+            //    InsertSlide.InsertNewSlide(presentationDocument, 4, "", "", true, Server.MapPath("/Templates"));
+            //}
 
-            return File(Server.MapPath("/Templates/PresentationCopy.pptx"), "application/vnd.openxmlformats-officedocument.presentationml.presentation");
+            //return File(Server.MapPath("/Templates/PresentationCopy.pptx"), "application/vnd.openxmlformats-officedocument.presentationml.presentation");
 
             //string connectionString = "Server=tcp:casting305.database.windows.net,1433;Initial Catalog=Casting305;Persist Security Info=False;User ID=dbadmin;Password=Baddbpass1;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
