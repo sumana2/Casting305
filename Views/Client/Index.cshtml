@@ -5,10 +5,17 @@
 <h4>
     @Html.ActionLink("Add New Client", "Add")
 </h4>
+@using (Html.BeginForm("Index", "Client", FormMethod.Get))
+{
+    <p>
+        Search: @Html.TextBox("search", ViewBag.FilterValue as string)
+        <input type="submit" value="Find" />
+    </p>
+}  
 <table class="table">
     <tr>
         <th>
-            @Html.ActionLink(Html.DisplayNameFor(model => model[0].Company).ToString(), "Index", new { sortOrder = ViewBag.SortingName })  
+            @Html.ActionLink(Html.DisplayNameFor(model => model[0].Company).ToString(), "Index", new { sortOrder = "Company", sortDirection = ViewBag.SortDirection, filterValue = ViewBag.FilterValue })  
         </th>
         <th>
             @Html.DisplayNameFor(model => model[0].FirstName)
@@ -17,7 +24,7 @@
             @Html.DisplayNameFor(model => model[0].LastName)
         </th>
         <th>
-            @Html.ActionLink(Html.DisplayNameFor(model => model[0].Country).ToString(), "Index", new { sortOrder = ViewBag.SortingDate })  
+            @Html.ActionLink(Html.DisplayNameFor(model => model[0].Country).ToString(), "Index", new { sortOrder = "Country", sortDirection = ViewBag.SortDirection, filterValue = ViewBag.FilterValue })  
         </th>
         <th>
             @Html.DisplayNameFor(model => model[0].Email)
@@ -70,6 +77,5 @@
 }
 </table>
 
-@*Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount*@
-@Html.PagedListPager(Model, Page_No => Url.Action("Index", new { Page_No, Sorting_Order = ViewBag.CurrentSortOrder, Filter_Value = ViewBag.FilterValue }))
+@Html.PagedListPager(Model, pageNo => Url.Action("Index", new { pageNo, sortOrder = ViewBag.CurrentSortOrder, sortDirection = ViewBag.CurrentsortDirection, filterValue = ViewBag.FilterValue }))
    

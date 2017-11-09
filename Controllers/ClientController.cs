@@ -1,37 +1,58 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using PagedList;
+using System;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
+using WebApplication1;
 using WebApplication1.Models;
-using PagedList;
 
 public class ClientController : Controller
-{  
-    public ActionResult Index(string sortOrder, int? Page_No)
+{
+    private int Size_Of_Page = 4;
+
+    public ActionResult Index(string sortOrder, string sortDirection, string search, string filterValue, int? pageNo)
     {
-        ViewBag.SortingName = String.IsNullOrEmpty(sortOrder) ? "Company" : "";
-        ViewBag.SortingDate = sortOrder == "Date_Enroll" ? "Country" : "";
+        ViewBag.CurrentSortOrder = sortOrder;
+        ViewBag.CurrentsortDirection = sortDirection;
+        ViewBag.SortDirection = sortDirection == Globals.Descending ? Globals.Ascending : Globals.Descending;
+
+        if (search != null)
+        {
+            pageNo = 1;
+        }
+        else
+        {
+            search = filterValue;
+        }
+
+        ViewBag.FilterValue = search;
 
         var clients = ClientModel.Get();
-        
+
+        if (!String.IsNullOrEmpty(search))
+        {
+            clients = clients.Where(x => x.Company.ToUpper().Contains(search.ToUpper())
+                || x.Country.ToUpper().Contains(search.ToUpper())).ToList();
+        }
         switch (sortOrder)
         {
             case "Company":
-                clients = clients.OrderByDescending(x => x.Company).ToList();
+                if (sortDirection == Globals.Ascending)
+                    clients = clients.OrderBy(x => x.Company).ToList();
+                else
+                    clients = clients.OrderByDescending(x => x.Company).ToList();
                 break;
             case "Country":
-                clients = clients.OrderBy(x => x.Country).ToList();
+                if (sortDirection == Globals.Ascending)
+                    clients = clients.OrderBy(x => x.Country).ToList();
+                else
+                    clients = clients.OrderByDescending(x => x.Country).ToList();
                 break;
             default:
                 clients = clients.OrderBy(stu => stu.Company).ToList();
                 break;
         }
 
-        ModelState.Clear();
-
-        int Size_Of_Page = 4;
-        int No_Of_Page = (Page_No ?? 1);
+        int No_Of_Page = (pageNo ?? 1);
         return View(clients.ToPagedList(No_Of_Page, Size_Of_Page));
     }
   
@@ -47,10 +68,12 @@ public class ClientController : Controller
         {
             if (ModelState.IsValid)
             {
-                if (client.Add())
+                if (!client.Add())
                 {
-                    ViewBag.Message = "Employee details added successfully";
+                    ViewBag.AlertMsg = "Unable to add";
+                    return View();
                 }
+                return RedirectToAction("Index");
             }
 
             return View();
@@ -72,13 +95,21 @@ public class ClientController : Controller
     {
         try
         {
-            obj.Update();
+            if (ModelState.IsValid)
+            {
+                if (!obj.Update())
+                {
+                    ViewBag.AlertMsg = "Unable to update";
+                    return View();
+                }
+                return RedirectToAction("Index");
+            }
 
-            return RedirectToAction("Index");
+            return View();
         }
         catch(Exception e)
         {
-            ViewBag.Message = "Error!";
+            ViewBag.AlertMsg = e.Message;
             return View();
         }
     }
@@ -88,15 +119,17 @@ public class ClientController : Controller
         try
         {
             ClientModel c = new ClientModel() { ID = id };
-            if (c.Delete())
+            if (!c.Delete())
             {
-                //ViewBag.AlertMsg = "Employee details deleted successfully";
+                ViewBag.AlertMsg = "Unable to delete";
+                return View();
             }
             return RedirectToAction("Index");
 
         }
-        catch
+        catch(Exception e)
         {
+            ViewBag.AlertMsg = e.Message;
             return View();
         }
     }
