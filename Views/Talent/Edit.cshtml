@@ -1,4 +1,4 @@
-﻿@model WebApplication1.Models.ClientModel
+﻿@model WebApplication1.Models.TalentModel
 
 
 @using (Html.BeginForm()) 
@@ -6,13 +6,14 @@
     @Html.AntiForgeryToken()
     
     <div class="form-horizontal">
-        <h4>Create New Client</h4>
+        <h4>Update Talent</h4>
         
-         @Html.EditorFor(model => Model)
+        @Html.EditorFor(model => Model)
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+                <input type="submit" value="Save" class="btn btn-default" />
+                @Html.ActionLink("Delete", "Delete", new { id = Model.ID })
             </div>
         </div>
     </div>

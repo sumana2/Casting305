@@ -121,3 +121,4 @@ C:\Casting305\bin\zh-Hans\System.Spatial.resources.dll
 C:\Casting305\bin\zh-Hant\System.Spatial.resources.dll
 C:\Casting305\obj\Debug\WebApplication1.dll
 C:\Casting305\obj\Debug\WebApplication1.pdb
+C:\Casting305\obj\Debug\WebApplication1.csprojResolveAssemblyReference.cache

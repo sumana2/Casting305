@@ -1,20 +1,17 @@
 ﻿using PagedList;
 using System;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using WebApplication1;
 using WebApplication1.Models;
 
-public class ClientController : Controller
+public class TalentController : Controller
 {
     private int Size_Of_Page = 4;
 
     public ActionResult Index(string sortOrder, string sortDirection, string search, string filterValue, int? pageNo)
     {
-        ViewBag.CurrentSortOrder = sortOrder;
-        ViewBag.CurrentsortDirection = sortDirection;
-        ViewBag.SortDirection = sortDirection == Globals.Descending ? Globals.Ascending : Globals.Descending;
-
         if (search != null)
         {
             pageNo = 1;
@@ -26,30 +23,12 @@ public class ClientController : Controller
 
         ViewBag.FilterValue = search;
 
-        var clients = ClientModel.Get();
+        var clients = TalentModel.Get();
 
         if (!String.IsNullOrEmpty(search))
         {
-            clients = clients.Where(x => x.Company.ToUpper().Contains(search.ToUpper())
-                || x.Country.ToUpper().Contains(search.ToUpper())).ToList();
-        }
-        switch (sortOrder)
-        {
-            case "Company":
-                if (sortDirection == Globals.Ascending)
-                    clients = clients.OrderBy(x => x.Company).ToList();
-                else
-                    clients = clients.OrderByDescending(x => x.Company).ToList();
-                break;
-            case "Country":
-                if (sortDirection == Globals.Ascending)
-                    clients = clients.OrderBy(x => x.Country).ToList();
-                else
-                    clients = clients.OrderByDescending(x => x.Country).ToList();
-                break;
-            default:
-                clients = clients.OrderBy(stu => stu.Company).ToList();
-                break;
+            clients = clients.Where(x => x.FirstName.ToUpper().Contains(search.ToUpper())
+                || x.LastName.ToUpper().Contains(search.ToUpper())).ToList();
         }
 
         int No_Of_Page = (pageNo ?? 1);
@@ -62,13 +41,13 @@ public class ClientController : Controller
     }
 
     [HttpPost]
-    public ActionResult Add(ClientModel client)
+    public ActionResult Add(TalentModel talent)
     {
         try
         {
             if (ModelState.IsValid)
             {
-                if (!client.Add())
+                if (!talent.Add())
                 {
                     ViewBag.Message = "Unable to add";
                     return View();
@@ -87,11 +66,11 @@ public class ClientController : Controller
 
     public ActionResult Edit(int id)
     {
-        return View(ClientModel.Get().Find(x => x.ID == id));
+        return View(TalentModel.Get().Find(x => x.ID == id));
     }
 
     [HttpPost]
-    public ActionResult Edit(int id, ClientModel obj)
+    public ActionResult Edit(int id, TalentModel obj)
     {
         try
         {
@@ -118,7 +97,7 @@ public class ClientController : Controller
     {
         try
         {
-            ClientModel model = new ClientModel() { ID = id };
+            TalentModel model = new TalentModel() { ID = id };
             if (!model.Delete())
             {
                 ViewBag.Message = "Unable to delete";
@@ -134,5 +113,46 @@ public class ClientController : Controller
         }
     }
 
+    public JsonResult FileUpload()
+    {
+        try
+        {
+            var hfc = HttpContext.Request.Files;
+            string path = "/content/files/contact/";
 
+            for (int i = 0; i < hfc.Count; i++)
+            {
+                var hpf = hfc[i];
+                if (hpf.ContentLength > 0)
+                {
+                    string fileName = "";
+                   
+                    
+                    fileName = hpf.FileName;
+                    
+                    string fullPathWithFileName = path + fileName;
+                    //hpf.SaveAs(Server.MapPath(fullPathWithFileName));
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+
+        //if (file != null)
+        //{
+        //    string pic = System.IO.Path.GetFileName(file.FileName);
+        //    string path = System.IO.Path.Combine(
+        //                           Server.MapPath("~/images/profile"), pic);
+        //    // file is uploaded
+        //    //file.SaveAs(path);
+
+        //}
+
+        return Json("");
+        // after successfully uploading redirect the user
+        //return RedirectToAction("actionname", "controller name");
+    }
 }

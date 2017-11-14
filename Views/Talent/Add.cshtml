@@ -1,4 +1,4 @@
-﻿@model WebApplication1.Models.ClientModel
+﻿@model WebApplication1.Models.TalentModel
 
 
 @using (Html.BeginForm()) 
@@ -6,7 +6,7 @@
     @Html.AntiForgeryToken()
     
     <div class="form-horizontal">
-        <h4>Create New Client</h4>
+        <h4>Add New Talent</h4>
         
          @Html.EditorFor(model => Model)
 
