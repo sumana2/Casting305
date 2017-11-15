@@ -21,7 +21,9 @@ namespace WebApplication1.Models
         public string Gender { get; set; }
 
         [Display(Name = "Date Of Birth")]
-        public DateTime DateOfBirth { get; set; }
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public Nullable<System.DateTime> DateOfBirth { get; set; }
 
         public string Nationality { get; set; }
 
@@ -186,6 +188,10 @@ namespace WebApplication1.Models
                 talent.Gender = Convert.ToString(row["Gender"]);
                 talent.Instagram = Convert.ToString(row["Instagram"]);
                 talent.ProfilePicture = Convert.ToString(row["ProfilePicture"]);
+
+                if (row["DateOfBirth"] != DBNull.Value)
+                    talent.DateOfBirth = Convert.ToDateTime(row["DateOfBirth"]);
+
                 list.Add(talent);
             }
 

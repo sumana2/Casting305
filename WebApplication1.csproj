@@ -314,10 +314,10 @@
     <Content Include="Views\Shared\EditorTemplates\TalentModel.cshtml" />
     <Content Include="Views\Talent\CoolTile.cshtml" />
     <Content Include="Views\Talent\Edit.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\TalentModel.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\Shared\DisplayTemplates\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

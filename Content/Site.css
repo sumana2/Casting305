@@ -26,3 +26,17 @@ textarea {
 .tile{
     padding-bottom:5px;
 }
+
+.tileHeight {
+    height: 400px;
+}
+
+.tileImage {
+    width:  250px;
+}
+
+.tileTitle {
+    margin-top: -5px;
+    margin-bottom: 5px;
+}
+    

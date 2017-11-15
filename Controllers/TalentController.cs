@@ -1,5 +1,9 @@
-﻿using PagedList;
+﻿using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Auth;
+using Microsoft.WindowsAzure.Storage.Blob;
+using PagedList;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -8,7 +12,7 @@ using WebApplication1.Models;
 
 public class TalentController : Controller
 {
-    private int Size_Of_Page = 4;
+    private int Size_Of_Page = 12;
 
     public ActionResult Index(string sortOrder, string sortDirection, string search, string filterValue, int? pageNo)
     {
@@ -115,23 +119,36 @@ public class TalentController : Controller
 
     public JsonResult FileUpload()
     {
+        string thumbnailUrl = string.Empty;
+
         try
         {
-            var hfc = HttpContext.Request.Files;
-            string path = "/content/files/contact/";
+            var files = HttpContext.Request.Files;
 
-            for (int i = 0; i < hfc.Count; i++)
+            for (int i = 0; i < files.Count; i++)
             {
-                var hpf = hfc[i];
-                if (hpf.ContentLength > 0)
+                var file = files[i];
+                if (file.ContentLength > 0)
                 {
-                    string fileName = "";
-                   
+                    // Create storagecredentials object by reading the values from the configuration (appsettings.json)
+                    var storageCredentials = new StorageCredentials("casting305", "TNDeEXG40fZg7FQuGT1MyFue / 4AXHTzsCi0OiQeQrMv17xENp + BO7fvrv / G6HyJ3Lz2P1cVzpAvYtmQVCYv7bQ ==");
                     
-                    fileName = hpf.FileName;
-                    
-                    string fullPathWithFileName = path + fileName;
-                    //hpf.SaveAs(Server.MapPath(fullPathWithFileName));
+                    // Create cloudstorage account by passing the storagecredentials
+                    var storageAccount = new CloudStorageAccount(storageCredentials, true);
+
+                    // Create blob client
+                    var blobClient = storageAccount.CreateCloudBlobClient();
+
+                    // Get reference to the container
+                    var container = blobClient.GetContainerReference("images");
+
+                    // Retrieve reference to a blob named "myblob".
+                    CloudBlockBlob blockBlob = container.GetBlockBlobReference(file.FileName);
+
+                    // Create or overwrite the "myblob" blob with contents from a local file.
+                    blockBlob.UploadFromStream(file.InputStream);
+
+                    thumbnailUrl = blockBlob.Uri.ToString();
                 }
             }
 
@@ -141,18 +158,6 @@ public class TalentController : Controller
             throw ex;
         }
 
-        //if (file != null)
-        //{
-        //    string pic = System.IO.Path.GetFileName(file.FileName);
-        //    string path = System.IO.Path.Combine(
-        //                           Server.MapPath("~/images/profile"), pic);
-        //    // file is uploaded
-        //    //file.SaveAs(path);
-
-        //}
-
-        return Json("");
-        // after successfully uploading redirect the user
-        //return RedirectToAction("actionname", "controller name");
+        return Json(thumbnailUrl);
     }
 }

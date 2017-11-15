@@ -174,7 +174,7 @@ var settings = {
     onSuccess:function(files,data,xhr)
     {
         $("#status").html("<font color='green'>Upload is success</font>");
-
+        $("#ProfilePicture").val(data);
     },
     onError: function(files,status,errMsg)
     {
