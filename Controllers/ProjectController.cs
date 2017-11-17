@@ -58,17 +58,17 @@ public class ProjectController : Controller
 
     public ActionResult Add()
     {
-        return View();
+        return View(new ProjectModel());
     }
 
     [HttpPost]
-    public ActionResult Add(ClientModel client)
+    public ActionResult Add(ProjectModel project)
     {
         try
         {
             if (ModelState.IsValid)
             {
-                if (!client.Add())
+                if (!project.Add())
                 {
                     ViewBag.Message = "Unable to add";
                     return View();
@@ -87,11 +87,11 @@ public class ProjectController : Controller
 
     public ActionResult Edit(int id)
     {
-        return View(ClientModel.Get().Find(x => x.ID == id));
+        return View(ProjectModel.Get().Find(x => x.ID == id));
     }
 
     [HttpPost]
-    public ActionResult Edit(int id, ClientModel obj)
+    public ActionResult Edit(int id, ProjectModel obj)
     {
         try
         {
@@ -134,5 +134,9 @@ public class ProjectController : Controller
         }
     }
 
+    public ActionResult AddRole(string count)
+    {
+        return PartialView("~/Views/Shared/EditorTemplates/ProjectRoleModel.cshtml", new ProjectRoleModel() { Name = "NewRole"+count });
+    }
 
 }

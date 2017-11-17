@@ -27,6 +27,11 @@ namespace WebApplication1.Models
 
         public List<ProjectRoleModel> Roles { get; set; }
 
+        public ProjectModel()
+        {
+            Roles = new List<ProjectRoleModel>();
+        }
+
         public bool Add()
         {
             string sql = @"INSERT INTO[dbo].[Projects]([Title],[Company],[Email],[Phone],[DueDate])
