@@ -139,4 +139,24 @@ public class ProjectController : Controller
         return PartialView("~/Views/Shared/EditorTemplates/ProjectRoleModel.cshtml", new ProjectRoleModel() { Name = "NewRole"+count });
     }
 
+    public ActionResult RoleTalent (int id, string viewMode, int? pageNo)
+    {
+        ProjectRoleModel model;
+        ViewBag.FilterValue = viewMode;
+
+        if (viewMode == "search")
+        {
+            model = ProjectRoleModel.GetByID(id, true);
+        }
+        else
+        {
+            model = ProjectRoleModel.GetByID(id);
+        }
+
+        int No_Of_Page = (pageNo ?? 1);
+        model.TalentPagedList = model.Talent.ToPagedList(No_Of_Page, Size_Of_Page);
+
+        return View(model);
+    }
+
 }

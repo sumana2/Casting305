@@ -334,6 +334,7 @@
     <Content Include="Views\Shared\EditorTemplates\ProjectRoleModel.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\ProjectModel.cshtml" />
     <Content Include="Views\Project\Edit.cshtml" />
+    <Content Include="Views\Project\RoleTalent.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -197,5 +197,38 @@ namespace WebApplication1.Models
 
             return list;
         }
+
+        public static List<TalentModel> GetByProjectRoleID(int id)
+        {
+            List<TalentModel> list = new List<TalentModel>();
+
+            var pl = new List<SqlParameter>();
+            pl.Add(DatabaseHelper.CreateSqlParameter("@ID", id));
+
+            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT t.* FROM dbo.ProjectTalent WITH (NOLOCK) JOIN dbo.Talent t WITH (NOLOCK) ON t.ID = TalentID WHERE ProjectRoleID = @ID", pl);
+
+            foreach (DataRow row in dt.Rows)
+            {
+                var talent = new TalentModel();
+                talent.ID = Convert.ToInt32(row["Id"]);
+                talent.FirstName = Convert.ToString(row["FirstName"]);
+                talent.LastName = Convert.ToString(row["LastName"]);
+                talent.Email = Convert.ToString(row["Email"]);
+                talent.Phone = Convert.ToString(row["Phone"]);
+                talent.Height = Convert.ToString(row["Height"]);
+                talent.HairColor = Convert.ToString(row["HairColor"]);
+                talent.EyeColor = Convert.ToString(row["EyeColor"]);
+                talent.Gender = Convert.ToString(row["Gender"]);
+                talent.Instagram = Convert.ToString(row["Instagram"]);
+                talent.ProfilePicture = Convert.ToString(row["ProfilePicture"]);
+
+                if (row["DateOfBirth"] != DBNull.Value)
+                    talent.DateOfBirth = Convert.ToDateTime(row["DateOfBirth"]);
+
+                list.Add(talent);
+            }
+
+            return list;
+        }
     }
 }

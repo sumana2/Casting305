@@ -2,7 +2,9 @@
 
 <div class="col-sm-6 col-md-3 tile">
     <div class="thumbnail tileHeight">
-        <img src="@Html.DisplayFor(model => model.ProfilePicture)" class="tileImage">
+        <div class="tileImageDiv">
+            <img src="@Html.DisplayFor(model => model.ProfilePicture)" class="tileImage">
+        </div>
         <div class="caption">
             <h3 class="tileTitle">@Html.ActionLink(string.Format("{0} {1}", Model.FirstName, Model.LastName), "Edit", new { id = Model.ID })</h3>
             <span><b>Height:</b> @Html.DisplayFor(model => model.Height)</span><br />

@@ -40,11 +40,19 @@ textarea {
     margin-bottom: 5px;
 }
 
-.role {
-    
-}    
+.tileImageDiv {
+    height: 260px;
+}
 
 .role li.active {
-    max-width: 280px;
     padding-bottom: 2px;
+}
+
+.role li.active a{
+    min-width: 280px;
+    display: inline-block;
 }    
+
+.role li.active span{
+    float: right;
+}

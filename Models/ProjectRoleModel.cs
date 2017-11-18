@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using PagedList;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -27,6 +28,13 @@ namespace WebApplication1.Models
         public string HairColor { get; set; }
 
         public List<TalentModel> Talent { get; set; }
+
+        public IPagedList<TalentModel> TalentPagedList { get; set; }
+
+        public ProjectRoleModel()
+        {
+            Talent = new List<TalentModel>();
+        }
 
         public bool Add()
         {
@@ -124,34 +132,39 @@ namespace WebApplication1.Models
             }
         }
 
-        public static List<TalentModel> Get()
+        public static ProjectRoleModel GetByID(int id, bool loadAllTalent = false)
         {
-            List<TalentModel> list = new List<TalentModel>();
+            var obj = new ProjectRoleModel();
 
-            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM dbo.Talent WITH (NOLOCK)");
+            var pl = new List<SqlParameter>();
+            pl.Add(DatabaseHelper.CreateSqlParameter("@ID", id));
+
+            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM dbo.ProjectRoles WITH (NOLOCK) WHERE ID = @ID", pl);
 
             foreach (DataRow row in dt.Rows)
             {
-                var talent = new TalentModel();
-                talent.ID = Convert.ToInt32(row["Id"]);
-                talent.FirstName = Convert.ToString(row["FirstName"]);
-                talent.LastName = Convert.ToString(row["LastName"]);
-                talent.Email = Convert.ToString(row["Email"]);
-                talent.Phone = Convert.ToString(row["Phone"]);
-                talent.Height = Convert.ToString(row["Height"]);
-                talent.HairColor = Convert.ToString(row["HairColor"]);
-                talent.EyeColor = Convert.ToString(row["EyeColor"]);
-                talent.Gender = Convert.ToString(row["Gender"]);
-                talent.Instagram = Convert.ToString(row["Instagram"]);
-                talent.ProfilePicture = Convert.ToString(row["ProfilePicture"]);
+                obj.ID = Convert.ToInt32(row["Id"]);
+                obj.ProjectID = Convert.ToInt32(row["ProjectID"]);
+                obj.Name = Convert.ToString(row["Name"]);
+                obj.AgeMin = Convert.ToInt32(row["AgeMin"]);
+                obj.AgeMax = Convert.ToInt32(row["AgeMax"]);
+                obj.HeightMin = Convert.ToDecimal(row["HeightMin"]);
+                obj.HeightMax = Convert.ToDecimal(row["HeightMax"]);
+                obj.HairColor = Convert.ToString(row["HairColor"]);
 
-                if (row["DateOfBirth"] != DBNull.Value)
-                    talent.DateOfBirth = Convert.ToDateTime(row["DateOfBirth"]);
-
-                list.Add(talent);
+                if (loadAllTalent)
+                {
+                    obj.Talent = TalentModel.Get();
+                }
+                else
+                {
+                    obj.Talent = TalentModel.GetByProjectRoleID(id);
+                }
+                    
+                break;
             }
 
-            return list;
+            return obj;
         }
 
         public static List<ProjectRoleModel> GetByProject(int projectID)
