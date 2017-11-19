@@ -60,15 +60,17 @@
 </div>
 
 <script>
-    $("#addRole").click(function () {
-        var count = $("#projectRoles").children().length;
+    $(function () {
+        $("#addRole").click(function () {
+            var count = $("#projectRoles").children().length;
 
-        $.ajax({
-            url: "/Project/AddRole",
-            cache: false,
-            data: { count: count },
-            success: function (html) { $("#projectRoles").append(html); }
+            $.ajax({
+                url: "/Project/AddRole",
+                cache: false,
+                data: { count: count },
+                success: function (html) { $("#projectRoles").append(html); }
+            });
+            return false;
         });
-        return false;
     });
 </script>

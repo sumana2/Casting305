@@ -6,7 +6,10 @@
             <img src="@Html.DisplayFor(model => model.ProfilePicture)" class="tileImage">
         </div>
         <div class="caption">
-            <h3 class="tileTitle">@Html.ActionLink(string.Format("{0} {1}", Model.FirstName, Model.LastName), "Edit", new { id = Model.ID })</h3>
+            <div>
+                <h3 class="tileTitle">@Html.ActionLink(string.Format("{0} {1}", Model.FirstName, Model.LastName), "Edit", new { id = Model.ID })</h3>
+                <span class="glyphicon glyphicon-unchecked tileCheck hide" aria-hidden="true"></span>
+            </div>
             <span><b>Height:</b> @Html.DisplayFor(model => model.Height)</span><br />
             <span><b>Eye Color:</b> @Html.DisplayFor(model => model.EyeColor)</span><br />
             <span><b>Email:</b> @Html.DisplayFor(model => model.Email)</span><br />

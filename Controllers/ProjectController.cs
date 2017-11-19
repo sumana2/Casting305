@@ -142,7 +142,7 @@ public class ProjectController : Controller
     public ActionResult RoleTalent (int id, string viewMode, int? pageNo)
     {
         ProjectRoleModel model;
-        ViewBag.FilterValue = viewMode;
+        ViewBag.ViewMode = viewMode;
 
         if (viewMode == "search")
         {
@@ -157,6 +157,16 @@ public class ProjectController : Controller
         model.TalentPagedList = model.Talent.ToPagedList(No_Of_Page, Size_Of_Page);
 
         return View(model);
+    }
+
+    public JsonResult AddTalent(int projectRoleID, int talentID)
+    {
+        return Json("");
+    }
+
+    public JsonResult RemoveTalent(int projectRoleID, int talentID)
+    {
+        return Json("");
     }
 
 }

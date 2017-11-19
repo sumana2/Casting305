@@ -76,7 +76,42 @@
         }
     </div>
 </div>
-@Html.PagedListPager(Model.TalentPagedList, pageNo => Url.Action("RoleTalent", new { pageNo }))
+@Html.PagedListPager(Model.TalentPagedList, pageNo => Url.Action("RoleTalent", new { pageNo, viewMode = ViewBag.ViewMode }))
 <p>
     @Html.ActionLink("Back to Project", "Edit", new { id = Model.ProjectID })
 </p>
+
+<script>
+    $(function () {
+        $(".tileCheck").removeClass('hide');
+
+        $(".tileCheck").click(function () {
+            var action = "";
+            var tileCheck = $(this);
+            var unchecked = $(this).hasClass("glyphicon-unchecked");
+            if (unchecked) {
+                action = "/Project/AddTalent";
+            }
+            else {
+                action = "/Project/RemoveTalent";
+            }
+
+            $.ajax({
+                url: action,
+                data: { projectRoleID: 1, talentID: 1 },
+                method:"POST",
+                success: function () {
+                    if (unchecked) {
+                        tileCheck.removeClass("glyphicon-unchecked");
+                        tileCheck.addClass("glyphicon-check");
+                    }
+                    else {
+                        tileCheck.addClass("glyphicon-unchecked");
+                        tileCheck.removeClass("glyphicon-check");
+                    }
+                }
+            });
+            return false;
+        });
+    });
+</script>
