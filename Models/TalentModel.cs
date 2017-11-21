@@ -59,6 +59,19 @@ namespace WebApplication1.Models
         [Display(Name = "Profile Picture")]
         public string ProfilePicture { get; set; }
 
+        public bool ShowCheck { get; set; }
+
+        public bool Checked { get; set; }
+
+        public string CheckClass
+        {
+            get
+            {
+                if (Checked) return "glyphicon-check";
+                else return "glyphicon-unchecked";
+            }
+        }
+
         public bool Add()
         {
             string sql = @"INSERT INTO[dbo].[Talent]([FirstName],[LastName],[Gender],[DateOfBirth],[Nationality],[Representative],[Height],[EyeColor]

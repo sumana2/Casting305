@@ -65,7 +65,7 @@
     @using (Html.BeginForm("RoleTalent", "Project", FormMethod.Get))
     {
         <p>
-            Mode: @Html.TextBox("viewMode", ViewBag.ViewMode as string)
+            Search Talent: @Html.CheckBox("searchMode", (bool)ViewBag.searchMode)
             <input type="submit" value="Go" />
         </p>
     }  
@@ -83,11 +83,10 @@
 
 <script>
     $(function () {
-        $(".tileCheck").removeClass('hide');
-
         $(".tileCheck").click(function () {
             var action = "";
             var tileCheck = $(this);
+            var talentID = $(this).children().val();
             var unchecked = $(this).hasClass("glyphicon-unchecked");
             if (unchecked) {
                 action = "/Project/AddTalent";
@@ -98,7 +97,7 @@
 
             $.ajax({
                 url: action,
-                data: { projectRoleID: 1, talentID: 1 },
+                data: { projectRoleID: @Model.ID, talentID: talentID },
                 method:"POST",
                 success: function () {
                     if (unchecked) {

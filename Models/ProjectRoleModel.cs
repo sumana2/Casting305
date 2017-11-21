@@ -63,47 +63,19 @@ namespace WebApplication1.Models
 
         public bool Update()
         {
-            string sql = @"UPDATE [dbo].[Talent]
-                           SET [FirstName] = @FirstName
-                              ,[LastName] = @LastName
-                              ,[Gender] = @Gender
-                              ,[DateOfBirth] = @DateOfBirth
-                              ,[Nationality] = @Nationality
-                              ,[Representative] = @Representative
-                              ,[Height] = @Height
-                              ,[EyeColor] = @EyeColor
-                              ,[HairColor] = @HairColor
-                              ,[Ethnicity] = @Ethnicity
-                              ,[ShoeSize] = @ShoeSize
-                              ,[WaistSize] = @WaistSize
-                              ,[ShirtSize] = @ShirtSize
-                              ,[Instagram] = @Instagram
-                              ,[Phone] = @Phone
-                              ,[Email] = @Email
-                              ,[Notes] = @Notes
-                              ,[ProfilePicture] = @ProfilePicture
-                         WHERE ID = @ID";
+            string sql = @"UPDATE [dbo].[ProjectRoles]
+                           SET ProjectID = @ProjectID, Name = @Name, AgeMin = @AgeMin, AgeMax = @AgeMax, HeightMin = @HeightMin, HeightMax = @HeightMax, HairColor = @HairColor
+                           WHERE ID = @ID";
 
             var pl = new List<SqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("@ID", this.ID));
-            //pl.Add(DatabaseHelper.CreateSqlParameter("@FirstName", this.FirstName));
-            //pl.Add(DatabaseHelper.CreateSqlParameter("@LastName", this.LastName));
-            //pl.Add(DatabaseHelper.CreateSqlParameter("@Gender", this.Gender));
-            //pl.Add(DatabaseHelper.CreateSqlParameter("@DateOfBirth", this.DateOfBirth));
-            //pl.Add(DatabaseHelper.CreateSqlParameter("@Nationality", this.Nationality));
-            //pl.Add(DatabaseHelper.CreateSqlParameter("@Representative", this.Representative));
-            //pl.Add(DatabaseHelper.CreateSqlParameter("@Height", this.Height));
-            //pl.Add(DatabaseHelper.CreateSqlParameter("@EyeColor", this.EyeColor));
-            //pl.Add(DatabaseHelper.CreateSqlParameter("@HairColor", this.HairColor));
-            //pl.Add(DatabaseHelper.CreateSqlParameter("@Ethnicity", this.Ethnicity));
-            //pl.Add(DatabaseHelper.CreateSqlParameter("@ShoeSize", this.ShoeSize));
-            //pl.Add(DatabaseHelper.CreateSqlParameter("@WaistSize", this.WaistSize));
-            //pl.Add(DatabaseHelper.CreateSqlParameter("@ShirtSize", this.ShirtSize));
-            //pl.Add(DatabaseHelper.CreateSqlParameter("@Instagram", this.Instagram));
-            //pl.Add(DatabaseHelper.CreateSqlParameter("@Phone", this.Phone));
-            //pl.Add(DatabaseHelper.CreateSqlParameter("@Email", this.Email));
-            //pl.Add(DatabaseHelper.CreateSqlParameter("@Notes", this.Notes));
-            //pl.Add(DatabaseHelper.CreateSqlParameter("@ProfilePicture", this.ProfilePicture));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@ProjectID", this.ProjectID));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Name", this.Name));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@AgeMin", this.AgeMin));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@AgeMax", this.AgeMax));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@HeightMin", this.HeightMin));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@HeightMax", this.HeightMax));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@HairColor", this.HairColor));
             int r = DatabaseHelper.ExecuteNonQuery(sql, pl);
 
             if (r >= 1)
@@ -141,8 +113,9 @@ namespace WebApplication1.Models
 
             DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM dbo.ProjectRoles WITH (NOLOCK) WHERE ID = @ID", pl);
 
-            foreach (DataRow row in dt.Rows)
+            if (dt.Rows.Count > 0)
             {
+                var row = dt.Rows[0];
                 obj.ID = Convert.ToInt32(row["Id"]);
                 obj.ProjectID = Convert.ToInt32(row["ProjectID"]);
                 obj.Name = Convert.ToString(row["Name"]);
@@ -155,13 +128,20 @@ namespace WebApplication1.Models
                 if (loadAllTalent)
                 {
                     obj.Talent = TalentModel.Get();
+                    var roleTalent = TalentModel.GetByProjectRoleID(id);
+
+                    foreach (var t in obj.Talent)
+                    {
+                        t.Checked = roleTalent.Exists(x => x.ID == t.ID);
+                    }
                 }
                 else
                 {
                     obj.Talent = TalentModel.GetByProjectRoleID(id);
+                    obj.Talent.ForEach(x => x.Checked = true);
                 }
-                    
-                break;
+
+                obj.Talent.ForEach(x => x.ShowCheck = true);
             }
 
             return obj;
@@ -192,6 +172,43 @@ namespace WebApplication1.Models
             }
 
             return list;
+        }
+
+        public static bool AddTalent(int projectRoleID, int talentID)
+        {
+            string sql = @"INSERT INTO [dbo].[ProjectTalent]([ProjectRoleID],[TalentID])
+                           VALUES (@ProjectRoleID, @TalentID)";
+
+            var pl = new List<SqlParameter>();
+            pl.Add(DatabaseHelper.CreateSqlParameter("@ProjectRoleID", projectRoleID));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@TalentID", talentID));
+            int r = DatabaseHelper.ExecuteNonQuery(sql, pl);
+
+            if (r >= 1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool RemoveTalent(int projectRoleID, int talentID)
+        {
+            var pl = new List<SqlParameter>();
+            pl.Add(DatabaseHelper.CreateSqlParameter("@ProjectRoleID", projectRoleID));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@TalentID", talentID));
+            int r = DatabaseHelper.ExecuteNonQuery("DELETE FROM dbo.ProjectTalent WHERE ProjectRoleID = @ProjectRoleID AND TalentID = @TalentID", pl);
+
+            if (r >= 1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

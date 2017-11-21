@@ -139,12 +139,12 @@ public class ProjectController : Controller
         return PartialView("~/Views/Shared/EditorTemplates/ProjectRoleModel.cshtml", new ProjectRoleModel() { Name = "NewRole"+count });
     }
 
-    public ActionResult RoleTalent (int id, string viewMode, int? pageNo)
+    public ActionResult RoleTalent (int id, bool? searchMode, int? pageNo)
     {
         ProjectRoleModel model;
-        ViewBag.ViewMode = viewMode;
+        ViewBag.SearchMode = searchMode.HasValue && searchMode.Value;
 
-        if (viewMode == "search")
+        if (ViewBag.SearchMode)
         {
             model = ProjectRoleModel.GetByID(id, true);
         }
@@ -161,11 +161,13 @@ public class ProjectController : Controller
 
     public JsonResult AddTalent(int projectRoleID, int talentID)
     {
+        ProjectRoleModel.AddTalent(projectRoleID, talentID);
         return Json("");
     }
 
     public JsonResult RemoveTalent(int projectRoleID, int talentID)
     {
+        ProjectRoleModel.RemoveTalent(projectRoleID, talentID);
         return Json("");
     }
 
