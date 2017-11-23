@@ -87,7 +87,7 @@ public class ProjectController : Controller
 
     public ActionResult Edit(int id)
     {
-        return View(ProjectModel.Get().Find(x => x.ID == id));
+        return View(ProjectModel.GetByID(id));
     }
 
     [HttpPost]

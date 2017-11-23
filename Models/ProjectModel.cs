@@ -131,12 +131,38 @@ namespace WebApplication1.Models
                 if (row["DueDate"] != DBNull.Value)
                     project.DueDate = Convert.ToDateTime(row["DueDate"]);
 
-                project.Roles = ProjectRoleModel.GetByProject(project.ID);
-
                 list.Add(project);
             }
 
             return list;
+        }
+
+        public static ProjectModel GetByID(int id)
+        {
+            ProjectModel project = new ProjectModel();
+
+            var pl = new List<SqlParameter>();
+            pl.Add(DatabaseHelper.CreateSqlParameter("@ID", id));
+
+            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM dbo.Projects WITH (NOLOCK) WHERE ID = @ID", pl);
+
+            foreach (DataRow row in dt.Rows)
+            {
+                project.ID = Convert.ToInt32(row["Id"]);
+                project.Title = Convert.ToString(row["Title"]);
+                project.Company = Convert.ToString(row["Company"]);
+                project.Email = Convert.ToString(row["Email"]);
+                project.Phone = Convert.ToString(row["Phone"]);
+
+                if (row["DueDate"] != DBNull.Value)
+                    project.DueDate = Convert.ToDateTime(row["DueDate"]);
+
+                project.Roles = ProjectRoleModel.GetByProject(project.ID);
+
+                break;
+            }
+
+            return project;
         }
     }
 }

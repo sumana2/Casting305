@@ -25,6 +25,8 @@ textarea {
 
 .tile{
     padding-bottom:5px;
+    max-width: 290px;
+    min-width: 290px;
 }
 
 .tileHeight {
@@ -49,7 +51,7 @@ textarea {
 }
 
 .role li.active a{
-    min-width: 280px;
+    min-width: 190px;
     display: inline-block;
 }    
 

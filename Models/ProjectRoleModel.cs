@@ -29,6 +29,8 @@ namespace WebApplication1.Models
 
         public List<TalentModel> Talent { get; set; }
 
+        public int TalentCount { get; set; }
+
         public IPagedList<TalentModel> TalentPagedList { get; set; }
 
         public ProjectRoleModel()
@@ -154,7 +156,13 @@ namespace WebApplication1.Models
             var pl = new List<SqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("@ProjectID", projectID));
 
-            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM dbo.ProjectRoles WITH (NOLOCK) WHERE ProjectID = @ProjectID", pl);
+            DataTable dt = DatabaseHelper.ExecuteQuery(@"SELECT * FROM dbo.ProjectRoles pr WITH (NOLOCK) 
+                                                            LEFT JOIN (
+	                                                            SELECT ProjectRoleID, COUNT(ID) AS TalentCount 
+	                                                            FROM dbo.ProjectTalent WITH (NOLOCK)
+	                                                            GROUP BY ProjectRoleID 
+                                                            ) pt ON pt.ProjectRoleID = pr.ID
+                                                         WHERE pr.ProjectID = @ProjectID", pl);
 
             foreach (DataRow row in dt.Rows)
             {
@@ -167,6 +175,9 @@ namespace WebApplication1.Models
                 role.HeightMin = Convert.ToDecimal(row["HeightMin"]);
                 role.HeightMax = Convert.ToDecimal(row["HeightMax"]);
                 role.HairColor = Convert.ToString(row["HairColor"]);
+
+                if (row["TalentCount"] != DBNull.Value)
+                    role.TalentCount = Convert.ToInt32(row["TalentCount"]);
 
                 list.Add(role);
             }
