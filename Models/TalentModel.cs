@@ -181,6 +181,13 @@ namespace WebApplication1.Models
             }
         }
 
+        public List<string> GetImages()
+        {
+            var images = new List<string>();
+
+            return images;
+        }
+
         public static List<TalentModel> Get()
         {
             List<TalentModel> list = new List<TalentModel>();

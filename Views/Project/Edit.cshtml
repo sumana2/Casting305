@@ -13,6 +13,7 @@
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Save" class="btn btn-default" />
                 @Html.ActionLink("Delete", "Delete", new { id = Model.ID })
+                @Html.ActionLink("Generate Presentation", "GetPresentation", new { id = Model.ID })
             </div>
         </div>
     </div>

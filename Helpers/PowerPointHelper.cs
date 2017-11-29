@@ -21,6 +21,7 @@ using Drawing = DocumentFormat.OpenXml.Drawing;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 
 namespace WebApplication1.Helpers
 {
@@ -38,7 +39,7 @@ namespace WebApplication1.Helpers
         }
 
         // Insert the specified slide into the presentation at the specified position.
-        public static void InsertNewSlide(PresentationDocument presentationDocument, int position, string slideTitle, string content, bool addImage, string serverPath)
+        public static void InsertNewSlide(PresentationDocument presentationDocument, int position, string slideTitle, string content, string imageName, string serverPath)
         {
 
             if (presentationDocument == null)
@@ -174,8 +175,11 @@ namespace WebApplication1.Helpers
             newSlideId.Id = maxSlideId;
             newSlideId.RelationshipId = presentationPart.GetIdOfPart(slidePart);
 
-            if (addImage)
-                InsertImageInLastSlide(slidePart.Slide, Path.Combine(serverPath, "image.png") , "image/png");
+            if (!string.IsNullOrEmpty(imageName))
+            {
+                //InsertImageInLastSlide(slidePart.Slide, Path.Combine(serverPath, imageName), "image/png");
+                InsertImageInLastSlide(slidePart.Slide, imageName, "image/png");
+            }
 
             // Save the modified presentation.
             presentationPart.Presentation.Save();
@@ -264,9 +268,17 @@ namespace WebApplication1.Helpers
 
             // Generates content of imagePart.
             ImagePart imagePart = slide.SlidePart.AddNewPart<ImagePart>(imageExt, embedId);
-            FileStream fileStream = new FileStream(imagePath, FileMode.Open);
-            imagePart.FeedData(fileStream);
-            fileStream.Close();
+
+            //FileStream fileStream = new FileStream(imagePath, FileMode.Open);
+            //imagePart.FeedData(fileStream);
+            //fileStream.Close();
+
+            WebRequest req = HttpWebRequest.Create(imagePath);
+            using (Stream stream = req.GetResponse().GetResponseStream())
+            {
+                imagePart.FeedData(stream);
+            }
+            
         }
     }
 

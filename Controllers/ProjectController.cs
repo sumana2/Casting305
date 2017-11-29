@@ -1,8 +1,12 @@
-﻿using PagedList;
+﻿using DocumentFormat.OpenXml.Packaging;
+using PagedList;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web.Mvc;
 using WebApplication1;
+using WebApplication1.Helpers;
 using WebApplication1.Models;
 
 public class ProjectController : Controller
@@ -136,10 +140,10 @@ public class ProjectController : Controller
 
     public ActionResult AddRole(string count)
     {
-        return PartialView("~/Views/Shared/EditorTemplates/ProjectRoleModel.cshtml", new ProjectRoleModel() { Name = "NewRole"+count });
+        return PartialView("~/Views/Shared/EditorTemplates/ProjectRoleModel.cshtml", new ProjectRoleModel() { Name = "NewRole" + count });
     }
 
-    public ActionResult RoleTalent (int id, bool? searchMode, int? pageNo)
+    public ActionResult RoleTalent(int id, bool? searchMode, int? pageNo)
     {
         ProjectRoleModel model;
         ViewBag.SearchMode = searchMode.HasValue && searchMode.Value;
@@ -171,4 +175,47 @@ public class ProjectController : Controller
         return Json("");
     }
 
+    public ActionResult GetPresentation(int id)
+    {
+        var project = ProjectModel.GetByID(id);
+        var roles = new List<ProjectRoleModel>();
+
+        foreach (var role in project.Roles)
+        {
+            roles.Add(ProjectRoleModel.GetByID(role.ID));
+        }
+
+        DirectoryInfo dir = new DirectoryInfo(Server.MapPath("/Templates"));
+
+        var files = dir.GetFiles("Presentation1.pptx");
+
+        files[0].CopyTo(Server.MapPath("/Templates/PresentationCopy.pptx"), true);
+
+        using (PresentationDocument presentationDocument = PresentationDocument.Open(Server.MapPath("/Templates/PresentationCopy.pptx"), true))
+        {
+            int slideNo = 2;
+
+            foreach (var role in roles)
+            {
+                InsertSlide.InsertNewSlide(presentationDocument, slideNo++, role.Name, "", "", Server.MapPath("/Templates"));
+
+                foreach (var talent in role.Talent)
+                {
+                    string info = string.Format("{1} {2}{0}Mide: {3}{0}Pesa: {4}{0}Pelo: {5}", Environment.NewLine, talent.FirstName, talent.LastName, talent.Height, talent.WaistSize, talent.HairColor);
+                    InsertSlide.InsertNewSlide(presentationDocument, slideNo++, "", info, "", Server.MapPath("/Templates"));
+
+                    InsertSlide.InsertNewSlide(presentationDocument, slideNo++, "", "", talent.ProfilePicture, Server.MapPath("/Templates"));
+
+                    //var images = talent.GetImages();
+
+                    //foreach (var image in images)
+                    //{
+                    //    InsertSlide.InsertNewSlide(presentationDocument, ++slideNo, "", "", image, Server.MapPath("/Templates"));
+                    //}
+                }
+            }
+        }
+
+        return File(Server.MapPath("/Templates/PresentationCopy.pptx"), "application/vnd.openxmlformats-officedocument.presentationml.presentation");
+    }
 }
