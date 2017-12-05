@@ -1,5 +1,9 @@
 ﻿@model WebApplication1.Models.TalentModel
 
+<link href="https://rawgithub.com/hayageek/jquery-upload-file/master/css/uploadfile.css" rel="stylesheet">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+<script src="https://rawgithub.com/hayageek/jquery-upload-file/master/js/jquery.uploadfile.min.js"></script>
+
 <hr />
 
 <div class="form-group">
@@ -9,6 +13,25 @@
 </div> 
 
 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+<div id="profilePictureFileUpload" name="profilePictureFileUpload" class="hide"></div>
+
+<div class="form-group">
+    <label class="control-label col-md-2"></label>
+    <div class="col-sm-6 col-md-3 tile">
+        <div class="thumbnail photoHeight">
+            <div class="tileImageDiv">
+                <button type="button" class="btn btn-default tileAction" aria-label="Left Align">
+                    <label for="" class="glyphicon glyphicon-pencil" aria-hidden="true"></label>
+                </button>
+                <img src="@Model.ProfilePicture" class="tileImage">
+            </div>
+        </div>
+    </div>
+</div>
+
+<br/>
+
 <div class="form-group">
     @Html.LabelFor(model => model.FirstName, htmlAttributes: new { @class = "control-label col-md-2" })
     <div class="col-md-10">
@@ -146,42 +169,76 @@
 </div>
 
 <div class="form-group">
-    @Html.LabelFor(model => model.ProfilePicture, htmlAttributes: new { @class = "control-label col-md-2" })
+    <label class="control-label col-md-2"></label>
     <div class="col-md-10">
-        @Html.EditorFor(model => model.ProfilePicture, new { htmlAttributes = new { @class = "form-control" } })
-        @Html.ValidationMessageFor(model => model.ProfilePicture, "", new { @class = "text-danger" })
+        <div id="bookPicturesFileUpload">Upload Photos</div>
+        <div id="status"></div>
+        <div id="photos"></div>
     </div>
 </div>
 
-<div id="mulitplefileuploader">Upload</div>
+@Html.EditorFor(model => model.ProfilePicture, new { htmlAttributes = new { @class = "hide" } })
+@Html.EditorFor(model => model.BookPictures, new { htmlAttributes = new { @class = "hide" } })
 
-<div id="status"></div>
-
-<link href="https://rawgithub.com/hayageek/jquery-upload-file/master/css/uploadfile.css" rel="stylesheet">
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
-<script src="https://rawgithub.com/hayageek/jquery-upload-file/master/js/jquery.uploadfile.min.js"></script>
 <script>
+    $(document).ready(function () {
 
-$(document).ready(function()
-{
+        var tile = '<div class="col-sm-6 col-md-3 tile">' +
+                        '<div class="thumbnail photoHeight">' +
+                            '<div class="tileImageDiv">' +
+                                '<button type="button" class="btn btn-default tileAction" aria-label="Left Align" onclick="deletePhoto($(this))">' +
+                                    '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>' +
+                                '</button>' +
+                                '<img src="photoUrl" class="tileImage">' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>';
 
-var settings = {
-    url: "/Talent/FileUpload",
-    method: "POST",
-    allowedTypes:"jpg,png,gif,doc,pdf,zip",
-    fileName: "myfile",
-    multiple: true,
-    onSuccess:function(files,data,xhr)
-    {
-        $("#status").html("<font color='green'>Upload is success</font>");
-        $("#ProfilePicture").val(data);
-    },
-    onError: function(files,status,errMsg)
-    {
-        $("#status").html("<font color='red'>Upload is Failed</font>");
+        var arr = $("#BookPictures").val().split(',');
+
+        arr.forEach(function (url) {
+            if (url) {
+                $("#photos").append(tile.replace("photoUrl", url));
+            }
+        });
+
+        var bookPicturesSettings = {
+            url: "/Talent/AddPhoto",
+            method: "POST",
+            allowedTypes: "jpg,png,gif",
+            fileName: "image",
+            multiple: true,
+            onSuccess: function (files, data, xhr) {
+                $("#BookPictures").val($("#BookPictures").val() + "," + data);
+                $("#photos").append('<div class="col-sm-6 col-md-3 tile"><div class="thumbnail photoHeight"><div class="tileImageDiv"><img src="' + data + '" class="tileImage"></div></div></div>');
+            },
+            onError: function (files, status, errMsg) {
+                $("#status").html("<font color='red'>Upload Failed</font>");
+            }
+        }
+
+        $("#bookPicturesFileUpload").uploadFile(bookPicturesSettings);
+
+        var profilePictureSettings = {
+            url: "/Talent/AddPhoto",
+            method: "POST",
+            allowedTypes: "jpg,png,gif",
+            fileName: "image",
+            multiple: false,
+            onSuccess: function (files, data, xhr) {
+            },
+            onError: function (files, status, errMsg) {
+            }
+        }
+
+        $("#profilePictureFileUpload").uploadFile(profilePictureSettings);
+
+        alert($("#profilePictureFileUpload :input").attr("id"));
+    });
+
+    function deletePhoto(e) {
+        var urlToRemove = e.siblings().attr('src');
+        $("#BookPictures").val($("#BookPictures").val().replace(urlToRemove, ""));
+        e.parent().parent().parent().remove();
     }
-}
-$("#mulitplefileuploader").uploadFile(settings);
-
-});
 </script>

@@ -33,6 +33,10 @@ textarea {
     height: 400px;
 }
 
+.photoHeight {
+    height: 215px;
+}
+
 .tileImage {
     width:  250px;
 }
@@ -61,4 +65,9 @@ textarea {
 
 .tileCheck {
     float:right;
+}
+
+.tileAction {
+    position:absolute;
+    padding: 1px 6px;
 }

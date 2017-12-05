@@ -70,7 +70,7 @@ public class TalentController : Controller
 
     public ActionResult Edit(int id)
     {
-        return View(TalentModel.Get().Find(x => x.ID == id));
+        return View(TalentModel.GetByID(id));
     }
 
     [HttpPost]
@@ -117,7 +117,7 @@ public class TalentController : Controller
         }
     }
 
-    public JsonResult FileUpload()
+    public JsonResult AddPhoto()
     {
         string thumbnailUrl = string.Empty;
 

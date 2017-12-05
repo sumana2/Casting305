@@ -56,8 +56,9 @@ namespace WebApplication1.Models
 
         public string Notes { get; set; }
 
-        [Display(Name = "Profile Picture")]
         public string ProfilePicture { get; set; }
+
+        public string BookPictures { get; set; }
 
         public bool ShowCheck { get; set; }
 
@@ -157,6 +158,32 @@ namespace WebApplication1.Models
 
             if (r >= 1)
             {
+                sql = @"DELETE FROM [dbo].[TalentPhotos] WHERE TalentID = @TalentID";
+
+                pl.Clear();
+                pl.Add(DatabaseHelper.CreateSqlParameter("@TalentID", this.ID));
+                DatabaseHelper.ExecuteNonQuery(sql, pl);
+
+                if (!string.IsNullOrEmpty(this.BookPictures))
+                {
+                    var photos = this.BookPictures.Split(',');
+
+                    foreach (var url in photos)
+                    {
+                        if (!string.IsNullOrEmpty(url))
+                        {
+                            sql = @"INSERT [dbo].[TalentPhotos] (TalentID, PhotoType, PhotoURL)
+                            VALUES (@TalentID, @PhotoType, @PhotoURL)";
+
+                            pl.Clear();
+                            pl.Add(DatabaseHelper.CreateSqlParameter("@TalentID", this.ID));
+                            pl.Add(DatabaseHelper.CreateSqlParameter("@PhotoType", "BookPhoto"));
+                            pl.Add(DatabaseHelper.CreateSqlParameter("@PhotoURL", url));
+                            DatabaseHelper.ExecuteNonQuery(sql, pl);
+                        }
+                    }
+                }
+                
                 return true;
             }
             else
@@ -186,6 +213,47 @@ namespace WebApplication1.Models
             var images = new List<string>();
 
             return images;
+        }
+
+        public static TalentModel GetByID(int id)
+        {
+            var talent = new TalentModel();
+            var bookPictures = new List<string>();
+
+            var pl = new List<SqlParameter>();
+            pl.Add(DatabaseHelper.CreateSqlParameter("@ID", id));
+            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM dbo.Talent WITH (NOLOCK) WHERE ID = @ID", pl);
+
+            foreach (DataRow row in dt.Rows)
+            {
+                talent.ID = Convert.ToInt32(row["Id"]);
+                talent.FirstName = Convert.ToString(row["FirstName"]);
+                talent.LastName = Convert.ToString(row["LastName"]);
+                talent.Email = Convert.ToString(row["Email"]);
+                talent.Phone = Convert.ToString(row["Phone"]);
+                talent.Height = Convert.ToString(row["Height"]);
+                talent.HairColor = Convert.ToString(row["HairColor"]);
+                talent.EyeColor = Convert.ToString(row["EyeColor"]);
+                talent.Gender = Convert.ToString(row["Gender"]);
+                talent.Instagram = Convert.ToString(row["Instagram"]);
+                talent.ProfilePicture = Convert.ToString(row["ProfilePicture"]);
+
+                if (row["DateOfBirth"] != DBNull.Value)
+                    talent.DateOfBirth = Convert.ToDateTime(row["DateOfBirth"]);
+            }
+
+            pl.Clear();
+            pl.Add(DatabaseHelper.CreateSqlParameter("@ID", id));
+            dt = DatabaseHelper.ExecuteQuery("SELECT * FROM dbo.TalentPhotos WITH (NOLOCK) WHERE TalentID = @ID", pl);
+
+            foreach (DataRow row in dt.Rows)
+            {
+                bookPictures.Add(Convert.ToString(row["PhotoURL"]));
+            }
+
+            talent.BookPictures = string.Join(",", bookPictures);
+
+            return talent;
         }
 
         public static List<TalentModel> Get()

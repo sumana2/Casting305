@@ -20,7 +20,7 @@ BEGIN
 		Phone   			VARCHAR(25) NULL,
 		Email   			VARCHAR(100) NULL,
 		Notes   			VARCHAR(MAX) NULL,
-		ProfilePicture   	VARCHAR(200) NULL
+		ProfilePicture   	VARCHAR(500) NULL
 	)
 	
 	PRINT 'Created table: [Talent]'
