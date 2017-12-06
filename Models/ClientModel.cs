@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Data.SqlClient;
 using WebApplication1.Helpers;
+using static WebApplication1.Models.ListItemModel;
 
 namespace WebApplication1.Models
 {
@@ -20,12 +21,15 @@ namespace WebApplication1.Models
 
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
-        public string Country { get; set; }
+
+        public ListItemModel Country { get; set; }
 
         [Required(ErrorMessage = "Email is required.")]
         [EmailAddress(ErrorMessage = "Invalid Email Address")]
         public string Email { get; set; }
+
         public string Phone { get; set; }
+
         public string Address { get; set; }
 
         [Display(Name = "Billing Info")]
@@ -42,7 +46,7 @@ namespace WebApplication1.Models
 
             var pl = new List<SqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("@Company", this.Company));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Country", this.Country));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Country", this.Country.Value));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Email", this.Email));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Phone", this.Phone));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Address", this.Address));
@@ -59,6 +63,7 @@ namespace WebApplication1.Models
                 return false;
             }
         } 
+
         public bool Update()
         {
             string sql = @"UPDATE dbo.Clients SET   
@@ -74,7 +79,7 @@ namespace WebApplication1.Models
             var pl = new List<SqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("@ID", this.ID));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Company", this.Company));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Country", this.Country));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Country", this.Country.Value));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Email", this.Email));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Phone", this.Phone));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Address", this.Address));
@@ -91,6 +96,7 @@ namespace WebApplication1.Models
                 return false;
             }
         }
+
         public bool Delete()
         {
             var pl = new List<SqlParameter>();
@@ -118,16 +124,51 @@ namespace WebApplication1.Models
                 var client = new ClientModel();
                 client.ID = Convert.ToInt32(row["Id"]);
                 client.Company = Convert.ToString(row["Company"]);
-                client.Country = Convert.ToString(row["Country"]);
                 client.Email = Convert.ToString(row["Email"]);
                 client.Phone = Convert.ToString(row["Phone"]);
                 client.Address = Convert.ToString(row["Address"]);
                 client.BillingInfo = Convert.ToString(row["BillingInfo"]);
                 client.AdminEmail = Convert.ToString(row["AdminEmail"]);
+
+                client.Country = new ListItemModel(Convert.ToString(row["Country"]));
+
                 list.Add(client);
             }
 
             return list;
+        }
+
+        public static ClientModel GetByID(int id)
+        {
+            ClientModel client = new ClientModel();
+
+            var pl = new List<SqlParameter>();
+            pl.Add(DatabaseHelper.CreateSqlParameter("@ID", id));
+
+            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM dbo.Clients WITH (NOLOCK) WHERE ID = @ID", pl);
+
+            foreach (DataRow row in dt.Rows)
+            {
+                client.ID = Convert.ToInt32(row["Id"]);
+                client.Company = Convert.ToString(row["Company"]);
+                client.Email = Convert.ToString(row["Email"]);
+                client.Phone = Convert.ToString(row["Phone"]);
+                client.Address = Convert.ToString(row["Address"]);
+                client.BillingInfo = Convert.ToString(row["BillingInfo"]);
+                client.AdminEmail = Convert.ToString(row["AdminEmail"]);
+
+                client.Country = new ListItemModel(Lists.Country, Convert.ToString(row["Country"]));
+            }
+
+            return client;
+        }
+
+        public void LoadLists()
+        {
+            if (this.Country == null)
+                this.Country = new ListItemModel(Lists.Country);
+
+            this.Country.LoadList();
         }
     }
 }

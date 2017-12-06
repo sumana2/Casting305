@@ -31,7 +31,7 @@ public class ClientController : Controller
         if (!String.IsNullOrEmpty(search))
         {
             clients = clients.Where(x => x.Company.ToUpper().Contains(search.ToUpper())
-                || x.Country.ToUpper().Contains(search.ToUpper())).ToList();
+                || x.Country.Value.ToUpper().Contains(search.ToUpper())).ToList();
         }
         switch (sortOrder)
         {
@@ -58,7 +58,9 @@ public class ClientController : Controller
   
     public ActionResult Add()
     {
-        return View();
+        var model = new ClientModel();
+        model.LoadLists();
+        return View(model);
     }
 
     [HttpPost]
@@ -87,7 +89,7 @@ public class ClientController : Controller
 
     public ActionResult Edit(int id)
     {
-        return View(ClientModel.Get().Find(x => x.ID == id));
+        return View(ClientModel.GetByID(id));
     }
 
     [HttpPost]
@@ -95,6 +97,8 @@ public class ClientController : Controller
     {
         try
         {
+            obj.LoadLists();
+
             if (ModelState.IsValid)
             {
                 if (!obj.Update())

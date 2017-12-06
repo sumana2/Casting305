@@ -1,0 +1,14 @@
+﻿@model WebApplication1.Models.ListItemModel
+
+@Html.DropDownListFor(model => model.Value, Model.ListItems, new { @class = "form-control listItemModel" })
+
+<button id="addRole" type="button" class="btn btn-default" aria-label="Left Align" onclick="addOption()">
+    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+</button>
+
+<script>
+    function addOption() {
+        alert("Add");
+    }
+</script>
+

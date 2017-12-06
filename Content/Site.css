@@ -71,3 +71,7 @@ textarea {
     position:absolute;
     padding: 1px 6px;
 }
+
+.listItemModel {
+    max-width: 235px;
+}

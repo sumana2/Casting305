@@ -14,23 +14,22 @@
 
 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-<div id="profilePictureFileUpload" name="profilePictureFileUpload" class="hide"></div>
+<div class="hide"><div id="profilePictureFileUpload" name="profilePictureFileUpload"></div></div>
+<div id="profilePictureStatus"></div>
 
 <div class="form-group">
     <label class="control-label col-md-2"></label>
     <div class="col-sm-6 col-md-3 tile">
         <div class="thumbnail photoHeight">
             <div class="tileImageDiv">
-                <button type="button" class="btn btn-default tileAction" aria-label="Left Align">
-                    <label for="" class="glyphicon glyphicon-pencil" aria-hidden="true"></label>
+                <button type="button" class="btn btn-default tileAction" aria-label="Left Align" onclick="$('#profilePictureFileUpload :input').trigger('click')">
+                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                 </button>
-                <img src="@Model.ProfilePicture" class="tileImage">
+                <img id="imgprofilePicture" src="@Model.ProfilePicture" class="tileImage">
             </div>
         </div>
     </div>
 </div>
-
-<br/>
 
 <div class="form-group">
     @Html.LabelFor(model => model.FirstName, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -172,7 +171,7 @@
     <label class="control-label col-md-2"></label>
     <div class="col-md-10">
         <div id="bookPicturesFileUpload">Upload Photos</div>
-        <div id="status"></div>
+        <div id="bookPicturesStatus"></div>
         <div id="photos"></div>
     </div>
 </div>
@@ -207,13 +206,13 @@
             method: "POST",
             allowedTypes: "jpg,png,gif",
             fileName: "image",
-            multiple: true,
+            multiple: false,
             onSuccess: function (files, data, xhr) {
                 $("#BookPictures").val($("#BookPictures").val() + "," + data);
-                $("#photos").append('<div class="col-sm-6 col-md-3 tile"><div class="thumbnail photoHeight"><div class="tileImageDiv"><img src="' + data + '" class="tileImage"></div></div></div>');
+                $("#photos").append(tile.replace("photoUrl", data));
             },
             onError: function (files, status, errMsg) {
-                $("#status").html("<font color='red'>Upload Failed</font>");
+                $("#bookPicturesStatus").html("<font color='red'>Upload Failed</font>");
             }
         }
 
@@ -226,14 +225,15 @@
             fileName: "image",
             multiple: false,
             onSuccess: function (files, data, xhr) {
+                $("#ProfilePicture").val(data);
+                $("#imgprofilePicture").attr("src", data);
             },
             onError: function (files, status, errMsg) {
+                $("#profilePictureStatus").html("<font color='red'>Upload Failed</font>");
             }
         }
 
         $("#profilePictureFileUpload").uploadFile(profilePictureSettings);
-
-        alert($("#profilePictureFileUpload :input").attr("id"));
     });
 
     function deletePhoto(e) {
