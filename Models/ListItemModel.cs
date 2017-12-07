@@ -46,64 +46,39 @@ namespace WebApplication1.Models
 
         public void LoadList()
         {
-            List<string> l = new List<string>();
-            l.Add("");
-            l.Add("USA");
-            l.Add("Mexico");
+            var items = new List<string>();
+            items.Add("");
 
-            this.ListItems = new SelectList(l);
+            var pl = new List<SqlParameter>();
+            pl.Add(DatabaseHelper.CreateSqlParameter("@List", this.List));
+
+            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM dbo.Lists WITH (NOLOCK) WHERE List = @List", pl);
+
+            foreach (DataRow row in dt.Rows)
+            {
+                items.Add(Convert.ToString(row["Text"]));
+            }
+
+            this.ListItems = new SelectList(items);
         }
 
-        //public bool Add()
-        //{
-        //    string sql = @"INSERT INTO [dbo].[Clients]([Company],[Country],[Email],[Phone],[Address],[BillingInfo],[AdminEmail])
-        //                   VALUES (@Company,@Country,@Email,@Phone,@Address,@BillingInfo,@AdminEmail)";
+        public bool Add()
+        {
+            string sql = @"INSERT INTO [dbo].[Lists]([Text],[List]) VALUES (@Text,@List)";
 
-        //    var pl = new List<SqlParameter>();
-        //    pl.Add(DatabaseHelper.CreateSqlParameter("@Company", this.Company));
-        //    pl.Add(DatabaseHelper.CreateSqlParameter("@Country", this.Country));
-        //    pl.Add(DatabaseHelper.CreateSqlParameter("@Email", this.Email));
-        //    pl.Add(DatabaseHelper.CreateSqlParameter("@Phone", this.Phone));
-        //    pl.Add(DatabaseHelper.CreateSqlParameter("@Address", this.Address));
-        //    pl.Add(DatabaseHelper.CreateSqlParameter("@BillingInfo", this.BillingInfo));
-        //    pl.Add(DatabaseHelper.CreateSqlParameter("@AdminEmail", this.AdminEmail));
-        //    int r = DatabaseHelper.ExecuteNonQuery(sql, pl);
+            var pl = new List<SqlParameter>();
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Text", this.Value));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@List", this.List.ToString()));
+            int r = DatabaseHelper.ExecuteNonQuery(sql, pl);
 
-        //    if (r >= 1)
-        //    {
-        //        return true;
-        //    }
-        //    else
-        //    {
-        //        return false;
-        //    }
-        //} 
-
-        //public static List<ListModel> Get(string listName)
-        //{
-        //    List<ListModel> list = new List<ListModel>();
-
-        //    //var pl = new List<SqlParameter>();
-        //    //pl.Add(DatabaseHelper.CreateSqlParameter("@ListName", listName));
-
-        //    //DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM dbo.Lists WITH (NOLOCK) WHERE ListName = @ListName", pl);
-
-        //    //foreach (DataRow row in dt.Rows)
-        //    //{
-        //    //    var listItem = new ListModel();
-        //    //    listItem.Value = Convert.ToString(row["Value"]);
-        //    //    listItem.Text = Convert.ToString(row["Text"]);
-        //    //    listItem.ListName = Convert.ToString(row["ListName"]);
-        //    //    list.Add(listItem);
-        //    //}
-
-        //    var listItem = new ListModel();
-        //    listItem.Value = "USA";
-        //    listItem.Text = "USA";
-        //    listItem.ListName = "Country";
-        //    list.Add(listItem);
-
-        //    return list;
-        //}
+            if (r >= 1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

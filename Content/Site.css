@@ -75,3 +75,8 @@ textarea {
 .listItemModel {
     max-width: 235px;
 }
+
+.listItemModelTextbox {
+    max-width: 235px;
+    display:inline;
+}
