@@ -17,7 +17,7 @@ namespace WebApplication1.Models
 
         public SelectList ListItems { get; set; }
 
-        public enum Lists { Country };
+        public enum Lists { None, Country, Gender, Nationality, EyeColor, HairColor, Ethnicity };
 
         public ListItemModel()
         {
@@ -64,21 +64,26 @@ namespace WebApplication1.Models
 
         public bool Add()
         {
-            string sql = @"INSERT INTO [dbo].[Lists]([Text],[List]) VALUES (@Text,@List)";
-
-            var pl = new List<SqlParameter>();
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Text", this.Value));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@List", this.List.ToString()));
-            int r = DatabaseHelper.ExecuteNonQuery(sql, pl);
-
-            if (r >= 1)
+            if (this.List != Lists.None)
             {
-                return true;
+                string sql = @"INSERT INTO [dbo].[Lists]([Text],[List]) VALUES (@Text,@List)";
+
+                var pl = new List<SqlParameter>();
+                pl.Add(DatabaseHelper.CreateSqlParameter("@Text", this.Value));
+                pl.Add(DatabaseHelper.CreateSqlParameter("@List", this.List.ToString()));
+                int r = DatabaseHelper.ExecuteNonQuery(sql, pl);
+
+                if (r >= 1)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
     }
 }

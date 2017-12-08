@@ -9,7 +9,7 @@ using static WebApplication1.Models.ListItemModel;
 
 namespace WebApplication1.Models
 {
-    public class ClientModel
+    public class ClientModel : BaseModel
     {
         public int ID { get; set; }
 
@@ -38,6 +38,21 @@ namespace WebApplication1.Models
         [Display(Name = "Admin Email")]
         [EmailAddress(ErrorMessage = "Invalid Email Address")]
         public string AdminEmail { get; set; }
+
+        public ClientModel() { }
+
+        public ClientModel(DataRow row)
+        {
+            this.ID = Convert.ToInt32(row["Id"]);
+            this.Company = Convert.ToString(row["Company"]);
+            this.Email = Convert.ToString(row["Email"]);
+            this.Phone = Convert.ToString(row["Phone"]);
+            this.Address = Convert.ToString(row["Address"]);
+            this.BillingInfo = Convert.ToString(row["BillingInfo"]);
+            this.AdminEmail = Convert.ToString(row["AdminEmail"]);
+
+            this.Country = new ListItemModel(Convert.ToString(row["Country"]));
+        }
 
         public bool Add()
         {
@@ -121,18 +136,7 @@ namespace WebApplication1.Models
 
             foreach (DataRow row in dt.Rows)
             {
-                var client = new ClientModel();
-                client.ID = Convert.ToInt32(row["Id"]);
-                client.Company = Convert.ToString(row["Company"]);
-                client.Email = Convert.ToString(row["Email"]);
-                client.Phone = Convert.ToString(row["Phone"]);
-                client.Address = Convert.ToString(row["Address"]);
-                client.BillingInfo = Convert.ToString(row["BillingInfo"]);
-                client.AdminEmail = Convert.ToString(row["AdminEmail"]);
-
-                client.Country = new ListItemModel(Convert.ToString(row["Country"]));
-
-                list.Add(client);
+                list.Add(new ClientModel(row));
             }
 
             return list;
@@ -140,35 +144,14 @@ namespace WebApplication1.Models
 
         public static ClientModel GetByID(int id)
         {
-            ClientModel client = new ClientModel();
-
             var pl = new List<SqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("@ID", id));
 
             DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM dbo.Clients WITH (NOLOCK) WHERE ID = @ID", pl);
 
-            foreach (DataRow row in dt.Rows)
-            {
-                client.ID = Convert.ToInt32(row["Id"]);
-                client.Company = Convert.ToString(row["Company"]);
-                client.Email = Convert.ToString(row["Email"]);
-                client.Phone = Convert.ToString(row["Phone"]);
-                client.Address = Convert.ToString(row["Address"]);
-                client.BillingInfo = Convert.ToString(row["BillingInfo"]);
-                client.AdminEmail = Convert.ToString(row["AdminEmail"]);
-
-                client.Country = new ListItemModel(Lists.Country, Convert.ToString(row["Country"]));
-            }
-
-            return client;
-        }
-
-        public void LoadLists()
-        {
-            if (this.Country == null)
-                this.Country = new ListItemModel(Lists.Country);
-
-            this.Country.LoadList();
+            var model = new ClientModel(dt.Rows[0]);
+            model.LoadLists();
+            return model;
         }
     }
 }

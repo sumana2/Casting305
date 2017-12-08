@@ -8,7 +8,7 @@ using WebApplication1.Helpers;
 
 namespace WebApplication1.Models
 {
-    public class TalentModel
+    public class TalentModel : BaseModel
     {
         public int ID { get; set; }
     
@@ -18,26 +18,26 @@ namespace WebApplication1.Models
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
 
-        public string Gender { get; set; }
+        public ListItemModel Gender { get; set; }
 
         [Display(Name = "Date Of Birth")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public Nullable<System.DateTime> DateOfBirth { get; set; }
 
-        public string Nationality { get; set; }
+        public ListItemModel Nationality { get; set; }
 
         public string Representative { get; set; }
 
         public string Height { get; set; }
 
         [Display(Name = "Eye Color")]
-        public string EyeColor { get; set; }
+        public ListItemModel EyeColor { get; set; }
 
         [Display(Name = "Hair Color")]
-        public string HairColor { get; set; }
+        public ListItemModel HairColor { get; set; }
 
-        public string Ethnicity { get; set; }
+        public ListItemModel Ethnicity { get; set; }
 
         [Display(Name = "Shoe Size")]
         public string ShoeSize { get; set; }
@@ -73,6 +73,27 @@ namespace WebApplication1.Models
             }
         }
 
+        public TalentModel() { }
+
+        public TalentModel(DataRow row)
+        {
+            this.ID = Convert.ToInt32(row["Id"]);
+            this.FirstName = Convert.ToString(row["FirstName"]);
+            this.LastName = Convert.ToString(row["LastName"]);
+            this.Email = Convert.ToString(row["Email"]);
+            this.Phone = Convert.ToString(row["Phone"]);
+            this.Height = Convert.ToString(row["Height"]);
+            this.Instagram = Convert.ToString(row["Instagram"]);
+            this.ProfilePicture = Convert.ToString(row["ProfilePicture"]);
+
+            this.HairColor = new ListItemModel(Convert.ToString(row["HairColor"]));
+            this.EyeColor = new ListItemModel(Convert.ToString(row["EyeColor"]));
+            this.Gender = new ListItemModel(Convert.ToString(row["Gender"]));
+
+            if (row["DateOfBirth"] != DBNull.Value)
+                this.DateOfBirth = Convert.ToDateTime(row["DateOfBirth"]);
+        }
+
         public bool Add()
         {
             string sql = @"INSERT INTO[dbo].[Talent]([FirstName],[LastName],[Gender],[DateOfBirth],[Nationality],[Representative],[Height],[EyeColor]
@@ -83,14 +104,14 @@ namespace WebApplication1.Models
             var pl = new List<SqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("@FirstName", this.FirstName));
             pl.Add(DatabaseHelper.CreateSqlParameter("@LastName", this.LastName));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Gender", this.Gender));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Gender", this.Gender.Value));
             pl.Add(DatabaseHelper.CreateSqlParameter("@DateOfBirth", this.DateOfBirth));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Nationality", this.Nationality));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Nationality", this.Nationality.Value));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Representative", this.Representative));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Height", this.Height));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@EyeColor", this.EyeColor));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@HairColor", this.HairColor));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Ethnicity", this.Ethnicity));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@EyeColor", this.EyeColor.Value));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@HairColor", this.HairColor.Value));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Ethnicity", this.Ethnicity.Value));
             pl.Add(DatabaseHelper.CreateSqlParameter("@ShoeSize", this.ShoeSize));
             pl.Add(DatabaseHelper.CreateSqlParameter("@WaistSize", this.WaistSize));
             pl.Add(DatabaseHelper.CreateSqlParameter("@ShirtSize", this.ShirtSize));
@@ -138,14 +159,14 @@ namespace WebApplication1.Models
             pl.Add(DatabaseHelper.CreateSqlParameter("@ID", this.ID));
             pl.Add(DatabaseHelper.CreateSqlParameter("@FirstName", this.FirstName));
             pl.Add(DatabaseHelper.CreateSqlParameter("@LastName", this.LastName));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Gender", this.Gender));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Gender", this.Gender.Value));
             pl.Add(DatabaseHelper.CreateSqlParameter("@DateOfBirth", this.DateOfBirth));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Nationality", this.Nationality));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Nationality", this.Nationality.Value));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Representative", this.Representative));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Height", this.Height));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@EyeColor", this.EyeColor));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@HairColor", this.HairColor));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Ethnicity", this.Ethnicity));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@EyeColor", this.EyeColor.Value));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@HairColor", this.HairColor.Value));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Ethnicity", this.Ethnicity.Value));
             pl.Add(DatabaseHelper.CreateSqlParameter("@ShoeSize", this.ShoeSize));
             pl.Add(DatabaseHelper.CreateSqlParameter("@WaistSize", this.WaistSize));
             pl.Add(DatabaseHelper.CreateSqlParameter("@ShirtSize", this.ShirtSize));
@@ -215,32 +236,30 @@ namespace WebApplication1.Models
             return images;
         }
 
+        public static List<TalentModel> Get()
+        {
+            List<TalentModel> list = new List<TalentModel>();
+
+            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM dbo.Talent WITH (NOLOCK)");
+
+            foreach (DataRow row in dt.Rows)
+            {
+                list.Add(new TalentModel(row));
+            }
+
+            return list;
+        }
+
         public static TalentModel GetByID(int id)
         {
-            var talent = new TalentModel();
             var bookPictures = new List<string>();
 
             var pl = new List<SqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("@ID", id));
             DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM dbo.Talent WITH (NOLOCK) WHERE ID = @ID", pl);
 
-            foreach (DataRow row in dt.Rows)
-            {
-                talent.ID = Convert.ToInt32(row["Id"]);
-                talent.FirstName = Convert.ToString(row["FirstName"]);
-                talent.LastName = Convert.ToString(row["LastName"]);
-                talent.Email = Convert.ToString(row["Email"]);
-                talent.Phone = Convert.ToString(row["Phone"]);
-                talent.Height = Convert.ToString(row["Height"]);
-                talent.HairColor = Convert.ToString(row["HairColor"]);
-                talent.EyeColor = Convert.ToString(row["EyeColor"]);
-                talent.Gender = Convert.ToString(row["Gender"]);
-                talent.Instagram = Convert.ToString(row["Instagram"]);
-                talent.ProfilePicture = Convert.ToString(row["ProfilePicture"]);
-
-                if (row["DateOfBirth"] != DBNull.Value)
-                    talent.DateOfBirth = Convert.ToDateTime(row["DateOfBirth"]);
-            }
+            var talent = new TalentModel(dt.Rows[0]);
+            talent.LoadLists();
 
             pl.Clear();
             pl.Add(DatabaseHelper.CreateSqlParameter("@ID", id));
@@ -256,36 +275,6 @@ namespace WebApplication1.Models
             return talent;
         }
 
-        public static List<TalentModel> Get()
-        {
-            List<TalentModel> list = new List<TalentModel>();
-
-            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM dbo.Talent WITH (NOLOCK)");
-
-            foreach (DataRow row in dt.Rows)
-            {
-                var talent = new TalentModel();
-                talent.ID = Convert.ToInt32(row["Id"]);
-                talent.FirstName = Convert.ToString(row["FirstName"]);
-                talent.LastName = Convert.ToString(row["LastName"]);
-                talent.Email = Convert.ToString(row["Email"]);
-                talent.Phone = Convert.ToString(row["Phone"]);
-                talent.Height = Convert.ToString(row["Height"]);
-                talent.HairColor = Convert.ToString(row["HairColor"]);
-                talent.EyeColor = Convert.ToString(row["EyeColor"]);
-                talent.Gender = Convert.ToString(row["Gender"]);
-                talent.Instagram = Convert.ToString(row["Instagram"]);
-                talent.ProfilePicture = Convert.ToString(row["ProfilePicture"]);
-
-                if (row["DateOfBirth"] != DBNull.Value)
-                    talent.DateOfBirth = Convert.ToDateTime(row["DateOfBirth"]);
-
-                list.Add(talent);
-            }
-
-            return list;
-        }
-
         public static List<TalentModel> GetByProjectRoleID(int id)
         {
             List<TalentModel> list = new List<TalentModel>();
@@ -297,23 +286,7 @@ namespace WebApplication1.Models
 
             foreach (DataRow row in dt.Rows)
             {
-                var talent = new TalentModel();
-                talent.ID = Convert.ToInt32(row["Id"]);
-                talent.FirstName = Convert.ToString(row["FirstName"]);
-                talent.LastName = Convert.ToString(row["LastName"]);
-                talent.Email = Convert.ToString(row["Email"]);
-                talent.Phone = Convert.ToString(row["Phone"]);
-                talent.Height = Convert.ToString(row["Height"]);
-                talent.HairColor = Convert.ToString(row["HairColor"]);
-                talent.EyeColor = Convert.ToString(row["EyeColor"]);
-                talent.Gender = Convert.ToString(row["Gender"]);
-                talent.Instagram = Convert.ToString(row["Instagram"]);
-                talent.ProfilePicture = Convert.ToString(row["ProfilePicture"]);
-
-                if (row["DateOfBirth"] != DBNull.Value)
-                    talent.DateOfBirth = Convert.ToDateTime(row["DateOfBirth"]);
-
-                list.Add(talent);
+                list.Add(new TalentModel(row));
             }
 
             return list;

@@ -243,6 +243,7 @@
     <Compile Include="Helpers\PowerPointHelper.cs" />
     <Compile Include="Helpers\DatabaseHelper.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\BaseModel.cs" />
     <Compile Include="Models\ListItemModel.cs" />
     <Compile Include="Models\ProjectRoleModel.cs" />
     <Compile Include="Models\ProjectModel.cs" />

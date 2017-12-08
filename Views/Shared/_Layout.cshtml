@@ -47,6 +47,51 @@
         $(document).ready(function () {
             $('.listItemModel').select2();
         });
+
+        function addListOption(btn) {
+            btn.addClass('hide');
+            btn.next().removeClass('hide');
+
+            btn.prev().removeClass('hide');
+            btn.prev().focus();
+            btn.prev().prev().addClass('hide');
+        }
+
+        function saveListOption(btn, listName) {
+
+            var txt = btn.prev().prev();
+            var newValue = txt.val();
+
+            if (newValue) {
+                $.ajax({
+                    type: "POST",
+                    url: "/List/AddListOption",
+                    data: { value: newValue, list: listName },
+                    success: function (data) {
+                        btn.prev().prev().prev().prev().append($("<option></option>").text(data));
+
+                        btn.addClass('hide');
+                        btn.prev().removeClass('hide');
+
+                        txt.addClass('hide');
+                        txt.val('');
+                        btn.prev().prev().prev().removeClass('hide');
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        btn.next().removeClass('hide');
+                    }
+                });
+            }
+            else {
+                btn.addClass('hide');
+                btn.prev().removeClass('hide');
+
+                txt.addClass('hide');
+                btn.prev().prev().prev().removeClass('hide');
+
+                btn.next().addClass('hide');
+            }
+        }
     </script>
 </body>
 </html>

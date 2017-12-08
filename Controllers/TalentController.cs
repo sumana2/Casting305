@@ -41,7 +41,9 @@ public class TalentController : Controller
   
     public ActionResult Add()
     {
-        return View();
+        var model = new TalentModel();
+        model.LoadLists();
+        return View(model);
     }
 
     [HttpPost]
@@ -78,6 +80,8 @@ public class TalentController : Controller
     {
         try
         {
+            obj.LoadLists();
+
             if (ModelState.IsValid)
             {
                 if (!obj.Update())
