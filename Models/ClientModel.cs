@@ -16,12 +16,6 @@ namespace WebApplication1.Models
         [Required(ErrorMessage = "Company is required.")]
         public string Company { get; set; }
 
-        [Display(Name = "First Name")]
-        public string FirstName { get; set; }
-
-        [Display(Name = "Last Name")]
-        public string LastName { get; set; }
-
         public ListItemModel Country { get; set; }
 
         [Required(ErrorMessage = "Email is required.")]
@@ -38,6 +32,8 @@ namespace WebApplication1.Models
         [Display(Name = "Admin Email")]
         [EmailAddress(ErrorMessage = "Invalid Email Address")]
         public string AdminEmail { get; set; }
+
+        public List<ContactModel> Contacts { get; set; }
 
         public ClientModel() { }
 

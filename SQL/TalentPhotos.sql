@@ -5,7 +5,8 @@ BEGIN
 		ID        	INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
 		TalentID	INT,
 		PhotoType   VARCHAR(25),
-		PhotoURL   	VARCHAR(500)
+		Photo   	VARCHAR(500),
+		Thumbnail   VARCHAR(500)
 	)
 	
 	PRINT 'Created table: [TalentPhotos]'

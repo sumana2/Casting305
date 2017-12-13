@@ -7,8 +7,8 @@ namespace WebApplication1.Helpers
 {
     public class DatabaseHelper
     {
-        private static string connectionString = "Server=tcp:casting305.database.windows.net,1433;Initial Catalog=Casting305;Persist Security Info=False;User ID=dbadmin;Password=Baddbpass1;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
-
+        private static string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+    
         public static DataTable CallStoredProcedure(string procedureName, List<SqlParameter> paramList)
         {
             var table = new DataTable("Table");

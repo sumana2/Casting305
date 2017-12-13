@@ -18,12 +18,6 @@
             @Html.ActionLink(Html.DisplayNameFor(model => model[0].Company).ToString(), "Index", new { sortOrder = "Company", sortDirection = ViewBag.SortDirection, filterValue = ViewBag.FilterValue })  
         </th>
         <th>
-            @Html.DisplayNameFor(model => model[0].FirstName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model[0].LastName)
-        </th>
-        <th>
             @Html.ActionLink(Html.DisplayNameFor(model => model[0].Country).ToString(), "Index", new { sortOrder = "Country", sortDirection = ViewBag.SortDirection, filterValue = ViewBag.FilterValue })  
         </th>
         <th>
@@ -48,12 +42,6 @@
     <tr>
         <td>
             @Html.ActionLink(item.Company, "Edit", new { id = item.ID })
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.FirstName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.LastName)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Country.Value)

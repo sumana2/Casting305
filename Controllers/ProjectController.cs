@@ -9,6 +9,7 @@ using WebApplication1;
 using WebApplication1.Helpers;
 using WebApplication1.Models;
 
+[Authorize]
 public class ProjectController : Controller
 {
     private int Size_Of_Page = 4;
@@ -186,7 +187,7 @@ public class ProjectController : Controller
         }
 
         DirectoryInfo dir = new DirectoryInfo(Server.MapPath("/Templates"));
-
+        
         var files = dir.GetFiles("Presentation1.pptx");
 
         files[0].CopyTo(Server.MapPath("/Templates/PresentationCopy.pptx"), true);

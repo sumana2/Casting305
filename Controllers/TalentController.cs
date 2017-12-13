@@ -10,6 +10,7 @@ using System.Web.Mvc;
 using WebApplication1;
 using WebApplication1.Models;
 
+[Authorize]
 public class TalentController : Controller
 {
     private int Size_Of_Page = 12;

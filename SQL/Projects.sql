@@ -5,8 +5,8 @@ BEGIN
 		ID        			INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
 		Title   		    VARCHAR(100) NOT NULL,
 		Company   			VARCHAR(100) NULL,
-		Email   			VARCHAR(25) NULL,
-		Phone   		    VARCHAR(25) NULL,
+		Email   			VARCHAR(100) NULL,
+		Phone   		    VARCHAR(20) NULL,
 		DueDate   		    DATETIME NULL
 	)
 	

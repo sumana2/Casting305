@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using WebApplication1;
 using WebApplication1.Models;
 
+[Authorize]
 public class ListController : Controller
 {
     [HttpPost]
