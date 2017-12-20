@@ -1,9 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Data;
-using System.Data.SqlClient;
 using System.Web.Mvc;
 using WebApplication1.Helpers;
 
@@ -49,10 +47,10 @@ namespace WebApplication1.Models
             var items = new List<string>();
             items.Add("");
 
-            var pl = new List<SqlParameter>();
+            var pl = new List<MySqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("@List", this.List));
 
-            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM dbo.Lists WITH (NOLOCK) WHERE List = @List", pl);
+            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM Lists WHERE List = @List", pl);
 
             foreach (DataRow row in dt.Rows)
             {
@@ -66,9 +64,9 @@ namespace WebApplication1.Models
         {
             if (this.List != Lists.None)
             {
-                string sql = @"INSERT INTO [dbo].[Lists]([Text],[List]) VALUES (@Text,@List)";
+                string sql = @"INSERT INTO [Lists]([Text],[List]) VALUES (@Text,@List)";
 
-                var pl = new List<SqlParameter>();
+                var pl = new List<MySqlParameter>();
                 pl.Add(DatabaseHelper.CreateSqlParameter("@Text", this.Value));
                 pl.Add(DatabaseHelper.CreateSqlParameter("@List", this.List.ToString()));
                 int r = DatabaseHelper.ExecuteNonQuery(sql, pl);

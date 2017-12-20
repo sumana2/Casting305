@@ -76,17 +76,17 @@ public class ProjectController : Controller
                 if (!project.Add())
                 {
                     ViewBag.Message = "Unable to add";
-                    return View();
+                    return View(project);
                 }
                 return RedirectToAction("Index");
             }
 
-            return View();
+            return View(project);
         }
         catch (Exception e)
         {
-            ViewBag.Message = "Error!";
-            return View();
+            ViewBag.Message = e.Message;
+            return View(project);
         }
     }
 

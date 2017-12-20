@@ -3,11 +3,8 @@ using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Blob;
 using PagedList;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using WebApplication1;
 using WebApplication1.Models;
 
 [Authorize]
@@ -50,6 +47,8 @@ public class TalentController : Controller
     [HttpPost]
     public ActionResult Add(TalentModel talent)
     {
+        talent.LoadLists();
+
         try
         {
             if (ModelState.IsValid)
@@ -57,17 +56,17 @@ public class TalentController : Controller
                 if (!talent.Add())
                 {
                     ViewBag.Message = "Unable to add";
-                    return View();
+                    return View(talent);
                 }
                 return RedirectToAction("Index");
             }
 
-            return View();
+            return View(talent);
         }
         catch(Exception e)
         {
-            ViewBag.Message = "Error!";
-            return View();
+            ViewBag.Message = e.Message;
+            return View(talent);
         }
     }
 

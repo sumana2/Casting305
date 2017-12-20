@@ -67,6 +67,8 @@ public class ClientController : Controller
     [HttpPost]
     public ActionResult Add(ClientModel client)
     {
+        client.LoadLists();
+
         try
         {
             if (ModelState.IsValid)
@@ -74,17 +76,17 @@ public class ClientController : Controller
                 if (!client.Add())
                 {
                     ViewBag.Message = "Unable to add";
-                    return View();
+                    return View(client);
                 }
                 return RedirectToAction("Index");
             }
 
-            return View();
+            return View(client);
         }
         catch(Exception e)
         {
-            ViewBag.Message = "Error!";
-            return View();
+            ViewBag.Message = e.Message;
+            return View(client);
         }
     }
 

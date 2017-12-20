@@ -18,7 +18,6 @@ namespace WebApplication1.Models
 
             foreach (PropertyInfo p in properties)
             {
-                // Only work with strings
                 if (p.PropertyType == typeof(ListItemModel) && p.CanWrite && p.CanRead)
                 {
                     MethodInfo mget = p.GetGetMethod(false);

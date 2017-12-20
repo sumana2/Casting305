@@ -1,9 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
-using System.Data.SqlClient;
 using WebApplication1.Helpers;
 
 namespace WebApplication1.Models
@@ -11,10 +10,12 @@ namespace WebApplication1.Models
     public class TalentModel : BaseModel
     {
         public int ID { get; set; }
-    
+
+        [Required(ErrorMessage = "First Name is required.")]
         [Display(Name = "First Name")]
         public string FirstName { get; set; }
 
+        [Required(ErrorMessage = "Last Name is required.")]
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
 
@@ -96,12 +97,12 @@ namespace WebApplication1.Models
 
         public bool Add()
         {
-            string sql = @"INSERT INTO[dbo].[Talent]([FirstName],[LastName],[Gender],[DateOfBirth],[Nationality],[Representative],[Height],[EyeColor]
+            string sql = @"INSERT INTO [Talent]([FirstName],[LastName],[Gender],[DateOfBirth],[Nationality],[Representative],[Height],[EyeColor]
                                            ,[HairColor],[Ethnicity],[ShoeSize],[WaistSize],[ShirtSize],[Instagram],[Phone],[Email],[Notes],[ProfilePicture])
                         VALUES (@FirstName, @LastName, @Gender, @DateOfBirth, @Nationality, @Representative, @Height, @EyeColor
                               , @HairColor, @Ethnicity, @ShoeSize, @WaistSize, @ShirtSize, @Instagram, @Phone, @Email, @Notes, @ProfilePicture)";
 
-            var pl = new List<SqlParameter>();
+            var pl = new List<MySqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("@FirstName", this.FirstName));
             pl.Add(DatabaseHelper.CreateSqlParameter("@LastName", this.LastName));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Gender", this.Gender.Value));
@@ -155,7 +156,7 @@ namespace WebApplication1.Models
                               ,[ProfilePicture] = @ProfilePicture
                          WHERE ID = @ID";
 
-            var pl = new List<SqlParameter>();
+            var pl = new List<MySqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("@ID", this.ID));
             pl.Add(DatabaseHelper.CreateSqlParameter("@FirstName", this.FirstName));
             pl.Add(DatabaseHelper.CreateSqlParameter("@LastName", this.LastName));
@@ -215,9 +216,9 @@ namespace WebApplication1.Models
 
         public bool Delete()
         {
-            var pl = new List<SqlParameter>();
+            var pl = new List<MySqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("ID", this.ID));
-            int r = DatabaseHelper.ExecuteNonQuery("DELETE FROM dbo.Talent WHERE ID = @ID", pl);
+            int r = DatabaseHelper.ExecuteNonQuery("DELETE FROM Talent WHERE ID = @ID", pl);
 
             if (r >= 1)
             {
@@ -240,7 +241,7 @@ namespace WebApplication1.Models
         {
             List<TalentModel> list = new List<TalentModel>();
 
-            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM dbo.Talent WITH (NOLOCK)");
+            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM Talent");
 
             foreach (DataRow row in dt.Rows)
             {
@@ -254,16 +255,16 @@ namespace WebApplication1.Models
         {
             var bookPictures = new List<string>();
 
-            var pl = new List<SqlParameter>();
+            var pl = new List<MySqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("@ID", id));
-            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM dbo.Talent WITH (NOLOCK) WHERE ID = @ID", pl);
+            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM Talent WHERE ID = @ID", pl);
 
             var talent = new TalentModel(dt.Rows[0]);
             talent.LoadLists();
 
             pl.Clear();
             pl.Add(DatabaseHelper.CreateSqlParameter("@ID", id));
-            dt = DatabaseHelper.ExecuteQuery("SELECT * FROM dbo.TalentPhotos WITH (NOLOCK) WHERE TalentID = @ID", pl);
+            dt = DatabaseHelper.ExecuteQuery("SELECT * FROM TalentPhotos WHERE TalentID = @ID", pl);
 
             foreach (DataRow row in dt.Rows)
             {
@@ -279,10 +280,10 @@ namespace WebApplication1.Models
         {
             List<TalentModel> list = new List<TalentModel>();
 
-            var pl = new List<SqlParameter>();
+            var pl = new List<MySqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("@ID", id));
 
-            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT t.* FROM dbo.ProjectTalent WITH (NOLOCK) JOIN dbo.Talent t WITH (NOLOCK) ON t.ID = TalentID WHERE ProjectRoleID = @ID", pl);
+            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT t.* FROM ProjectTalent JOIN Talent t ON t.ID = TalentID WHERE ProjectRoleID = @ID", pl);
 
             foreach (DataRow row in dt.Rows)
             {

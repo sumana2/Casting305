@@ -1,11 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
-using System.Data.SqlClient;
 using WebApplication1.Helpers;
-using static WebApplication1.Models.ListItemModel;
 
 namespace WebApplication1.Models
 {
@@ -52,10 +51,10 @@ namespace WebApplication1.Models
 
         public bool Add()
         {
-            string sql = @"INSERT INTO [dbo].[Clients]([Company],[Country],[Email],[Phone],[Address],[BillingInfo],[AdminEmail])
+            string sql = @"INSERT INTO [Clients]([Company],[Country],[Email],[Phone],[Address],[BillingInfo],[AdminEmail])
                            VALUES (@Company,@Country,@Email,@Phone,@Address,@BillingInfo,@AdminEmail)";
 
-            var pl = new List<SqlParameter>();
+            var pl = new List<MySqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("@Company", this.Company));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Country", this.Country.Value));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Email", this.Email));
@@ -77,7 +76,7 @@ namespace WebApplication1.Models
 
         public bool Update()
         {
-            string sql = @"UPDATE dbo.Clients SET   
+            string sql = @"UPDATE Clients SET   
                              [Company] = @Company
                             ,[Country] = @Country
                             ,[Email] = @Email
@@ -87,7 +86,7 @@ namespace WebApplication1.Models
                             ,[AdminEmail] = @AdminEmail
                             WHERE ID = @ID";
 
-            var pl = new List<SqlParameter>();
+            var pl = new List<MySqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("@ID", this.ID));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Company", this.Company));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Country", this.Country.Value));
@@ -110,9 +109,9 @@ namespace WebApplication1.Models
 
         public bool Delete()
         {
-            var pl = new List<SqlParameter>();
+            var pl = new List<MySqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("ID", this.ID));
-            int r = DatabaseHelper.ExecuteNonQuery("DELETE FROM dbo.Clients WHERE ID = @ID", pl);
+            int r = DatabaseHelper.ExecuteNonQuery("DELETE FROM Clients WHERE ID = @ID", pl);
 
             if (r >= 1)
             {
@@ -128,7 +127,7 @@ namespace WebApplication1.Models
         {
             List<ClientModel> list = new List<ClientModel>();
 
-            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM dbo.Clients WITH (NOLOCK)");
+            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM Clients");
 
             foreach (DataRow row in dt.Rows)
             {
@@ -140,10 +139,10 @@ namespace WebApplication1.Models
 
         public static ClientModel GetByID(int id)
         {
-            var pl = new List<SqlParameter>();
+            var pl = new List<MySqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("@ID", id));
 
-            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM dbo.Clients WITH (NOLOCK) WHERE ID = @ID", pl);
+            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM Clients WHERE ID = @ID", pl);
 
             var model = new ClientModel(dt.Rows[0]);
             model.LoadLists();

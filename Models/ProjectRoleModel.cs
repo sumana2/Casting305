@@ -1,10 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using MySql.Data.MySqlClient;
 using PagedList;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Data;
-using System.Data.SqlClient;
 using WebApplication1.Helpers;
 
 namespace WebApplication1.Models
@@ -40,10 +38,10 @@ namespace WebApplication1.Models
 
         public bool Add()
         {
-            string sql = @"INSERT INTO[dbo].[ProjectRoles]([ProjectID],[Name],[AgeMin],[AgeMax],[HeightMin],[HeightMax],[HairColor])
+            string sql = @"INSERT INTO [ProjectRoles]([ProjectID],[Name],[AgeMin],[AgeMax],[HeightMin],[HeightMax],[HairColor])
                            VALUES (@ProjectID, @Name, @AgeMin, @AgeMax, @HeightMin, @HeightMax, @HairColor)";
 
-            var pl = new List<SqlParameter>();
+            var pl = new List<MySqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("@ProjectID", this.ProjectID));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Name", this.Name));
             pl.Add(DatabaseHelper.CreateSqlParameter("@AgeMin", this.AgeMin));
@@ -65,11 +63,11 @@ namespace WebApplication1.Models
 
         public bool Update()
         {
-            string sql = @"UPDATE [dbo].[ProjectRoles]
+            string sql = @"UPDATE [ProjectRoles]
                            SET ProjectID = @ProjectID, Name = @Name, AgeMin = @AgeMin, AgeMax = @AgeMax, HeightMin = @HeightMin, HeightMax = @HeightMax, HairColor = @HairColor
                            WHERE ID = @ID";
 
-            var pl = new List<SqlParameter>();
+            var pl = new List<MySqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("@ID", this.ID));
             pl.Add(DatabaseHelper.CreateSqlParameter("@ProjectID", this.ProjectID));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Name", this.Name));
@@ -92,9 +90,9 @@ namespace WebApplication1.Models
 
         public bool Delete()
         {
-            var pl = new List<SqlParameter>();
+            var pl = new List<MySqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("ID", this.ID));
-            int r = DatabaseHelper.ExecuteNonQuery("DELETE FROM dbo.Talent WHERE ID = @ID", pl);
+            int r = DatabaseHelper.ExecuteNonQuery("DELETE FROM Talent WHERE ID = @ID", pl);
 
             if (r >= 1)
             {
@@ -110,10 +108,10 @@ namespace WebApplication1.Models
         {
             var obj = new ProjectRoleModel();
 
-            var pl = new List<SqlParameter>();
+            var pl = new List<MySqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("@ID", id));
 
-            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM dbo.ProjectRoles WITH (NOLOCK) WHERE ID = @ID", pl);
+            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM ProjectRoles WHERE ID = @ID", pl);
 
             if (dt.Rows.Count > 0)
             {
@@ -153,13 +151,13 @@ namespace WebApplication1.Models
         {
             List<ProjectRoleModel> list = new List<ProjectRoleModel>();
 
-            var pl = new List<SqlParameter>();
+            var pl = new List<MySqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("@ProjectID", projectID));
 
-            DataTable dt = DatabaseHelper.ExecuteQuery(@"SELECT * FROM dbo.ProjectRoles pr WITH (NOLOCK) 
+            DataTable dt = DatabaseHelper.ExecuteQuery(@"SELECT * FROM ProjectRoles pr
                                                             LEFT JOIN (
 	                                                            SELECT ProjectRoleID, COUNT(ID) AS TalentCount 
-	                                                            FROM dbo.ProjectTalent WITH (NOLOCK)
+	                                                            FROM ProjectTalent
 	                                                            GROUP BY ProjectRoleID 
                                                             ) pt ON pt.ProjectRoleID = pr.ID
                                                          WHERE pr.ProjectID = @ProjectID", pl);
@@ -187,10 +185,10 @@ namespace WebApplication1.Models
 
         public static bool AddTalent(int projectRoleID, int talentID)
         {
-            string sql = @"INSERT INTO [dbo].[ProjectTalent]([ProjectRoleID],[TalentID])
+            string sql = @"INSERT INTO [ProjectTalent]([ProjectRoleID],[TalentID])
                            VALUES (@ProjectRoleID, @TalentID)";
 
-            var pl = new List<SqlParameter>();
+            var pl = new List<MySqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("@ProjectRoleID", projectRoleID));
             pl.Add(DatabaseHelper.CreateSqlParameter("@TalentID", talentID));
             int r = DatabaseHelper.ExecuteNonQuery(sql, pl);
@@ -207,10 +205,10 @@ namespace WebApplication1.Models
 
         public static bool RemoveTalent(int projectRoleID, int talentID)
         {
-            var pl = new List<SqlParameter>();
+            var pl = new List<MySqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("@ProjectRoleID", projectRoleID));
             pl.Add(DatabaseHelper.CreateSqlParameter("@TalentID", talentID));
-            int r = DatabaseHelper.ExecuteNonQuery("DELETE FROM dbo.ProjectTalent WHERE ProjectRoleID = @ProjectRoleID AND TalentID = @TalentID", pl);
+            int r = DatabaseHelper.ExecuteNonQuery("DELETE FROM ProjectTalent WHERE ProjectRoleID = @ProjectRoleID AND TalentID = @TalentID", pl);
 
             if (r >= 1)
             {
