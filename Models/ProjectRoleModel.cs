@@ -38,7 +38,7 @@ namespace WebApplication1.Models
 
         public bool Add()
         {
-            string sql = @"INSERT INTO [ProjectRoles]([ProjectID],[Name],[AgeMin],[AgeMax],[HeightMin],[HeightMax],[HairColor])
+            string sql = @"INSERT INTO ProjectRoles(ProjectID,Name,AgeMin,AgeMax,HeightMin,HeightMax,HairColor)
                            VALUES (@ProjectID, @Name, @AgeMin, @AgeMax, @HeightMin, @HeightMax, @HairColor)";
 
             var pl = new List<MySqlParameter>();
@@ -63,7 +63,7 @@ namespace WebApplication1.Models
 
         public bool Update()
         {
-            string sql = @"UPDATE [ProjectRoles]
+            string sql = @"UPDATE ProjectRoles
                            SET ProjectID = @ProjectID, Name = @Name, AgeMin = @AgeMin, AgeMax = @AgeMax, HeightMin = @HeightMin, HeightMax = @HeightMax, HairColor = @HairColor
                            WHERE ID = @ID";
 
@@ -185,7 +185,7 @@ namespace WebApplication1.Models
 
         public static bool AddTalent(int projectRoleID, int talentID)
         {
-            string sql = @"INSERT INTO [ProjectTalent]([ProjectRoleID],[TalentID])
+            string sql = @"INSERT INTO ProjectTalent(ProjectRoleID,TalentID)
                            VALUES (@ProjectRoleID, @TalentID)";
 
             var pl = new List<MySqlParameter>();

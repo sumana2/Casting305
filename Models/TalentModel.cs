@@ -97,8 +97,8 @@ namespace WebApplication1.Models
 
         public bool Add()
         {
-            string sql = @"INSERT INTO [Talent]([FirstName],[LastName],[Gender],[DateOfBirth],[Nationality],[Representative],[Height],[EyeColor]
-                                           ,[HairColor],[Ethnicity],[ShoeSize],[WaistSize],[ShirtSize],[Instagram],[Phone],[Email],[Notes],[ProfilePicture])
+            string sql = @"INSERT INTO Talent(FirstName,LastName,Gender,DateOfBirth,Nationality,Representative,Height,EyeColor
+                                           ,HairColor,Ethnicity,ShoeSize,WaistSize,ShirtSize,Instagram,Phone,Email,Notes,ProfilePicture)
                         VALUES (@FirstName, @LastName, @Gender, @DateOfBirth, @Nationality, @Representative, @Height, @EyeColor
                               , @HairColor, @Ethnicity, @ShoeSize, @WaistSize, @ShirtSize, @Instagram, @Phone, @Email, @Notes, @ProfilePicture)";
 
@@ -135,25 +135,25 @@ namespace WebApplication1.Models
 
         public bool Update()
         {
-            string sql = @"UPDATE [dbo].[Talent]
-                           SET [FirstName] = @FirstName
-                              ,[LastName] = @LastName
-                              ,[Gender] = @Gender
-                              ,[DateOfBirth] = @DateOfBirth
-                              ,[Nationality] = @Nationality
-                              ,[Representative] = @Representative
-                              ,[Height] = @Height
-                              ,[EyeColor] = @EyeColor
-                              ,[HairColor] = @HairColor
-                              ,[Ethnicity] = @Ethnicity
-                              ,[ShoeSize] = @ShoeSize
-                              ,[WaistSize] = @WaistSize
-                              ,[ShirtSize] = @ShirtSize
-                              ,[Instagram] = @Instagram
-                              ,[Phone] = @Phone
-                              ,[Email] = @Email
-                              ,[Notes] = @Notes
-                              ,[ProfilePicture] = @ProfilePicture
+            string sql = @"UPDATE Talent
+                           SET FirstName = @FirstName
+                              ,LastName = @LastName
+                              ,Gender = @Gender
+                              ,DateOfBirth = @DateOfBirth
+                              ,Nationality = @Nationality
+                              ,Representative = @Representative
+                              ,Height = @Height
+                              ,EyeColor = @EyeColor
+                              ,HairColor = @HairColor
+                              ,Ethnicity = @Ethnicity
+                              ,ShoeSize = @ShoeSize
+                              ,WaistSize = @WaistSize
+                              ,ShirtSize = @ShirtSize
+                              ,Instagram = @Instagram
+                              ,Phone = @Phone
+                              ,Email = @Email
+                              ,Notes = @Notes
+                              ,ProfilePicture = @ProfilePicture
                          WHERE ID = @ID";
 
             var pl = new List<MySqlParameter>();

@@ -141,5 +141,10 @@ public class ClientController : Controller
         }
     }
 
+    public ActionResult AddContact(string count)
+    {
+        return PartialView("~/Views/Shared/EditorTemplates/ContactModel.cshtml", new ContactModel() { FirstName = "NewContact" + count });
+    }
+
 
 }

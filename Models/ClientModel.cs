@@ -34,7 +34,10 @@ namespace WebApplication1.Models
 
         public List<ContactModel> Contacts { get; set; }
 
-        public ClientModel() { }
+        public ClientModel()
+        {
+            Contacts = new List<ContactModel>();
+        }
 
         public ClientModel(DataRow row)
         {
@@ -51,22 +54,14 @@ namespace WebApplication1.Models
 
         public bool Add()
         {
-            string sql = @"INSERT INTO [Clients]([Company],[Country],[Email],[Phone],[Address],[BillingInfo],[AdminEmail])
-                           VALUES (@Company,@Country,@Email,@Phone,@Address,@BillingInfo,@AdminEmail)";
+            string sql = @"INSERT INTO Clients (Company,Country,Email,Phone,Address,BillingInfo,AdminEmail)
+                           VALUES (@Company,@Country,@Email,@Phone,@Address,@BillingInfo,@AdminEmail) LAST_INSERT_ID()";
 
-            var pl = new List<MySqlParameter>();
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Company", this.Company));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Country", this.Country.Value));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Email", this.Email));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Phone", this.Phone));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Address", this.Address));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@BillingInfo", this.BillingInfo));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@AdminEmail", this.AdminEmail));
-            int r = DatabaseHelper.ExecuteNonQuery(sql, pl);
+            this.ID = (int)DatabaseHelper.ExecuteScalar(sql, GetParams());
 
-            if (r >= 1)
+            if (this.ID >= 1)
             {
-                return true;
+                return SaveContacts();
             }
             else
             {
@@ -77,29 +72,20 @@ namespace WebApplication1.Models
         public bool Update()
         {
             string sql = @"UPDATE Clients SET   
-                             [Company] = @Company
-                            ,[Country] = @Country
-                            ,[Email] = @Email
-                            ,[Phone] = @Phone
-                            ,[Address] = @Address
-                            ,[BillingInfo] = @BillingInfo
-                            ,[AdminEmail] = @AdminEmail
+                             Company = @Company
+                            ,Country = @Country
+                            ,Email = @Email
+                            ,Phone = @Phone
+                            ,Address = @Address
+                            ,BillingInfo = @BillingInfo
+                            ,AdminEmail = @AdminEmail
                             WHERE ID = @ID";
 
-            var pl = new List<MySqlParameter>();
-            pl.Add(DatabaseHelper.CreateSqlParameter("@ID", this.ID));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Company", this.Company));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Country", this.Country.Value));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Email", this.Email));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Phone", this.Phone));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Address", this.Address));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@BillingInfo", this.BillingInfo));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@AdminEmail", this.AdminEmail));
-            int r = DatabaseHelper.ExecuteNonQuery(sql, pl);
+            int r = DatabaseHelper.ExecuteNonQuery(sql, GetParams());
 
             if (r >= 1)
             {
-                return true;
+                return SaveContacts();
             }
             else
             {
@@ -115,6 +101,10 @@ namespace WebApplication1.Models
 
             if (r >= 1)
             {
+                pl = new List<MySqlParameter>();
+                pl.Add(DatabaseHelper.CreateSqlParameter("ID", this.ID));
+                DatabaseHelper.ExecuteNonQuery("DELETE FROM Contacts WHERE SourceID = @ID", pl);
+
                 return true;
             }
             else
@@ -145,8 +135,49 @@ namespace WebApplication1.Models
             DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM Clients WHERE ID = @ID", pl);
 
             var model = new ClientModel(dt.Rows[0]);
+
+            model.Contacts = ContactModel.GetBySource(id);
             model.LoadLists();
+
             return model;
+        }
+
+        private List<MySqlParameter> GetParams()
+        {
+            var pl = new List<MySqlParameter>();
+            pl.Add(DatabaseHelper.CreateSqlParameter("@ID", this.ID));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Company", this.Company));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Country", this.Country.Value));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Email", this.Email));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Phone", this.Phone));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Address", this.Address));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@BillingInfo", this.BillingInfo));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@AdminEmail", this.AdminEmail));
+
+            return pl;
+        }
+
+        public bool SaveContacts()
+        {
+            if (ContactModel.DeleteBySource(this.ID))
+            {
+                if (Contacts == null)
+                {
+                    Contacts = new List<ContactModel>();
+                }
+
+                foreach (var contact in Contacts)
+                {
+                    contact.SourceID = this.ID;
+                    contact.Type = "Client";
+                    if (!contact.Add())
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
     }
 }

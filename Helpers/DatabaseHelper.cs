@@ -58,6 +58,31 @@ namespace WebApplication1.Helpers
             return r;
         }
 
+        public static object ExecuteScalar(string sql, List<MySqlParameter> paramList = null)
+        {
+            object obj;
+
+            using (MySqlConnection con = new MySqlConnection(connectionString))
+            {
+                con.Open();
+
+                using (var cmd = new MySqlCommand(sql, con))
+                {
+                    cmd.Prepare();
+                    if (paramList != null)
+                    {
+                        cmd.Parameters.AddRange(paramList.ToArray());
+                    }
+
+                    cmd.CommandType = CommandType.Text;
+
+                    obj = cmd.ExecuteScalar();
+                }
+            }
+
+            return obj;
+        }
+
         public static MySqlParameter CreateSqlParameter(string name, object value)
         {
             MySqlParameter p = new MySqlParameter();

@@ -345,6 +345,7 @@
     <Content Include="Views\Project\Edit.cshtml" />
     <Content Include="Views\Project\RoleTalent.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\ListItemModel.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\ContactModel.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

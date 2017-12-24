@@ -1,5 +1,8 @@
 ﻿@model PagedList.IPagedList<WebApplication1.Models.ClientModel>
 @using PagedList.Mvc;  
+@{
+    ViewBag.Title = "Clients";
+}
 <link href="~/Content/PagedList.css" rel="stylesheet" />  
 
 <h4>
@@ -15,10 +18,10 @@
 <table class="table">
     <tr>
         <th>
-            @Html.ActionLink(Html.DisplayNameFor(model => model[0].Company).ToString(), "Index", new { sortOrder = "Company", sortDirection = ViewBag.SortDirection, filterValue = ViewBag.FilterValue })  
+            @Html.DisplayNameFor(model => model[0].Company)
         </th>
         <th>
-            @Html.ActionLink(Html.DisplayNameFor(model => model[0].Country).ToString(), "Index", new { sortOrder = "Country", sortDirection = ViewBag.SortDirection, filterValue = ViewBag.FilterValue })  
+            @Html.DisplayNameFor(model => model[0].Country)
         </th>
         <th>
             @Html.DisplayNameFor(model => model[0].Email)

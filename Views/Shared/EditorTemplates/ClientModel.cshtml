@@ -68,7 +68,7 @@
 <div class="form-group">
     @Html.LabelFor(model => model.Contacts, htmlAttributes: new { @class = "control-label col-md-2" })
     <div class="col-md-10">
-        <ul id="projectRoles" class="nav nav-pills nav-stacked role">
+        <ul id="clientContacts" class="nav nav-pills nav-stacked role">
             @foreach (var item in Model.Contacts)
             {
                 @Html.EditorFor(modelItem => item);
@@ -84,7 +84,7 @@
 
 <script>
     $(function () {
-        $("#addRole").click(function () {
+        $("#addContact").click(function () {
             var count = $("#clientContacts").children().length;
 
             $.ajax({
@@ -96,4 +96,9 @@
             return false;
         });
     });
+
+    function deleteContact(btn) {
+        btn.parent().next().remove();
+        btn.parent().remove();
+    }
 </script>

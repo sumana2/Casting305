@@ -12,7 +12,9 @@ namespace WebApplication1.Models
     {
         public int ID { get; set; }
 
-        public int ClientID { get; set; }
+        public int SourceID { get; set; }
+
+        public string Type { get; set; }
 
         [Display(Name = "First Name")]
         [Required(ErrorMessage = "First Name is required.")]
@@ -30,10 +32,15 @@ namespace WebApplication1.Models
 
         public ContactModel() { }
 
+        public string FullName { get { return string.Format("{0} {1}", FirstName, LastName); } }
+
+        public string FullNameNoSpace { get { return string.Format("{0}{1}", FirstName, LastName); } }
+
         public ContactModel(DataRow row)
         {
             this.ID = Convert.ToInt32(row["Id"]);
-            this.ClientID = Convert.ToInt32(row["ClientID"]);
+            this.SourceID = Convert.ToInt32(row["SourceID"]);
+            this.Type = Convert.ToString(row["Type"]);
             this.Email = Convert.ToString(row["Email"]);
             this.Phone = Convert.ToString(row["Phone"]);
             this.FirstName = Convert.ToString(row["FirstName"]);
@@ -42,8 +49,8 @@ namespace WebApplication1.Models
 
         public bool Add()
         {
-            string sql = @"INSERT INTO [Clients]([Company],[Country],[Email],[Phone],[Address],[BillingInfo],[AdminEmail])
-                           VALUES (@Company,@Country,@Email,@Phone,@Address,@BillingInfo,@AdminEmail)";
+            string sql = @"INSERT INTO Contacts(SourceID,Type,Email,Phone,FirstName,LastName)
+                           VALUES (@SourceID,@Type,@Email,@Phone,@FirstName,@LastName)";
 
             int r = DatabaseHelper.ExecuteNonQuery(sql, GetParams());
 
@@ -61,7 +68,8 @@ namespace WebApplication1.Models
         {
             var pl = new List<MySqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("@ID", this.ID));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@ClientID", this.ClientID));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@SourceID", this.SourceID));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Type", this.Type));
             pl.Add(DatabaseHelper.CreateSqlParameter("@FirstName", this.FirstName));
             pl.Add(DatabaseHelper.CreateSqlParameter("@LastName", this.LastName));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Email", this.Email));
@@ -72,15 +80,13 @@ namespace WebApplication1.Models
 
         public bool Update()
         {
-            string sql = @"UPDATE Clients SET   
-                             [Company] = @Company
-                            ,[Country] = @Country
-                            ,[Email] = @Email
-                            ,[Phone] = @Phone
-                            ,[Address] = @Address
-                            ,[BillingInfo] = @BillingInfo
-                            ,[AdminEmail] = @AdminEmail
-                            WHERE ID = @ID";
+            string sql = @"UPDATE Contacts SET   
+                             SourceID = @SourceID
+                            ,Type = @Type
+                            ,FirstName = @FirstName
+                            ,LastName = @LastName
+                            ,Email = @Email
+                            ,Phone = @Phone";
 
             int r = DatabaseHelper.ExecuteNonQuery(sql, GetParams());
 
@@ -94,27 +100,22 @@ namespace WebApplication1.Models
             }
         }
 
-        public bool Delete()
+        public static bool DeleteBySource(int id)
         {
             var pl = new List<MySqlParameter>();
-            pl.Add(DatabaseHelper.CreateSqlParameter("ID", this.ID));
-            int r = DatabaseHelper.ExecuteNonQuery("DELETE FROM Clients WHERE ID = @ID", pl);
+            pl.Add(DatabaseHelper.CreateSqlParameter("ID", id));
+            int r = DatabaseHelper.ExecuteNonQuery("DELETE FROM Contacts WHERE SourceID = @ID", pl);
 
-            if (r >= 1)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return true;
         }
 
-        public static List<ContactModel> Get()
+        public static List<ContactModel> GetBySource(int id)
         {
             List<ContactModel> list = new List<ContactModel>();
 
-            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM Clients");
+            var pl = new List<MySqlParameter>();
+            pl.Add(DatabaseHelper.CreateSqlParameter("@ID", id));
+            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM Contacts WHERE SourceID = @ID", pl);
 
             foreach (DataRow row in dt.Rows)
             {
@@ -122,18 +123,6 @@ namespace WebApplication1.Models
             }
 
             return list;
-        }
-
-        public static ContactModel GetByID(int id)
-        {
-            var pl = new List<MySqlParameter>();
-            pl.Add(DatabaseHelper.CreateSqlParameter("@ID", id));
-
-            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM Clients WHERE ID = @ID", pl);
-
-            var model = new ContactModel(dt.Rows[0]);
-
-            return model;
         }
     }
 }

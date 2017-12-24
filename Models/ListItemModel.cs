@@ -64,7 +64,7 @@ namespace WebApplication1.Models
         {
             if (this.List != Lists.None)
             {
-                string sql = @"INSERT INTO [Lists]([Text],[List]) VALUES (@Text,@List)";
+                string sql = @"INSERT INTO Lists(Text,List) VALUES (@Text,@List)";
 
                 var pl = new List<MySqlParameter>();
                 pl.Add(DatabaseHelper.CreateSqlParameter("@Text", this.Value));
