@@ -100,11 +100,12 @@ namespace WebApplication1.Models
             }
         }
 
-        public static bool DeleteBySource(int id)
+        public static bool DeleteBySource(int id, string type)
         {
             var pl = new List<MySqlParameter>();
-            pl.Add(DatabaseHelper.CreateSqlParameter("ID", id));
-            int r = DatabaseHelper.ExecuteNonQuery("DELETE FROM Contacts WHERE SourceID = @ID", pl);
+            pl.Add(DatabaseHelper.CreateSqlParameter("@ID", id));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Type", type));
+            int r = DatabaseHelper.ExecuteNonQuery("DELETE FROM Contacts WHERE SourceID = @ID AND Type = @Type", pl);
 
             return true;
         }

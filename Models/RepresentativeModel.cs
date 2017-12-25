@@ -8,7 +8,7 @@ using WebApplication1.Helpers;
 
 namespace WebApplication1.Models
 {
-    public class ClientModel : BaseModel
+    public class RepresentativeModel : BaseModel
     {
         public int ID { get; set; }
 
@@ -34,14 +34,14 @@ namespace WebApplication1.Models
 
         public List<ContactModel> Contacts { get; set; }
 
-        public string RecordType { get { return "Client"; } }
+        public string RecordType { get { return "Representative"; } }
 
-        public ClientModel()
+        public RepresentativeModel()
         {
             Contacts = new List<ContactModel>();
         }
 
-        public ClientModel(DataRow row)
+        public RepresentativeModel(DataRow row)
         {
             this.ID = Convert.ToInt32(row["Id"]);
             this.Company = Convert.ToString(row["Company"]);
@@ -56,7 +56,7 @@ namespace WebApplication1.Models
 
         public bool Add()
         {
-            string sql = @"INSERT INTO Clients (Company,Country,Email,Phone,Address,BillingInfo,AdminEmail)
+            string sql = @"INSERT INTO Representatives (Company,Country,Email,Phone,Address,BillingInfo,AdminEmail)
                            VALUES (@Company,@Country,@Email,@Phone,@Address,@BillingInfo,@AdminEmail); SELECT LAST_INSERT_ID()";
 
             this.ID = Convert.ToInt32(DatabaseHelper.ExecuteScalar(sql, GetParams()));
@@ -73,7 +73,7 @@ namespace WebApplication1.Models
 
         public bool Update()
         {
-            string sql = @"UPDATE Clients SET   
+            string sql = @"UPDATE Representatives SET   
                              Company = @Company
                             ,Country = @Country
                             ,Email = @Email
@@ -99,7 +99,7 @@ namespace WebApplication1.Models
         {
             var pl = new List<MySqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("ID", this.ID));
-            int r = DatabaseHelper.ExecuteNonQuery("DELETE FROM Clients WHERE ID = @ID", pl);
+            int r = DatabaseHelper.ExecuteNonQuery("DELETE FROM Representatives WHERE ID = @ID", pl);
 
             if (r >= 1)
             {
@@ -113,28 +113,28 @@ namespace WebApplication1.Models
             }
         }
 
-        public static List<ClientModel> Get()
+        public static List<RepresentativeModel> Get()
         {
-            List<ClientModel> list = new List<ClientModel>();
+            List<RepresentativeModel> list = new List<RepresentativeModel>();
 
-            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM Clients");
+            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM Representatives");
 
             foreach (DataRow row in dt.Rows)
             {
-                list.Add(new ClientModel(row));
+                list.Add(new RepresentativeModel(row));
             }
 
             return list;
         }
 
-        public static ClientModel GetByID(int id)
+        public static RepresentativeModel GetByID(int id)
         {
             var pl = new List<MySqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("@ID", id));
 
-            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM Clients WHERE ID = @ID", pl);
+            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM Representatives WHERE ID = @ID", pl);
 
-            var model = new ClientModel(dt.Rows[0]);
+            var model = new RepresentativeModel(dt.Rows[0]);
 
             model.Contacts = ContactModel.GetBySource(id);
             model.LoadLists();

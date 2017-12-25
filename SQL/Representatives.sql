@@ -1,5 +1,5 @@
 
-CREATE TABLE CastingLand.Clients (
+CREATE TABLE CastingLand.Representatives (
 	ID        		INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	Company   		VARCHAR(200) NOT NULL,
 	Country   		VARCHAR(100) NULL,

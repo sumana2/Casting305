@@ -1,0 +1,72 @@
+﻿@model PagedList.IPagedList<WebApplication1.Models.RepresentativeModel>
+@using PagedList.Mvc;  
+@{
+    ViewBag.Title = "Representative";
+}
+<link href="~/Content/PagedList.css" rel="stylesheet" />  
+
+<h4>
+    @Html.ActionLink("Add New Representative", "Add")
+</h4>
+@using (Html.BeginForm("Index", "Representative", FormMethod.Get))
+{
+    <p>
+        Search: @Html.TextBox("search", ViewBag.FilterValue as string)
+        <input type="submit" value="Find" />
+    </p>
+}  
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model[0].Company)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model[0].Country)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model[0].Email)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model[0].Phone)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model[0].Address)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model[0].BillingInfo)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model[0].AdminEmail)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.ActionLink(item.Company, "Edit", new { id = item.ID })
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Country.Value)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Email)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Phone)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Address)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.BillingInfo)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.AdminEmail)
+        </td>
+    </tr>
+}
+</table>
+
+@Html.PagedListPager(Model, pageNo => Url.Action("Index", new { pageNo, sortOrder = ViewBag.CurrentSortOrder, sortDirection = ViewBag.CurrentsortDirection, filterValue = ViewBag.FilterValue }))
+   
