@@ -3,21 +3,24 @@
 
 @using (Html.BeginCollectionItem("Roles"))
 {
-    @Html.HiddenFor(model => model.ID);
-    @Html.HiddenFor(model => model.ProjectID);
     <li role="presentation" class="active">
-        <a data-toggle="collapse" href="#@Html.DisplayFor(Model => Model.Name)" aria-expanded="false" aria-controls="@Html.DisplayFor(Model => Model.Name)" class="collapsed">
-            @Html.DisplayFor(Model => Model.Name)<span class="badge">@Html.DisplayFor(Model => Model.TalentCount)</span>
+        <a data-toggle="collapse" href="#@Html.DisplayFor(model => model.Name)" aria-expanded="false" aria-controls="@Html.DisplayFor(model => model.Name)" class="collapsed">
+            @Html.DisplayFor(model => model.Name)<span class="badge">@Html.DisplayFor(model => model.TalentCount)</span>
         </a>
-        <button id="removeRole" type="button" class="btn btn-default" aria-label="Left Align">
+        <button type="button" class="btn btn-default" aria-label="Left Align" onclick="deleteRole($(this))">
             <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
         </button>
-        <button id="roleTalent" type="button" class="btn btn-default" aria-label="Left Align" onclick="window.location.href = '/Project/RoleTalent/@Html.DisplayFor(Model => Model.ID)'">
-            <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
-        </button>
+        @if (Model.ProjectID > 0)
+        {
+            <button id="roleTalent" type="button" class="btn btn-default" aria-label="Left Align" onclick="window.location.href = '/Project/RoleTalent/@Html.DisplayFor(model => model.ID)'">
+                <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+            </button>
+        }
     </li>
     <li class="item">
-        <div id="@Html.DisplayFor(Model => Model.Name)" class="collapse" role="tabpanel">
+        @Html.HiddenFor(model => model.ID)
+        @Html.HiddenFor(model => model.ProjectID)
+        <div id="@Html.DisplayFor(model => model.Name)" class="collapse" role="tabpanel">
             <div class="form-horizontal">
                 <div class="form-group">
                     @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })

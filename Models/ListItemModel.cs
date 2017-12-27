@@ -15,7 +15,9 @@ namespace WebApplication1.Models
 
         public SelectList ListItems { get; set; }
 
-        public enum Lists { None, Country, Gender, Nationality, EyeColor, HairColor, Ethnicity };
+        public bool AllowAdd { get { return List != Lists.Representative; } } 
+
+        public enum Lists { None, Country, Gender, Nationality, EyeColor, HairColor, Ethnicity, Representative };
 
         public ListItemModel()
         {
@@ -44,25 +46,43 @@ namespace WebApplication1.Models
 
         public void LoadList()
         {
-            var items = new List<string>();
-            items.Add("");
-
-            var pl = new List<MySqlParameter>();
-            pl.Add(DatabaseHelper.CreateSqlParameter("@List", this.List));
-
-            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM Lists WHERE List = @List", pl);
-
-            foreach (DataRow row in dt.Rows)
+            if (List == Lists.Representative)
             {
-                items.Add(Convert.ToString(row["Text"]));
+                List<KeyValuePair<string, string>> kvp = new List<KeyValuePair<string, string>>();
+                kvp.Add(new KeyValuePair<string, string>(string.Empty, string.Empty));
+
+                DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM Representatives");
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    kvp.Add(new KeyValuePair<string, string>(Convert.ToString(row["ID"]), Convert.ToString(row["Company"])));
+                }
+
+                this.ListItems = new SelectList(kvp, "Key", "Value");
             }
 
-            this.ListItems = new SelectList(items);
+            else
+            {
+                var items = new List<string>();
+                items.Add("");
+
+                var pl = new List<MySqlParameter>();
+                pl.Add(DatabaseHelper.CreateSqlParameter("@List", this.List));
+
+                DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM Lists WHERE List = @List", pl);
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    items.Add(Convert.ToString(row["Text"]));
+                }
+
+                this.ListItems = new SelectList(items);
+            }
         }
 
         public bool Add()
         {
-            if (this.List != Lists.None)
+            if (this.List != Lists.None && this.AllowAdd)
             {
                 string sql = @"INSERT INTO Lists(Text,List) VALUES (@Text,@List)";
 
@@ -83,5 +103,6 @@ namespace WebApplication1.Models
 
             return false;
         }
+
     }
 }

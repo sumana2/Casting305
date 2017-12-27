@@ -26,9 +26,12 @@ namespace WebApplication1.Models
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public Nullable<System.DateTime> DateOfBirth { get; set; }
 
-        public ListItemModel Nationality { get; set; }
+        [Display(Name = "Nationality")]
+        public ListItemModel Country { get; set; }
 
-        public string Representative { get; set; }
+        public ListItemModel Representative { get; set; }
+
+        public string RepDisplayName { get; set; }
 
         public string Height { get; set; }
 
@@ -86,7 +89,14 @@ namespace WebApplication1.Models
             this.Height = Convert.ToString(row["Height"]);
             this.Instagram = Convert.ToString(row["Instagram"]);
             this.ProfilePicture = Convert.ToString(row["ProfilePicture"]);
+            this.ShoeSize = Convert.ToString(row["ShoeSize"]);
+            this.WaistSize = Convert.ToString(row["WaistSize"]);
+            this.ShirtSize = Convert.ToString(row["ShirtSize"]);
+            this.Notes = Convert.ToString(row["Notes"]);
 
+            this.Country = new ListItemModel(Convert.ToString(row["Nationality"]));
+            this.Representative = new ListItemModel(Convert.ToString(row["Representative"]));
+            this.Ethnicity = new ListItemModel(Convert.ToString(row["Ethnicity"]));
             this.HairColor = new ListItemModel(Convert.ToString(row["HairColor"]));
             this.EyeColor = new ListItemModel(Convert.ToString(row["EyeColor"]));
             this.Gender = new ListItemModel(Convert.ToString(row["Gender"]));
@@ -103,25 +113,7 @@ namespace WebApplication1.Models
                               , @HairColor, @Ethnicity, @ShoeSize, @WaistSize, @ShirtSize, @Instagram, @Phone, @Email, @Notes, @ProfilePicture)";
 
             var pl = new List<MySqlParameter>();
-            pl.Add(DatabaseHelper.CreateSqlParameter("@FirstName", this.FirstName));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@LastName", this.LastName));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Gender", this.Gender.Value));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@DateOfBirth", this.DateOfBirth));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Nationality", this.Nationality.Value));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Representative", this.Representative));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Height", this.Height));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@EyeColor", this.EyeColor.Value));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@HairColor", this.HairColor.Value));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Ethnicity", this.Ethnicity.Value));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@ShoeSize", this.ShoeSize));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@WaistSize", this.WaistSize));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@ShirtSize", this.ShirtSize));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Instagram", this.Instagram));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Phone", this.Phone));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Email", this.Email));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Notes", this.Notes));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@ProfilePicture", this.ProfilePicture));
-            int r = DatabaseHelper.ExecuteNonQuery(sql, pl);
+            int r = DatabaseHelper.ExecuteNonQuery(sql, GetParams());
 
             if (r >= 1)
             {
@@ -156,33 +148,14 @@ namespace WebApplication1.Models
                               ,ProfilePicture = @ProfilePicture
                          WHERE ID = @ID";
 
-            var pl = new List<MySqlParameter>();
-            pl.Add(DatabaseHelper.CreateSqlParameter("@ID", this.ID));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@FirstName", this.FirstName));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@LastName", this.LastName));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Gender", this.Gender.Value));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@DateOfBirth", this.DateOfBirth));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Nationality", this.Nationality.Value));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Representative", this.Representative));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Height", this.Height));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@EyeColor", this.EyeColor.Value));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@HairColor", this.HairColor.Value));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Ethnicity", this.Ethnicity.Value));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@ShoeSize", this.ShoeSize));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@WaistSize", this.WaistSize));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@ShirtSize", this.ShirtSize));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Instagram", this.Instagram));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Phone", this.Phone));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Email", this.Email));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Notes", this.Notes));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@ProfilePicture", this.ProfilePicture));
-            int r = DatabaseHelper.ExecuteNonQuery(sql, pl);
+            
+            int r = DatabaseHelper.ExecuteNonQuery(sql, GetParams());
 
             if (r >= 1)
             {
-                sql = @"DELETE FROM [dbo].[TalentPhotos] WHERE TalentID = @TalentID";
+                sql = @"DELETE FROM TalentPhotos WHERE TalentID = @TalentID";
 
-                pl.Clear();
+                var pl = new List<MySqlParameter>();
                 pl.Add(DatabaseHelper.CreateSqlParameter("@TalentID", this.ID));
                 DatabaseHelper.ExecuteNonQuery(sql, pl);
 
@@ -194,7 +167,7 @@ namespace WebApplication1.Models
                     {
                         if (!string.IsNullOrEmpty(url))
                         {
-                            sql = @"INSERT [dbo].[TalentPhotos] (TalentID, PhotoType, PhotoURL)
+                            sql = @"INSERT TalentPhotos (TalentID, PhotoType, PhotoURL)
                             VALUES (@TalentID, @PhotoType, @PhotoURL)";
 
                             pl.Clear();
@@ -241,11 +214,13 @@ namespace WebApplication1.Models
         {
             List<TalentModel> list = new List<TalentModel>();
 
-            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM Talent");
+            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT t.*, r.Company FROM Talent t LEFT JOIN Representatives r ON r.ID = t.Representative");
 
             foreach (DataRow row in dt.Rows)
             {
-                list.Add(new TalentModel(row));
+                var obj = new TalentModel(row);
+                obj.RepDisplayName = Convert.ToString(row["Company"]);
+                list.Add(obj);
             }
 
             return list;
@@ -291,6 +266,32 @@ namespace WebApplication1.Models
             }
 
             return list;
+        }
+
+        private List<MySqlParameter> GetParams()
+        {
+            var pl = new List<MySqlParameter>();
+            pl.Add(DatabaseHelper.CreateSqlParameter("@ID", this.ID));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@FirstName", this.FirstName));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@LastName", this.LastName));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Gender", this.Gender.Value));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@DateOfBirth", this.DateOfBirth));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Nationality", this.Country.Value));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Representative", this.Representative.Value));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Height", this.Height));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@EyeColor", this.EyeColor.Value));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@HairColor", this.HairColor.Value));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Ethnicity", this.Ethnicity.Value));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@ShoeSize", this.ShoeSize));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@WaistSize", this.WaistSize));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@ShirtSize", this.ShirtSize));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Instagram", this.Instagram));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Phone", this.Phone));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Email", this.Email));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Notes", this.Notes));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@ProfilePicture", this.ProfilePicture));
+
+            return pl;
         }
     }
 }

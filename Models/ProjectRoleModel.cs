@@ -183,6 +183,15 @@ namespace WebApplication1.Models
             return list;
         }
 
+        public static bool DeleteByProject(int id)
+        {
+            var pl = new List<MySqlParameter>();
+            pl.Add(DatabaseHelper.CreateSqlParameter("@ID", id));
+            int r = DatabaseHelper.ExecuteNonQuery("DELETE FROM ProjectRoles WHERE ProjectID = @ID", pl);
+
+            return true;
+        }
+
         public static bool AddTalent(int projectRoleID, int talentID)
         {
             string sql = @"INSERT INTO ProjectTalent(ProjectRoleID,TalentID)

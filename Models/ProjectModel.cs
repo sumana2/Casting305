@@ -37,26 +37,11 @@ namespace WebApplication1.Models
             string sql = @"INSERT INTO Projects (Title,Company,Email,Phone,DueDate)
                            VALUES (@Title, @Company, @Email, @Phone, @DueDate)";
 
-            var pl = new List<MySqlParameter>();
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Title", this.Title));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Company", this.Company));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Email", this.Email));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Phone", this.Phone));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@DueDate", this.DueDate));
-            int r = DatabaseHelper.ExecuteNonQuery(sql, pl);
+            this.ID = Convert.ToInt32(DatabaseHelper.ExecuteScalar(sql, GetParams()));
 
-            if (r >= 1)
+            if (this.ID >= 1)
             {
-                foreach (var role in Roles)
-                {
-                    //TODO: Get Project ID and add transaction to all this
-                    if (!role.Add())
-                    {
-                        return false;
-                    }
-                }
-
-                return true;
+                return SaveRoles();
             }
             else
             {
@@ -70,26 +55,11 @@ namespace WebApplication1.Models
                            SET Title = @Title, Company = @Company, Email = @Email, Phone = @Phone, DueDate = @DueDate
                            WHERE ID = @ID";
 
-            var pl = new List<MySqlParameter>();
-            pl.Add(DatabaseHelper.CreateSqlParameter("@ID", this.ID));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Title", this.Title));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Company", this.Company));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Email", this.Email));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@Phone", this.Phone));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@DueDate", this.DueDate));
-            int r = DatabaseHelper.ExecuteNonQuery(sql, pl);
+            int r = DatabaseHelper.ExecuteNonQuery(sql, GetParams());
 
             if (r >= 1)
             {
-                foreach (var role in Roles)
-                {
-                    if (!role.Update())
-                    {
-                        return false;
-                    }
-                }
-
-                return true;
+                return SaveRoles();
             }
             else
             {
@@ -163,6 +133,41 @@ namespace WebApplication1.Models
             }
 
             return project;
+        }
+
+        private List<MySqlParameter> GetParams()
+        {
+            var pl = new List<MySqlParameter>();
+            pl.Add(DatabaseHelper.CreateSqlParameter("@ID", this.ID));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Title", this.Title));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Company", this.Company));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Email", this.Email));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Phone", this.Phone));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@DueDate", this.DueDate));
+
+            return pl;
+        }
+
+        public bool SaveRoles()
+        {
+            if (ProjectRoleModel.DeleteByProject(this.ID))
+            {
+                if (Roles == null)
+                {
+                    Roles = new List<ProjectRoleModel>();
+                }
+
+                foreach (var role in Roles)
+                {
+                    role.ProjectID = this.ID;
+                    if (!role.Add())
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
     }
 }

@@ -80,4 +80,9 @@
             return false;
         });
     });
+
+    function deleteRole(btn) {
+        btn.parent().next().remove();
+        btn.parent().remove();
+    }
 </script>

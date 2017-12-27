@@ -5,6 +5,8 @@
 
     @Html.TextBox("newOption","", new { @class = "form-control listItemModelTextbox hide" })
 
+    @if (Model.AllowAdd)
+    {
     <button type="button" class="btn btn-default" aria-label="Left Align" onclick="addListOption($(this))">
         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
     </button>
@@ -12,7 +14,7 @@
     <button type="button" class="btn btn-default hide" aria-label="Left Align" onclick="saveListOption($(this), '@Model.List')">
         <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
     </button>
-
+    }
     <div class="hide"><span class="text-danger field-validation-error">Save Failed</span></div>
 </div>
 
