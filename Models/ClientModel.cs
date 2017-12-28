@@ -61,7 +61,7 @@ namespace WebApplication1.Models
 
             this.ID = Convert.ToInt32(DatabaseHelper.ExecuteScalar(sql, GetParams()));
 
-            if (this.ID >= 1)
+            if (this.ID > 0)
             {
                 return SaveContacts();
             }

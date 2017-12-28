@@ -38,7 +38,8 @@ textarea {
 }
 
 .tileImage {
-    width:  250px;
+    max-width: 250px;
+    max-height: 205px;
 }
 
 .tileTitle {

@@ -177,6 +177,7 @@
 
 @Html.EditorFor(model => model.ProfilePicture, new { htmlAttributes = new { @class = "hide" } })
 @Html.EditorFor(model => model.BookPictures, new { htmlAttributes = new { @class = "hide" } })
+@Html.EditorFor(model => model.Thumbnails, new { htmlAttributes = new { @class = "hide" } })
 
 <script>
     $(document).ready(function () {
@@ -192,7 +193,7 @@
                         '</div>' +
                     '</div>';
 
-        var arr = $("#BookPictures").val().split(',');
+        var arr = $("#Thumbnails").val().split(',');
 
         arr.forEach(function (url) {
             if (url) {
@@ -205,7 +206,7 @@
             method: "POST",
             allowedTypes: "jpg,png,gif",
             fileName: "image",
-            multiple: false,
+            multiple: true,
             onSuccess: function (files, data, xhr) {
                 $("#BookPictures").val($("#BookPictures").val() + "," + data);
                 $("#photos").append(tile.replace("photoUrl", data));
@@ -236,7 +237,7 @@
     });
 
     function deletePhoto(e) {
-        var urlToRemove = e.siblings().attr('src');
+        var urlToRemove = e.siblings().attr('src').replace("/Thumbs", "");
         $("#BookPictures").val($("#BookPictures").val().replace(urlToRemove, ""));
         e.parent().parent().parent().remove();
     }

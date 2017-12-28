@@ -3,6 +3,7 @@ using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Blob;
 using PagedList;
 using System;
+using System.IO;
 using System.Linq;
 using System.Web.Mvc;
 using WebApplication1.Models;
@@ -123,10 +124,16 @@ public class TalentController : Controller
 
     public JsonResult AddPhoto()
     {
-        string thumbnailUrl = string.Empty;
+        string url = string.Empty;
 
         try
         {
+            string path = Server.MapPath("~/TalentPhotos/Temp");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
             var files = HttpContext.Request.Files;
 
             for (int i = 0; i < files.Count; i++)
@@ -134,25 +141,11 @@ public class TalentController : Controller
                 var file = files[i];
                 if (file.ContentLength > 0)
                 {
-                    //// Create storagecredentials object by reading the values from the configuration (appsettings.json)
-                    //var storageCredentials = new StorageCredentials("casting305", "TNDeEXG40fZg7FQuGT1MyFue / 4AXHTzsCi0OiQeQrMv17xENp + BO7fvrv / G6HyJ3Lz2P1cVzpAvYtmQVCYv7bQ ==");
-                    
-                    //// Create cloudstorage account by passing the storagecredentials
-                    //var storageAccount = new CloudStorageAccount(storageCredentials, true);
+                    string filename = string.Format("{0}{1}", Guid.NewGuid().ToString(), Path.GetExtension(file.FileName));
+                    string filepath = Path.Combine(path, filename);
+                    file.SaveAs(filepath);
 
-                    //// Create blob client
-                    //var blobClient = storageAccount.CreateCloudBlobClient();
-
-                    //// Get reference to the container
-                    //var container = blobClient.GetContainerReference("images");
-
-                    //// Retrieve reference to a blob named "myblob".
-                    //CloudBlockBlob blockBlob = container.GetBlockBlobReference(file.FileName);
-
-                    //// Create or overwrite the "myblob" blob with contents from a local file.
-                    //blockBlob.UploadFromStream(file.InputStream);
-
-                    //thumbnailUrl = blockBlob.Uri.ToString();
+                    url = string.Format("{0}{1}", "/TalentPhotos/Temp/", filename);
                 }
             }
 
@@ -162,6 +155,6 @@ public class TalentController : Controller
             throw ex;
         }
 
-        return Json(thumbnailUrl);
+        return Json(url);
     }
 }

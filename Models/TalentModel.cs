@@ -3,6 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
+using System.Drawing;
+using System.IO;
+using System.Web.Hosting;
 using WebApplication1.Helpers;
 
 namespace WebApplication1.Models
@@ -64,6 +67,8 @@ namespace WebApplication1.Models
 
         public string BookPictures { get; set; }
 
+        public string Thumbnails { get; set; }
+
         public bool ShowCheck { get; set; }
 
         public bool Checked { get; set; }
@@ -108,16 +113,16 @@ namespace WebApplication1.Models
         public bool Add()
         {
             string sql = @"INSERT INTO Talent(FirstName,LastName,Gender,DateOfBirth,Nationality,Representative,Height,EyeColor
-                                           ,HairColor,Ethnicity,ShoeSize,WaistSize,ShirtSize,Instagram,Phone,Email,Notes,ProfilePicture)
+                                           ,HairColor,Ethnicity,ShoeSize,WaistSize,ShirtSize,Instagram,Phone,Email,Notes)
                         VALUES (@FirstName, @LastName, @Gender, @DateOfBirth, @Nationality, @Representative, @Height, @EyeColor
-                              , @HairColor, @Ethnicity, @ShoeSize, @WaistSize, @ShirtSize, @Instagram, @Phone, @Email, @Notes, @ProfilePicture)";
+                              , @HairColor, @Ethnicity, @ShoeSize, @WaistSize, @ShirtSize, @Instagram, @Phone, @Email, @Notes)";
 
             var pl = new List<MySqlParameter>();
-            int r = DatabaseHelper.ExecuteNonQuery(sql, GetParams());
+            this.ID = Convert.ToInt32(DatabaseHelper.ExecuteScalar(sql, GetParams()));
 
-            if (r >= 1)
+            if (this.ID > 0)
             {
-                return true;
+                return SavePhotos();
             }
             else
             {
@@ -145,7 +150,6 @@ namespace WebApplication1.Models
                               ,Phone = @Phone
                               ,Email = @Email
                               ,Notes = @Notes
-                              ,ProfilePicture = @ProfilePicture
                          WHERE ID = @ID";
 
             
@@ -153,37 +157,108 @@ namespace WebApplication1.Models
 
             if (r >= 1)
             {
-                sql = @"DELETE FROM TalentPhotos WHERE TalentID = @TalentID";
-
-                var pl = new List<MySqlParameter>();
-                pl.Add(DatabaseHelper.CreateSqlParameter("@TalentID", this.ID));
-                DatabaseHelper.ExecuteNonQuery(sql, pl);
-
-                if (!string.IsNullOrEmpty(this.BookPictures))
-                {
-                    var photos = this.BookPictures.Split(',');
-
-                    foreach (var url in photos)
-                    {
-                        if (!string.IsNullOrEmpty(url))
-                        {
-                            sql = @"INSERT TalentPhotos (TalentID, PhotoType, PhotoURL)
-                            VALUES (@TalentID, @PhotoType, @PhotoURL)";
-
-                            pl.Clear();
-                            pl.Add(DatabaseHelper.CreateSqlParameter("@TalentID", this.ID));
-                            pl.Add(DatabaseHelper.CreateSqlParameter("@PhotoType", "BookPhoto"));
-                            pl.Add(DatabaseHelper.CreateSqlParameter("@PhotoURL", url));
-                            DatabaseHelper.ExecuteNonQuery(sql, pl);
-                        }
-                    }
-                }
-                
-                return true;
+                return SavePhotos();
             }
             else
             {
                 return false;
+            }
+        }
+
+        private bool SavePhotos()
+        {
+            SaveProfilePicture();
+
+            string sql = @"DELETE FROM TalentPhotos WHERE TalentID = @TalentID";
+
+            var pl = new List<MySqlParameter>();
+            pl.Add(DatabaseHelper.CreateSqlParameter("@TalentID", this.ID));
+            DatabaseHelper.ExecuteNonQuery(sql, pl);
+
+            if (!string.IsNullOrEmpty(this.BookPictures))
+            {
+                var photos = this.BookPictures.Split(',');
+
+                foreach (var url in photos)
+                {
+                    if (!string.IsNullOrEmpty(url))
+                    {
+                        MovePhotoToTalentFolder(url, true);
+                        
+                        sql = @"INSERT TalentPhotos (TalentID, PhotoType, Photo, Thumbnail)
+                        VALUES (@TalentID, @PhotoType, @Photo, @Thumbnail)";
+
+                        pl.Clear();
+                        pl.Add(DatabaseHelper.CreateSqlParameter("@TalentID", this.ID));
+                        pl.Add(DatabaseHelper.CreateSqlParameter("@PhotoType", "BookPhoto"));
+                        pl.Add(DatabaseHelper.CreateSqlParameter("@Photo", GetPhotoUrl(url)));
+                        pl.Add(DatabaseHelper.CreateSqlParameter("@Thumbnail", GetThumbUrl(url)));
+                        DatabaseHelper.ExecuteNonQuery(sql, pl);
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        private void SaveProfilePicture()
+        {
+            MovePhotoToTalentFolder(this.ProfilePicture);
+
+            var pl = new List<MySqlParameter>();
+            pl.Add(DatabaseHelper.CreateSqlParameter("@ProfilePicture", GetPhotoUrl(this.ProfilePicture)));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@ID", this.ID));
+
+            DatabaseHelper.ExecuteNonQuery("UPDATE Talent SET ProfilePicture = @ProfilePicture WHERE ID = @ID", pl);
+        }
+
+        private string GetPhotoUrl(string url)
+        {
+            if (url.Contains("/Temp/"))
+            {
+                return string.Format("/{0}/{1}/{2}", "TalentPhotos", this.ID, Path.GetFileName(url));
+            }
+
+            return url;
+        }
+
+        private string GetThumbUrl(string url)
+        {
+            return string.Format("/{0}/{1}/{2}/{3}", "TalentPhotos", this.ID, "Thumbs", Path.GetFileName(url));
+        }
+
+        private void MovePhotoToTalentFolder(string url, bool generateThum = false)
+        {
+            if (url.Contains("/Temp/"))
+            {
+                string from = HostingEnvironment.MapPath(url);
+                string to = HostingEnvironment.MapPath(GetPhotoUrl(url));
+
+                string directory = Path.GetDirectoryName(to);
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                File.Move(from, to);
+
+                if (generateThum)
+                {
+                    Image image = Image.FromFile(to);
+
+                    //TODO: get Thumb dims
+
+                    Image thumb = image.GetThumbnailImage(250, 250, () => false, IntPtr.Zero);
+
+                    string thumPath = HostingEnvironment.MapPath(GetThumbUrl(url));
+                    string thumbDirectory = Path.GetDirectoryName(thumPath);
+                    if (!Directory.Exists(thumbDirectory))
+                    {
+                        Directory.CreateDirectory(thumbDirectory);
+                    }
+
+                    thumb.Save(thumPath);
+                }
             }
         }
 
@@ -229,6 +304,7 @@ namespace WebApplication1.Models
         public static TalentModel GetByID(int id)
         {
             var bookPictures = new List<string>();
+            var thumbnails = new List<string>();
 
             var pl = new List<MySqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("@ID", id));
@@ -243,10 +319,12 @@ namespace WebApplication1.Models
 
             foreach (DataRow row in dt.Rows)
             {
-                bookPictures.Add(Convert.ToString(row["PhotoURL"]));
+                bookPictures.Add(Convert.ToString(row["Photo"]));
+                thumbnails.Add(Convert.ToString(row["Thumbnail"]));
             }
 
             talent.BookPictures = string.Join(",", bookPictures);
+            talent.Thumbnails = string.Join(",", thumbnails);
 
             return talent;
         }
@@ -289,7 +367,6 @@ namespace WebApplication1.Models
             pl.Add(DatabaseHelper.CreateSqlParameter("@Phone", this.Phone));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Email", this.Email));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Notes", this.Notes));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@ProfilePicture", this.ProfilePicture));
 
             return pl;
         }
