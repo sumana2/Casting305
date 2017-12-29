@@ -117,7 +117,6 @@ namespace WebApplication1.Models
                         VALUES (@FirstName, @LastName, @Gender, @DateOfBirth, @Nationality, @Representative, @Height, @EyeColor
                               , @HairColor, @Ethnicity, @ShoeSize, @WaistSize, @ShirtSize, @Instagram, @Phone, @Email, @Notes)";
 
-            var pl = new List<MySqlParameter>();
             this.ID = Convert.ToInt32(DatabaseHelper.ExecuteScalar(sql, GetParams()));
 
             if (this.ID > 0)
@@ -169,6 +168,8 @@ namespace WebApplication1.Models
         {
             SaveProfilePicture();
 
+            DeletePhotos();
+
             string sql = @"DELETE FROM TalentPhotos WHERE TalentID = @TalentID";
 
             var pl = new List<MySqlParameter>();
@@ -201,15 +202,75 @@ namespace WebApplication1.Models
             return true;
         }
 
-        private void SaveProfilePicture()
+        private void DeletePhotos()
         {
-            MovePhotoToTalentFolder(this.ProfilePicture);
+            if (string.IsNullOrEmpty(this.BookPictures))
+            {
+                this.BookPictures = string.Empty;
+            }
+
+            var newPhotos = new List<string>(this.BookPictures.Split(','));
+            var currentphotos = new Dictionary<string, string>();
 
             var pl = new List<MySqlParameter>();
-            pl.Add(DatabaseHelper.CreateSqlParameter("@ProfilePicture", GetPhotoUrl(this.ProfilePicture)));
             pl.Add(DatabaseHelper.CreateSqlParameter("@ID", this.ID));
 
-            DatabaseHelper.ExecuteNonQuery("UPDATE Talent SET ProfilePicture = @ProfilePicture WHERE ID = @ID", pl);
+            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT Photo, Thumbnail FROM TalentPhotos WHERE TalentID = @ID", pl);
+
+            foreach (DataRow row in dt.Rows)
+            {
+                currentphotos.Add(Convert.ToString(row["Photo"]), Convert.ToString(row["Thumbnail"]));
+            }
+
+            foreach (var photo in currentphotos)
+            {
+                if (!newPhotos.Contains(photo.Key))
+                {
+                    try
+                    {
+                        File.Delete(HostingEnvironment.MapPath(photo.Key));
+                        File.Delete(HostingEnvironment.MapPath(photo.Value));
+                    }
+                    catch { }
+                }
+            }
+        }
+
+        private void SaveProfilePicture()
+        {
+            if (DeleteCurrentProfilePicture())
+            {
+                MovePhotoToTalentFolder(this.ProfilePicture);
+
+                var pl = new List<MySqlParameter>();
+                pl.Add(DatabaseHelper.CreateSqlParameter("@ProfilePicture", GetPhotoUrl(this.ProfilePicture)));
+                pl.Add(DatabaseHelper.CreateSqlParameter("@ID", this.ID));
+
+                DatabaseHelper.ExecuteNonQuery("UPDATE Talent SET ProfilePicture = @ProfilePicture WHERE ID = @ID", pl);
+            }
+        }
+
+        private bool DeleteCurrentProfilePicture()
+        {
+            bool deleted = false;
+
+            var pl = new List<MySqlParameter>();
+            pl.Add(DatabaseHelper.CreateSqlParameter("@ID", this.ID));
+
+            string currentProfilePicture = Convert.ToString(DatabaseHelper.ExecuteScalar("SELECT ProfilePicture FROM Talent WHERE ID = @ID", pl));
+
+            if (!currentProfilePicture.Equals(this.ProfilePicture))
+            {
+                try
+                {
+                    File.Delete(HostingEnvironment.MapPath(currentProfilePicture));
+                }
+                catch { }
+                
+                return true;
+            }
+
+            return deleted;
         }
 
         private string GetPhotoUrl(string url)
@@ -246,9 +307,11 @@ namespace WebApplication1.Models
                 {
                     Image image = Image.FromFile(to);
 
-                    //TODO: get Thumb dims
+                    double reductionPercent = 250.0 / Math.Max(image.Width, image.Height);
+                    int width = (int)(image.Width * reductionPercent);
+                    int height = (int)(image.Height * reductionPercent);
 
-                    Image thumb = image.GetThumbnailImage(250, 250, () => false, IntPtr.Zero);
+                    Image thumb = image.GetThumbnailImage(width, height, () => false, IntPtr.Zero);
 
                     string thumPath = HostingEnvironment.MapPath(GetThumbUrl(url));
                     string thumbDirectory = Path.GetDirectoryName(thumPath);
