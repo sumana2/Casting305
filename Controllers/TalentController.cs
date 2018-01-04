@@ -11,7 +11,7 @@ using WebApplication1.Models;
 [Authorize]
 public class TalentController : Controller
 {
-    private int Size_Of_Page = 12;
+    private int Size_Of_Page = 4;
 
     public ActionResult Index(string sortOrder, string sortDirection, string search, string filterValue, int? pageNo)
     {

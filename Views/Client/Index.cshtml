@@ -11,7 +11,7 @@
 @using (Html.BeginForm("Index", "Client", FormMethod.Get))
 {
     <p>
-        Search: @Html.TextBox("search", ViewBag.FilterValue as string)
+        @Html.TextBox("search", ViewBag.FilterValue as string, new { placeholder = "Search" })
         <input type="submit" value="Find" />
     </p>
 }  

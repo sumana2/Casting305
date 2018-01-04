@@ -7,61 +7,84 @@
 <div>
     <h4>Project Talent</h4>
     <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Name)
-        </dd>
+    <div class="row">
+        <div class="group col-md-3">
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.Name)
+                </dt>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.AgeMin)
-        </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Name)
+                </dd>
+            </dl>
+        </div>
+        <div class="group col-md-3">
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.AgeMin)
+                </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.AgeMin)
-        </dd>
+                <dd>
+                    @Html.DisplayFor(model => model.AgeMin)
+                </dd>
+            </dl>
+        </div>
+        <div class="group col-md-3">
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.AgeMax)
+                </dt>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.AgeMax)
-        </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.AgeMax)
+                </dd>
+            </dl>
+        </div>
+    </div>
 
-        <dd>
-            @Html.DisplayFor(model => model.AgeMax)
-        </dd>
+    <div class="row">
+        <div class="group col-md-3">
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.HeightMin)
+                </dt>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.HeightMin)
-        </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.HeightMin)
+                </dd>
+            </dl>
+        </div>
+        <div class="group col-md-3">
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.HeightMax)
+                </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.HeightMin)
-        </dd>
+                <dd>
+                    @Html.DisplayFor(model => model.HeightMax)
+                </dd>
+            </dl>
+        </div>
+        <div class="group col-md-3">
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.HairColor)
+                </dt>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.HeightMax)
-        </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.HairColor)
+                </dd>
+            </dl>
+        </div>
+    </div>
 
-        <dd>
-            @Html.DisplayFor(model => model.HeightMax)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.HairColor)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.HairColor)
-        </dd>
-
-    </dl>
     @using (Html.BeginForm("RoleTalent", "Project", FormMethod.Get))
     {
         <p>
-            Search Talent: @Html.CheckBox("searchMode", (bool)ViewBag.searchMode)
-            <input type="submit" value="Go" />
+            @Html.TextBox("search", ViewBag.FilterValue as string, new { placeholder = "Search" }) @Html.CheckBox("searchMode", (bool)ViewBag.searchMode) Search All
+            <input type="submit" value="Find" />
         </p>
     }  
     <div class="row">
@@ -71,7 +94,7 @@
         }
     </div>
 </div>
-@Html.PagedListPager(Model.TalentPagedList, pageNo => Url.Action("RoleTalent", new { pageNo, viewMode = ViewBag.ViewMode }))
+@Html.PagedListPager(Model.TalentPagedList, pageNo => Url.Action("RoleTalent", new { pageNo, viewMode = ViewBag.ViewMode, filterValue = ViewBag.FilterValue, searchMode = ViewBag.SearchMode }))
 <p>
     @Html.ActionLink("Back to Project", "Edit", new { id = Model.ProjectID })
 </p>

@@ -9,14 +9,26 @@
     
     <div class="form-horizontal">
         <h4>Update Project</h4>
-        
+
         @Html.EditorFor(model => Model)
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Save" class="btn btn-default" />
+
+                <div class="btn-group">
+                    <button id="actionBtn" type="button" class="btn btn-info" onclick="getPresensation()">Get Zip</button>
+                    <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="caret"></span>
+                        <span class="sr-only">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a href="#" onclick="$('#actionBtn').text('Get Zip')">Get Zip</a></li>
+                        <li><a href="#" onclick="$('#actionBtn').text('Get Slides')">Get Slides</a></li>
+                        <li><a href="#" onclick="$('#actionBtn').text('Get Printout')">Get Printout</a></li>
+                    </ul>
+                </div>
                 @Html.ActionLink("Delete", "Delete", new { id = Model.ID })
-                @Html.ActionLink("Generate Presentation", "GetPresentation", new { id = Model.ID })
             </div>
         </div>
     </div>
@@ -29,3 +41,12 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
+
+<script>
+    function getPresensation() {
+        var url = '/Project/GetPresentation/@Html.DisplayFor(model => model.ID)';
+        var action = $('#actionBtn').text().replace(" ", "");
+
+        window.location.href = url + "?actionType=" + action;
+    }
+</script>

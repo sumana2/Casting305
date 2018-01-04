@@ -144,10 +144,21 @@ public class ProjectController : Controller
         return PartialView("~/Views/Shared/EditorTemplates/ProjectRoleModel.cshtml", new ProjectRoleModel() { Name = "NewRole" + count });
     }
 
-    public ActionResult RoleTalent(int id, bool? searchMode, int? pageNo)
+    public ActionResult RoleTalent(int id, bool? searchMode, string search, string filterValue, int? pageNo)
     {
         ProjectRoleModel model;
         ViewBag.SearchMode = searchMode.HasValue && searchMode.Value;
+
+        if (search != null)
+        {
+            pageNo = 1;
+        }
+        else
+        {
+            search = filterValue;
+        }
+
+        ViewBag.FilterValue = search;
 
         if (ViewBag.SearchMode)
         {
@@ -156,6 +167,12 @@ public class ProjectController : Controller
         else
         {
             model = ProjectRoleModel.GetByID(id);
+        }
+
+        if (!String.IsNullOrEmpty(search))
+        {
+            model.Talent = model.Talent.Where(x => x.FirstName.ToUpper().Contains(search.ToUpper())
+                || x.LastName.ToUpper().Contains(search.ToUpper())).ToList();
         }
 
         int No_Of_Page = (pageNo ?? 1);
@@ -176,8 +193,10 @@ public class ProjectController : Controller
         return Json("");
     }
 
-    public ActionResult GetPresentation(int id)
+    public ActionResult GetPresentation(int id, string actionType)
     {
+        ActionResult result = null;
+
         var project = ProjectModel.GetByID(id);
         var roles = new List<ProjectRoleModel>();
 
@@ -186,8 +205,46 @@ public class ProjectController : Controller
             roles.Add(ProjectRoleModel.GetByID(role.ID));
         }
 
+        try
+        {
+            switch (actionType)
+            {
+                case "GetZip":
+                    //result = GetZip(project);
+                    break;
+                case "GetSlides":
+                    //result = GetSlides(project);
+                    break;
+                case "GetPrintout":
+                    //result = GetPrintout(project);
+                    break;
+                default:
+                    ViewBag.Message = string.Format("Invalid action: {0}", actionType);
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            ViewBag.Message = ex.Message;
+        }
+
+        if (result == null)
+        {
+            result = View("Edit", project);
+        }
+
+        return result;
+    }
+
+    private ActionResult GetZip(ProjectModel project)
+    {
+        return null;
+    }
+
+    private ActionResult GetSlides(ProjectModel project)
+    {
         DirectoryInfo dir = new DirectoryInfo(Server.MapPath("/Templates"));
-        
+
         var files = dir.GetFiles("Presentation1.pptx");
 
         files[0].CopyTo(Server.MapPath("/Templates/PresentationCopy.pptx"), true);
@@ -196,7 +253,7 @@ public class ProjectController : Controller
         {
             int slideNo = 2;
 
-            foreach (var role in roles)
+            foreach (var role in project.Roles)
             {
                 InsertSlide.InsertNewSlide(presentationDocument, slideNo++, role.Name, "", "", Server.MapPath("/Templates"));
 
@@ -218,5 +275,10 @@ public class ProjectController : Controller
         }
 
         return File(Server.MapPath("/Templates/PresentationCopy.pptx"), "application/vnd.openxmlformats-officedocument.presentationml.presentation");
+    }
+
+    private ActionResult GetPrintout(ProjectModel project)
+    {
+        return null;
     }
 }

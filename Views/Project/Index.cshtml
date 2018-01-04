@@ -1,4 +1,5 @@
 ﻿@model PagedList.IPagedList<WebApplication1.Models.ProjectModel>
+@using PagedList.Mvc;  
 @{
     ViewBag.Title = "Projects";
 }
@@ -10,7 +11,7 @@
 @using (Html.BeginForm("Index", "Project", FormMethod.Get))
 {
     <p>
-        Search: @Html.TextBox("search", ViewBag.FilterValue as string)
+        @Html.TextBox("search", ViewBag.FilterValue as string, new { placeholder = "Search" })
         <input type="submit" value="Find" />
     </p>
 }  
@@ -55,3 +56,5 @@
 }
 
 </table>
+
+@Html.PagedListPager(Model, pageNo => Url.Action("Index", new { pageNo, sortOrder = ViewBag.CurrentSortOrder, sortDirection = ViewBag.CurrentsortDirection, filterValue = ViewBag.FilterValue }))

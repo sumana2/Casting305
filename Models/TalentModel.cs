@@ -115,7 +115,7 @@ namespace WebApplication1.Models
             string sql = @"INSERT INTO Talent(FirstName,LastName,Gender,DateOfBirth,Nationality,Representative,Height,EyeColor
                                            ,HairColor,Ethnicity,ShoeSize,WaistSize,ShirtSize,Instagram,Phone,Email,Notes)
                         VALUES (@FirstName, @LastName, @Gender, @DateOfBirth, @Nationality, @Representative, @Height, @EyeColor
-                              , @HairColor, @Ethnicity, @ShoeSize, @WaistSize, @ShirtSize, @Instagram, @Phone, @Email, @Notes)";
+                              , @HairColor, @Ethnicity, @ShoeSize, @WaistSize, @ShirtSize, @Instagram, @Phone, @Email, @Notes); SELECT LAST_INSERT_ID()";
 
             this.ID = Convert.ToInt32(DatabaseHelper.ExecuteScalar(sql, GetParams()));
 
@@ -258,6 +258,7 @@ namespace WebApplication1.Models
             pl.Add(DatabaseHelper.CreateSqlParameter("@ID", this.ID));
 
             string currentProfilePicture = Convert.ToString(DatabaseHelper.ExecuteScalar("SELECT ProfilePicture FROM Talent WHERE ID = @ID", pl));
+            this.ProfilePicture = string.IsNullOrEmpty(this.ProfilePicture) ? string.Empty : this.ProfilePicture;
 
             if (!currentProfilePicture.Equals(this.ProfilePicture))
             {
@@ -305,22 +306,24 @@ namespace WebApplication1.Models
 
                 if (generateThum)
                 {
-                    Image image = Image.FromFile(to);
-
-                    double reductionPercent = 250.0 / Math.Max(image.Width, image.Height);
-                    int width = (int)(image.Width * reductionPercent);
-                    int height = (int)(image.Height * reductionPercent);
-
-                    Image thumb = image.GetThumbnailImage(width, height, () => false, IntPtr.Zero);
-
-                    string thumPath = HostingEnvironment.MapPath(GetThumbUrl(url));
-                    string thumbDirectory = Path.GetDirectoryName(thumPath);
-                    if (!Directory.Exists(thumbDirectory))
+                    using (Image image = Image.FromFile(to))
                     {
-                        Directory.CreateDirectory(thumbDirectory);
-                    }
+                        double reductionPercent = 250.0 / Math.Max(image.Width, image.Height);
+                        int width = (int)(image.Width * reductionPercent);
+                        int height = (int)(image.Height * reductionPercent);
 
-                    thumb.Save(thumPath);
+                        using (Image thumb = image.GetThumbnailImage(width, height, () => false, IntPtr.Zero))
+                        {
+                            string thumPath = HostingEnvironment.MapPath(GetThumbUrl(url));
+                            string thumbDirectory = Path.GetDirectoryName(thumPath);
+                            if (!Directory.Exists(thumbDirectory))
+                            {
+                                Directory.CreateDirectory(thumbDirectory);
+                            }
+
+                            thumb.Save(thumPath);
+                        }
+                    }
                 }
             }
         }
