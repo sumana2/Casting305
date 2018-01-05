@@ -49,7 +49,9 @@
 
     <script>
         $(document).ready(function () {
-            $('.listItemModel').select2();
+            $('.listItemModel').select2({
+                minimumResultsForSearch: 10 // at least 20 results must be displayed
+            });
         });
 
         function addListOption(btn) {

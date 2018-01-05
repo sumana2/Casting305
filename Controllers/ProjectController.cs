@@ -121,13 +121,14 @@ public class ProjectController : Controller
 
     public ActionResult Delete(int id)
     {
+        ProjectModel model = new ProjectModel() { ID = id };
+
         try
         {
-            ClientModel model = new ClientModel() { ID = id };
             if (!model.Delete())
             {
                 ViewBag.Message = "Unable to delete";
-                return View();
+                return View(model);
             }
             return RedirectToAction("Index");
 
@@ -135,7 +136,7 @@ public class ProjectController : Controller
         catch (Exception e)
         {
             ViewBag.Message = e.Message;
-            return View();
+            return View(model);
         }
     }
 
@@ -210,7 +211,7 @@ public class ProjectController : Controller
             switch (actionType)
             {
                 case "GetZip":
-                    //result = GetZip(project);
+                    result = GetZip(project);
                     break;
                 case "GetSlides":
                     //result = GetSlides(project);
@@ -238,7 +239,46 @@ public class ProjectController : Controller
 
     private ActionResult GetZip(ProjectModel project)
     {
-        return null;
+        string root = Server.MapPath(string.Format("/Zips/{0}", project.Title));
+        if (Directory.Exists(root))
+        {
+            Directory.Delete(root,true);
+        }
+        Directory.CreateDirectory(root);
+
+        foreach (ProjectRoleModel role in project.Roles)
+        {
+            string roleFolder = Path.Combine(root, role.Name);
+            Directory.CreateDirectory(roleFolder);
+            role.Talent = TalentModel.GetByProjectRoleID(role.ID);
+
+            foreach (TalentModel talent in role.Talent)
+            {
+                string talentFolder = Path.Combine(roleFolder, string.Format("{0} {1}", talent.FirstName, talent.LastName));
+                Directory.CreateDirectory(talentFolder);
+                if (!string.IsNullOrEmpty(talent.ProfilePicture))
+                {
+                    System.IO.File.Copy(Server.MapPath(talent.ProfilePicture), Path.Combine(talentFolder, "Profile" + Path.GetExtension(talent.ProfilePicture)));
+                }
+
+                talent.GetImages();
+                if (!string.IsNullOrEmpty(talent.BookPictures))
+                {
+                    string[] pics = talent.BookPictures.Split(',');
+                    for (int i = 0; i < Math.Min(pics.Length, 10); i++)
+                    {
+                        System.IO.File.Copy(Server.MapPath(pics[i]), Path.Combine(talentFolder, "picture" + (i + 1) + Path.GetExtension(pics[i])));
+                    }
+                }
+            }
+        }
+
+        string zip = Server.MapPath("/Zips/") + project.Title + ".zip";
+        System.IO.File.Delete(zip);
+        System.IO.Compression.ZipFile.CreateFromDirectory(root, zip);
+        Directory.Delete(root,true);
+
+        return File(zip, "application/zip", project.Title + ".zip");
     }
 
     private ActionResult GetSlides(ProjectModel project)

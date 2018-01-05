@@ -4,7 +4,7 @@
 @using (Html.BeginCollectionItem("Roles"))
 {
     <li role="presentation" class="active">
-        <a data-toggle="collapse" href="#@Html.DisplayFor(model => model.Name)" aria-expanded="false" aria-controls="@Html.DisplayFor(model => model.Name)" class="collapsed">
+        <a data-toggle="collapse" href="#@Html.DisplayFor(model => model.NameNoSpace)" aria-expanded="false" aria-controls="@Html.DisplayFor(model => model.NameNoSpace)" class="collapsed">
             @Html.DisplayFor(model => model.Name)<span class="badge">@Html.DisplayFor(model => model.TalentCount)</span>
         </a>
         <button type="button" class="btn btn-default" aria-label="Left Align" onclick="deleteRole($(this))">
@@ -20,7 +20,7 @@
     <li class="item">
         @Html.HiddenFor(model => model.ID)
         @Html.HiddenFor(model => model.ProjectID)
-        <div id="@Html.DisplayFor(model => model.Name)" class="collapse" role="tabpanel">
+        <div id="@Html.DisplayFor(model => model.NameNoSpace)" class="collapse" role="tabpanel">
             <div class="form-horizontal">
                 <div class="form-group">
                     @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })

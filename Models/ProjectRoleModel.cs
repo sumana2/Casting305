@@ -31,6 +31,8 @@ namespace WebApplication1.Models
 
         public IPagedList<TalentModel> TalentPagedList { get; set; }
 
+        public string NameNoSpace { get { return Name.Replace(" ",""); } }
+
         public ProjectRoleModel()
         {
             Talent = new List<TalentModel>();
@@ -91,8 +93,8 @@ namespace WebApplication1.Models
         public bool Delete()
         {
             var pl = new List<MySqlParameter>();
-            pl.Add(DatabaseHelper.CreateSqlParameter("ID", this.ID));
-            int r = DatabaseHelper.ExecuteNonQuery("DELETE FROM Talent WHERE ID = @ID", pl);
+            pl.Add(DatabaseHelper.CreateSqlParameter("ID", this.ProjectID));
+            int r = DatabaseHelper.ExecuteNonQuery("DELETE FROM ProjectRoles WHERE ProjectID = @ID", pl);
 
             if (r >= 1)
             {

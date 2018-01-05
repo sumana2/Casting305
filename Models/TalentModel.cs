@@ -344,11 +344,23 @@ namespace WebApplication1.Models
             }
         }
 
-        public List<string> GetImages()
+        public void GetImages()
         {
-            var images = new List<string>();
+            var bookPictures = new List<string>();
+            var thumbnails = new List<string>();
 
-            return images;
+            var pl = new List<MySqlParameter>();
+            pl.Add(DatabaseHelper.CreateSqlParameter("@ID", this.ID));
+            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM TalentPhotos WHERE TalentID = @ID", pl);
+
+            foreach (DataRow row in dt.Rows)
+            {
+                bookPictures.Add(Convert.ToString(row["Photo"]));
+                thumbnails.Add(Convert.ToString(row["Thumbnail"]));
+            }
+
+            this.BookPictures = string.Join(",", bookPictures);
+            this.Thumbnails = string.Join(",", thumbnails);
         }
 
         public static List<TalentModel> Get()
@@ -378,20 +390,8 @@ namespace WebApplication1.Models
 
             var talent = new TalentModel(dt.Rows[0]);
             talent.LoadLists();
-
-            pl.Clear();
-            pl.Add(DatabaseHelper.CreateSqlParameter("@ID", id));
-            dt = DatabaseHelper.ExecuteQuery("SELECT * FROM TalentPhotos WHERE TalentID = @ID", pl);
-
-            foreach (DataRow row in dt.Rows)
-            {
-                bookPictures.Add(Convert.ToString(row["Photo"]));
-                thumbnails.Add(Convert.ToString(row["Thumbnail"]));
-            }
-
-            talent.BookPictures = string.Join(",", bookPictures);
-            talent.Thumbnails = string.Join(",", thumbnails);
-
+            talent.GetImages();
+            
             return talent;
         }
 

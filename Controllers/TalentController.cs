@@ -104,13 +104,14 @@ public class TalentController : Controller
 
     public ActionResult Delete(int id)
     {
+        TalentModel model = new TalentModel() { ID = id };
+
         try
         {
-            TalentModel model = new TalentModel() { ID = id };
             if (!model.Delete())
             {
                 ViewBag.Message = "Unable to delete";
-                return View();
+                return View(model);
             }
             return RedirectToAction("Index");
 
@@ -118,7 +119,7 @@ public class TalentController : Controller
         catch(Exception e)
         {
             ViewBag.Message = e.Message;
-            return View();
+            return View(model);
         }
     }
 

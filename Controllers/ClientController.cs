@@ -123,13 +123,14 @@ public class ClientController : Controller
 
     public ActionResult Delete(int id)
     {
+        ClientModel model = new ClientModel() { ID = id };
+
         try
         {
-            ClientModel model = new ClientModel() { ID = id };
             if (!model.Delete())
             {
                 ViewBag.Message = "Unable to delete";
-                return View();
+                return View(model);
             }
             return RedirectToAction("Index");
 
@@ -137,7 +138,7 @@ public class ClientController : Controller
         catch(Exception e)
         {
             ViewBag.Message = e.Message;
-            return View();
+            return View(model);
         }
     }
 

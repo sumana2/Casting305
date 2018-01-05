@@ -35,7 +35,7 @@ namespace WebApplication1.Models
         public bool Add()
         {
             string sql = @"INSERT INTO Projects (Title,Company,Email,Phone,DueDate)
-                           VALUES (@Title, @Company, @Email, @Phone, @DueDate)";
+                           VALUES (@Title, @Company, @Email, @Phone, @DueDate); SELECT LAST_INSERT_ID()";
 
             this.ID = Convert.ToInt32(DatabaseHelper.ExecuteScalar(sql, GetParams()));
 
@@ -71,7 +71,7 @@ namespace WebApplication1.Models
         {
             var pl = new List<MySqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("ID", this.ID));
-            int r = DatabaseHelper.ExecuteNonQuery("DELETE FROM Talent WHERE ID = @ID", pl);
+            int r = DatabaseHelper.ExecuteNonQuery("DELETE FROM Projects WHERE ID = @ID", pl);
 
             if (r >= 1)
             {

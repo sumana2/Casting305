@@ -67,7 +67,7 @@ namespace WebApplication1.Models
                 items.Add("");
 
                 var pl = new List<MySqlParameter>();
-                pl.Add(DatabaseHelper.CreateSqlParameter("@List", this.List));
+                pl.Add(DatabaseHelper.CreateSqlParameter("@List", this.List.ToString()));
 
                 DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM Lists WHERE List = @List", pl);
 

@@ -88,7 +88,6 @@ namespace WebApplication1.Helpers
             MySqlParameter p = new MySqlParameter();
             p.ParameterName = name;
             p.Value = value == null ? DBNull.Value : value;
-            p.DbType = DbType.String;
 
             return p;
         }

@@ -123,13 +123,14 @@ public class RepresentativeController : Controller
 
     public ActionResult Delete(int id)
     {
+        RepresentativeModel model = new RepresentativeModel() { ID = id };
+
         try
         {
-            RepresentativeModel model = new RepresentativeModel() { ID = id };
             if (!model.Delete())
             {
                 ViewBag.Message = "Unable to delete";
-                return View();
+                return View(model);
             }
             return RedirectToAction("Index");
 
@@ -137,7 +138,7 @@ public class RepresentativeController : Controller
         catch(Exception e)
         {
             ViewBag.Message = e.Message;
-            return View();
+            return View(model);
         }
     }
 
