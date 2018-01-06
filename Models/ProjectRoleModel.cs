@@ -189,7 +189,11 @@ namespace WebApplication1.Models
         {
             var pl = new List<MySqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("@ID", id));
-            int r = DatabaseHelper.ExecuteNonQuery("DELETE FROM ProjectRoles WHERE ProjectID = @ID", pl);
+            DatabaseHelper.ExecuteNonQuery("DELETE FROM ProjectTalent WHERE ProjectRoleID IN (SELECT ID FROM ProjectRoles WHERE ProjectID = @ID)", pl);
+
+            pl.Clear();
+            pl.Add(DatabaseHelper.CreateSqlParameter("@ID", id));
+            DatabaseHelper.ExecuteNonQuery("DELETE FROM ProjectRoles WHERE ProjectID = @ID", pl);
 
             return true;
         }

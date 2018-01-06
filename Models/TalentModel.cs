@@ -336,6 +336,12 @@ namespace WebApplication1.Models
 
             if (r >= 1)
             {
+                pl.Clear();
+                pl.Add(DatabaseHelper.CreateSqlParameter("ID", this.ID));
+                DatabaseHelper.ExecuteNonQuery("DELETE FROM TalentPhotos WHERE TalentID = @ID", pl);
+
+                Directory.Delete(HostingEnvironment.MapPath(string.Format("/TalentPhotos/{0}", this.ID)), true);
+
                 return true;
             }
             else

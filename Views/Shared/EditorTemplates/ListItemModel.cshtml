@@ -3,7 +3,7 @@
 <div>
     @Html.DropDownListFor(model => model.Value, Model.ListItems, new { @class = "form-control listItemModel" })
 
-    @Html.TextBox("newOption","", new { @class = "form-control listItemModelTextbox hide" })
+    @Html.TextBox("newOption","", new { @class = "form-control listItemModelTextbox hide", placeholder = "Enter New Value" })
 
     @if (Model.AllowAdd)
     {

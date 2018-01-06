@@ -75,6 +75,8 @@ namespace WebApplication1.Models
 
             if (r >= 1)
             {
+                ProjectRoleModel.DeleteByProject(this.ID);
+
                 return true;
             }
             else
