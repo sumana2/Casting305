@@ -152,24 +152,38 @@ namespace WebApplication1.Models
 
         public bool SaveRoles()
         {
-            if (ProjectRoleModel.DeleteByProject(this.ID))
-            {
-                if (Roles == null)
-                {
-                    Roles = new List<ProjectRoleModel>();
-                }
+            bool ok = true;
 
-                foreach (var role in Roles)
+            var currentRoles = ProjectRoleModel.GetByProject(this.ID);
+
+            if (Roles == null)
+            {
+                Roles = new List<ProjectRoleModel>();
+            }
+
+            foreach (var role in currentRoles)
+            {
+                if (!Roles.Exists(x => x.ID == role.ID))
                 {
-                    role.ProjectID = this.ID;
-                    if (!role.Add())
-                    {
-                        return false;
-                    }
+                    ok = ok && role.Delete();
                 }
             }
 
-            return true;
+            foreach (var role in Roles)
+            {
+                if (role.ID == 0)
+                {
+                    role.ProjectID = this.ID;
+                    ok = ok && role.Add();
+                }
+                else
+                {
+                    ok = ok && role.Update();
+                }
+                
+            }
+         
+            return ok;
         }
     }
 }

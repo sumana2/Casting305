@@ -93,8 +93,8 @@ namespace WebApplication1.Models
         public bool Delete()
         {
             var pl = new List<MySqlParameter>();
-            pl.Add(DatabaseHelper.CreateSqlParameter("ID", this.ProjectID));
-            int r = DatabaseHelper.ExecuteNonQuery("DELETE FROM ProjectRoles WHERE ProjectID = @ID", pl);
+            pl.Add(DatabaseHelper.CreateSqlParameter("ID", this.ID));
+            int r = DatabaseHelper.ExecuteNonQuery("DELETE FROM ProjectRoles WHERE ID = @ID", pl);
 
             if (r >= 1)
             {
