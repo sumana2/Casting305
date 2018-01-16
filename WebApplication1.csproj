@@ -356,6 +356,7 @@
     <Content Include="Views\Representative\Edit.cshtml" />
     <Content Include="Views\Representative\Index.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\RepresentativeModel.cshtml" />
+    <Content Include="Views\Project\Printout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

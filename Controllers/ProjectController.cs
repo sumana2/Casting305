@@ -121,14 +121,14 @@ public class ProjectController : Controller
 
     public ActionResult Delete(int id)
     {
-        ProjectModel model = new ProjectModel() { ID = id };
+        ProjectModel model = ProjectModel.GetByID(id);
 
         try
         {
             if (!model.Delete())
             {
                 ViewBag.Message = "Unable to delete";
-                return View(model);
+                return View("Edit", model);
             }
             return RedirectToAction("Index");
 
@@ -136,7 +136,7 @@ public class ProjectController : Controller
         catch (Exception e)
         {
             ViewBag.Message = e.Message;
-            return View(model);
+            return View("Edit", model);
         }
     }
 
@@ -217,7 +217,7 @@ public class ProjectController : Controller
                     //result = GetSlides(project);
                     break;
                 case "GetPrintout":
-                    //result = GetPrintout(project);
+                    result = GetPrintout(project);
                     break;
                 default:
                     ViewBag.Message = string.Format("Invalid action: {0}", actionType);
@@ -322,8 +322,16 @@ public class ProjectController : Controller
         return File(Server.MapPath("/Templates/PresentationCopy.pptx"), "application/vnd.openxmlformats-officedocument.presentationml.presentation");
     }
 
-    private ActionResult GetPrintout(ProjectModel project)
+    public ActionResult GetPrintout(ProjectModel project)
     {
-        return null;
+        foreach (var role in project.Roles)
+        {
+            if (role.TalentCount > 0)
+            {
+                role.Talent = TalentModel.GetByProjectRoleID(role.ID);
+            }
+        }
+
+        return View("Printout", project);
     }
 }

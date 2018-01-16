@@ -1,0 +1,30 @@
+﻿@model WebApplication1.Models.ProjectModel
+
+<h1>@Html.DisplayFor(model => model.Title)</h1>
+
+@foreach (var role in Model.Roles)
+{
+    <h3>@Html.DisplayFor(model => role.Name)</h3>
+    
+    foreach (var talent in role.Talent)
+    {
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <td width="80" rowspan="2"><img src="@Html.DisplayFor(model => talent.ProfilePicture)" height="60" width="60" /></td>
+                    <td colspan="3"><b>@string.Format("{0} {1}", talent.FirstName, talent.LastName)</b></td>
+                </tr>
+                <tr>
+                    <td>Height: @Html.DisplayFor(model => talent.Height)</td>
+                    <td>Weight: @Html.DisplayFor(model => talent.WaistSize)</td>
+                    <td>Eye Color: @Html.DisplayFor(model => talent.EyeColor.Value)</td>
+                </tr>
+                <tr>
+                    <td colspan="2">Representative: @Html.DisplayFor(model => talent.RepDisplayName)</td>
+                    <td>Email: @Html.DisplayFor(model => talent.Email)</td>
+                    <td>Phone: @Html.DisplayFor(model => talent.Phone)</td>
+                </tr>
+            </tbody>
+        </table>
+    }
+}

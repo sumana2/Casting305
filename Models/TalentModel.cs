@@ -340,7 +340,11 @@ namespace WebApplication1.Models
                 pl.Add(DatabaseHelper.CreateSqlParameter("ID", this.ID));
                 DatabaseHelper.ExecuteNonQuery("DELETE FROM TalentPhotos WHERE TalentID = @ID", pl);
 
-                Directory.Delete(HostingEnvironment.MapPath(string.Format("/TalentPhotos/{0}", this.ID)), true);
+                string path = HostingEnvironment.MapPath(string.Format("/TalentPhotos/{0}", this.ID));
+                if (Directory.Exists(path))
+                {
+                    Directory.Delete(path, true);
+                }
 
                 return true;
             }
@@ -408,11 +412,13 @@ namespace WebApplication1.Models
             var pl = new List<MySqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("@ID", id));
 
-            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT t.* FROM ProjectTalent JOIN Talent t ON t.ID = TalentID WHERE ProjectRoleID = @ID", pl);
+            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT t.*, r.Company FROM ProjectTalent JOIN Talent t ON t.ID = TalentID LEFT JOIN Representatives r ON r.ID = t.Representative WHERE ProjectRoleID = @ID", pl);
 
             foreach (DataRow row in dt.Rows)
             {
-                list.Add(new TalentModel(row));
+                var obj = new TalentModel(row);
+                obj.RepDisplayName = Convert.ToString(row["Company"]);
+                list.Add(obj);
             }
 
             return list;
