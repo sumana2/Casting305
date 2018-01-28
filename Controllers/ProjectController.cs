@@ -214,7 +214,7 @@ public class ProjectController : Controller
                     result = GetZip(project);
                     break;
                 case "GetSlides":
-                    //result = GetSlides(project);
+                    result = GetSlides(project);
                     break;
                 case "GetPrintout":
                     result = GetPrintout(project);
@@ -300,23 +300,33 @@ public class ProjectController : Controller
 
             foreach (var role in project.Roles)
             {
-                InsertSlide.InsertNewSlide(presentationDocument, slideNo++, role.Name, "", "", Server.MapPath("/Templates"));
+                PowerPointHelper.InsertNewSlide(presentationDocument, slideNo++, string.Format("Role: {0}", role.Name), "", "", Server.MapPath("/Templates"));
+
+                if (role.TalentCount > 0)
+                {
+                    role.Talent = TalentModel.GetByProjectRoleID(role.ID);
+                }
 
                 foreach (var talent in role.Talent)
                 {
-                    string info = string.Format("{1} {2}{0}Mide: {3}{0}Pesa: {4}{0}Pelo: {5}", Environment.NewLine, talent.FirstName, talent.LastName, talent.Height, talent.WaistSize, talent.HairColor);
-                    InsertSlide.InsertNewSlide(presentationDocument, slideNo++, "", info, "", Server.MapPath("/Templates"));
+                    string info = string.Format("{1} {2}{0}Height: {3}{0}Waist Size: {4}{0}Eye Color: {5}{0}Representative: {6}{0}Email: {7}{0}Phone: {8}", 
+                        Environment.NewLine, talent.FirstName, talent.LastName, talent.Height, talent.WaistSize, 
+                        talent.EyeColor.Value, talent.RepDisplayName, talent.Email, talent.Phone);
 
-                    InsertSlide.InsertNewSlide(presentationDocument, slideNo++, "", "", talent.ProfilePicture, Server.MapPath("/Templates"));
+                    PowerPointHelper.InsertNewSlide(presentationDocument, slideNo++, "", info, talent.ProfilePicture, Server.MapPath("/Templates"));
+
+                    //PowerPointHelper.InsertNewSlide(presentationDocument, slideNo++, "", "", talent.BookPictures.Split(',')[0], Server.MapPath("/Templates"));
 
                     //var images = talent.GetImages();
 
                     //foreach (var image in images)
                     //{
-                    //    InsertSlide.InsertNewSlide(presentationDocument, ++slideNo, "", "", image, Server.MapPath("/Templates"));
+                    //    PowerPointHelper.InsertNewSlide(presentationDocument, ++slideNo, "", "", image, Server.MapPath("/Templates"));
                     //}
                 }
             }
+
+            PowerPointHelper.DeleteSlide(presentationDocument, 1);
         }
 
         return File(Server.MapPath("/Templates/PresentationCopy.pptx"), "application/vnd.openxmlformats-officedocument.presentationml.presentation");

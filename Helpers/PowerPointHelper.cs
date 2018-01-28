@@ -22,10 +22,12 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Web;
+using System.Web.Hosting;
 
 namespace WebApplication1.Helpers
 {
-    public class InsertSlide
+    public class PowerPointHelper
     {
         // Insert a slide into the specified presentation.
         public static void InsertNewSlide(string presentationFile, int position, string slideTitle)
@@ -108,8 +110,10 @@ namespace WebApplication1.Helpers
                 bodyShape.ShapeProperties = new ShapeProperties();
 
                 Drawing.Transform2D transform2D = new Drawing.Transform2D();
-                Drawing.Offset offset = new Drawing.Offset() { X = 1453896, Y = 1188720 };
-                Drawing.Extents extents = new Drawing.Extents() { Cx = 8732520, Cy = 4270248 };
+                //position
+                Drawing.Offset offset = new Drawing.Offset() { X = 1418626 + 3810000, Y = 1188720 };
+                //size
+                Drawing.Extents extents = new Drawing.Extents() { Cx = 6665831, Cy = 3270248 };
                 transform2D.Append(offset);
                 transform2D.Append(extents);
 
@@ -228,8 +232,7 @@ namespace WebApplication1.Helpers
             Drawing.BlipExtension blipExtension = new Drawing.BlipExtension() { Uri = "{28A0092B-C50C-407E-A947-70E740481C1C}" };
 
             DocumentFormat.OpenXml.Office2010.Drawing.UseLocalDpi useLocalDpi = new DocumentFormat.OpenXml.Office2010.Drawing.UseLocalDpi() { Val = false };
-            useLocalDpi.AddNamespaceDeclaration("a14",
-                "http://schemas.microsoft.com/office/drawing/2010/main");
+            useLocalDpi.AddNamespaceDeclaration("a14","http://schemas.microsoft.com/office/drawing/2010/main");
 
             blipExtension.Append(useLocalDpi);
             blipExtensionList.Append(blipExtension);
@@ -244,10 +247,23 @@ namespace WebApplication1.Helpers
 
             // Creates a ShapeProperties instance and adds its children.
             ShapeProperties shapeProperties = new ShapeProperties();
+            
+            //http://en.wikipedia.org/wiki/English_Metric_Unit#DrawingML
+            //http://stackoverflow.com/questions/1341930/pixel-to-centimeter
+            //http://stackoverflow.com/questions/139655/how-to-convert-pixels-to-points-px-to-pt-in-net-c
+            long cx, cy;
+            using (System.Drawing.Image img = System.Drawing.Image.FromFile(HostingEnvironment.MapPath(imagePath)))
+            {
+                cx = (long)img.Width * (long)((float)914400 / img.HorizontalResolution);
+                cy = (long)img.Height * (long)((float)914400 / img.VerticalResolution);
+            }
 
             Drawing.Transform2D transform2D = new Drawing.Transform2D();
-            Drawing.Offset offset = new Drawing.Offset() { X = 838200, Y = 1877264 };
-            Drawing.Extents extents = new Drawing.Extents() { Cx = 3284002, Cy = 3214689 };
+            //Position
+            Drawing.Offset offset = new Drawing.Offset() { X = 1418626, Y = 1188720 };
+            //Size
+            //Drawing.Extents extents = new Drawing.Extents() { Cx = 3810000, Cy = 4829175 };
+            Drawing.Extents extents = new Drawing.Extents() { Cx = cx, Cy = cy };
 
             transform2D.Append(offset);
             transform2D.Append(extents);
@@ -269,20 +285,113 @@ namespace WebApplication1.Helpers
             // Generates content of imagePart.
             ImagePart imagePart = slide.SlidePart.AddNewPart<ImagePart>(imageExt, embedId);
 
-            //FileStream fileStream = new FileStream(imagePath, FileMode.Open);
-            //imagePart.FeedData(fileStream);
-            //fileStream.Close();
-
-            WebRequest req = HttpWebRequest.Create(imagePath);
+            WebRequest req = HttpWebRequest.Create(HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + imagePath);
             using (Stream stream = req.GetResponse().GetResponseStream())
             {
                 imagePart.FeedData(stream);
             }
             
         }
+
+        // Delete the specified slide from the presentation.
+        public static void DeleteSlide(PresentationDocument presentationDocument, int slideIndex)
+        {
+            if (presentationDocument == null)
+            {
+                throw new ArgumentNullException("presentationDocument");
+            }
+
+            // Use the CountSlides sample to get the number of slides in the presentation.
+            int slidesCount = CountSlides(presentationDocument);
+
+            if (slideIndex < 0 || slideIndex >= slidesCount)
+            {
+                throw new ArgumentOutOfRangeException("slideIndex");
+            }
+
+            // Get the presentation part from the presentation document. 
+            PresentationPart presentationPart = presentationDocument.PresentationPart;
+
+            // Get the presentation from the presentation part.
+            Presentation presentation = presentationPart.Presentation;
+
+            // Get the list of slide IDs in the presentation.
+            SlideIdList slideIdList = presentation.SlideIdList;
+
+            // Get the slide ID of the specified slide
+            SlideId slideId = slideIdList.ChildElements[slideIndex] as SlideId;
+
+            // Get the relationship ID of the slide.
+            string slideRelId = slideId.RelationshipId;
+
+            // Remove the slide from the slide list.
+            slideIdList.RemoveChild(slideId);
+
+            //
+            // Remove references to the slide from all custom shows.
+            if (presentation.CustomShowList != null)
+            {
+                // Iterate through the list of custom shows.
+                foreach (var customShow in presentation.CustomShowList.Elements<CustomShow>())
+                {
+                    if (customShow.SlideList != null)
+                    {
+                        // Declare a link list of slide list entries.
+                        LinkedList<SlideListEntry> slideListEntries = new LinkedList<SlideListEntry>();
+                        foreach (SlideListEntry slideListEntry in customShow.SlideList.Elements())
+                        {
+                            // Find the slide reference to remove from the custom show.
+                            if (slideListEntry.Id != null && slideListEntry.Id == slideRelId)
+                            {
+                                slideListEntries.AddLast(slideListEntry);
+                            }
+                        }
+
+                        // Remove all references to the slide from the custom show.
+                        foreach (SlideListEntry slideListEntry in slideListEntries)
+                        {
+                            customShow.SlideList.RemoveChild(slideListEntry);
+                        }
+                    }
+                }
+            }
+
+            // Save the modified presentation.
+            presentation.Save();
+
+            // Get the slide part for the specified slide.
+            SlidePart slidePart = presentationPart.GetPartById(slideRelId) as SlidePart;
+
+            // Remove the slide part.
+            presentationPart.DeletePart(slidePart);
+        }
+
+        // Count the slides in the presentation.
+        public static int CountSlides(PresentationDocument presentationDocument)
+        {
+            // Check for a null document object.
+            if (presentationDocument == null)
+            {
+                throw new ArgumentNullException("presentationDocument");
+            }
+
+            int slidesCount = 0;
+
+            // Get the presentation part of document.
+            PresentationPart presentationPart = presentationDocument.PresentationPart;
+
+            // Get the slide count from the SlideParts.
+            if (presentationPart != null)
+            {
+                slidesCount = presentationPart.SlideParts.Count();
+            }
+
+            // Return the slide count to the previous method.
+            return slidesCount;
+        }
     }
 
-    public static class OpenXmlUtils
+        public static class OpenXmlUtils
     {
         public static IEnumerable<SlidePart> GetSlidePartsInOrder(this PresentationPart presentationPart)
         {
