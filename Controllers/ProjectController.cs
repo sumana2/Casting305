@@ -315,21 +315,20 @@ public class ProjectController : Controller
 
                     PowerPointHelper.InsertNewSlide(presentationDocument, slideNo++, "", info, talent.ProfilePicture, Server.MapPath("/Templates"));
 
-                    //PowerPointHelper.InsertNewSlide(presentationDocument, slideNo++, "", "", talent.BookPictures.Split(',')[0], Server.MapPath("/Templates"));
-
-                    //var images = talent.GetImages();
-
-                    //foreach (var image in images)
-                    //{
-                    //    PowerPointHelper.InsertNewSlide(presentationDocument, ++slideNo, "", "", image, Server.MapPath("/Templates"));
-                    //}
+                    talent.GetImages();
+                    if (!string.IsNullOrEmpty(talent.BookPictures))
+                    {
+                        string[] images = talent.BookPictures.Split(',');
+                        for (int i = 0; i < Math.Min(4, images.Length); i++)
+                            PowerPointHelper.InsertNewSlide(presentationDocument, slideNo++, "", "", images[i], Server.MapPath("/Templates"));
+                    }
                 }
             }
 
             PowerPointHelper.DeleteSlide(presentationDocument, 1);
         }
 
-        return File(Server.MapPath("/Templates/PresentationCopy.pptx"), "application/vnd.openxmlformats-officedocument.presentationml.presentation");
+        return File(Server.MapPath("/Templates/PresentationCopy.pptx"), "application/vnd.openxmlformats-officedocument.presentationml.presentation", project.Title + ".pptx");
     }
 
     public ActionResult GetPrintout(ProjectModel project)

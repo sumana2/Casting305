@@ -90,14 +90,30 @@ namespace WebApplication1.Helpers
                     new ApplicationNonVisualDrawingProperties(new PlaceholderShape() { Type = PlaceholderValues.Title }));
                 titleShape.ShapeProperties = new ShapeProperties();
 
+                Drawing.Transform2D transform2D = new Drawing.Transform2D();
+                //position
+                Drawing.Offset offset = new Drawing.Offset() { X = 159657, Y = 2692399 };
+                //size
+                Drawing.Extents extents = new Drawing.Extents() { Cx = 11872686, Cy = 1505311 };
+                transform2D.Append(offset);
+                transform2D.Append(extents);
+
+                titleShape.ShapeProperties.Transform2D = transform2D;
+
                 // Specify the text of the title shape.
                 titleShape.TextBody = new TextBody(new Drawing.BodyProperties(),
                         new Drawing.ListStyle(),
-                        new Drawing.Paragraph(new Drawing.Run(new Drawing.Text() { Text = slideTitle })));
+                        new Drawing.Paragraph(new Drawing.ParagraphProperties() { Alignment = Drawing.TextAlignmentTypeValues.Center }, new Drawing.Run(new Drawing.Text() { Text = slideTitle })));
             }
 
             if (!string.IsNullOrEmpty(content))
             {
+                long cx;
+                using (System.Drawing.Image img = System.Drawing.Image.FromFile(HostingEnvironment.MapPath(imageName)))
+                {
+                    cx = (long)img.Width * (long)((float)914400 / img.HorizontalResolution);
+                }
+
                 // Declare and instantiate the body shape of the new slide.
                 Shape bodyShape = slide.CommonSlideData.ShapeTree.AppendChild(new Shape());
 
@@ -111,7 +127,7 @@ namespace WebApplication1.Helpers
 
                 Drawing.Transform2D transform2D = new Drawing.Transform2D();
                 //position
-                Drawing.Offset offset = new Drawing.Offset() { X = 1418626 + 3810000, Y = 1188720 };
+                Drawing.Offset offset = new Drawing.Offset() { X = 1418626 + cx, Y = 1188720 };
                 //size
                 Drawing.Extents extents = new Drawing.Extents() { Cx = 6665831, Cy = 3270248 };
                 transform2D.Append(offset);
@@ -130,6 +146,12 @@ namespace WebApplication1.Helpers
 
             // Save the new slide part.
             slide.Save(slidePart);
+
+            if (!string.IsNullOrEmpty(imageName))
+            {
+                //InsertImageInLastSlide(slidePart.Slide, Path.Combine(serverPath, imageName), "image/png");
+                InsertImageInLastSlide(slidePart.Slide, imageName, "image/png");
+            }
 
             // Modify the slide ID list in the presentation part.
             // The slide ID list should not be null.
@@ -178,12 +200,6 @@ namespace WebApplication1.Helpers
             SlideId newSlideId = slideIdList.InsertAfter(new SlideId(), prevSlideId);
             newSlideId.Id = maxSlideId;
             newSlideId.RelationshipId = presentationPart.GetIdOfPart(slidePart);
-
-            if (!string.IsNullOrEmpty(imageName))
-            {
-                //InsertImageInLastSlide(slidePart.Slide, Path.Combine(serverPath, imageName), "image/png");
-                InsertImageInLastSlide(slidePart.Slide, imageName, "image/png");
-            }
 
             // Save the modified presentation.
             presentationPart.Presentation.Save();
@@ -252,17 +268,46 @@ namespace WebApplication1.Helpers
             //http://stackoverflow.com/questions/1341930/pixel-to-centimeter
             //http://stackoverflow.com/questions/139655/how-to-convert-pixels-to-points-px-to-pt-in-net-c
             long cx, cy;
+            long maxCx = 12192000;
+            long maxCy = 6858000;
             using (System.Drawing.Image img = System.Drawing.Image.FromFile(HostingEnvironment.MapPath(imagePath)))
             {
                 cx = (long)img.Width * (long)((float)914400 / img.HorizontalResolution);
                 cy = (long)img.Height * (long)((float)914400 / img.VerticalResolution);
+
+                if (cx > maxCx)
+                {
+                    double reductionPercent = ((double)maxCx) / ((double)cx);
+                    cx = (long)(cx * reductionPercent);
+                    cy = (long)(cy * reductionPercent);
+                }
+
+                if (cy > maxCy)
+                {
+                    double reductionPercent = ((double)maxCy) / ((double)cy);
+                    cx = (long)(cx * reductionPercent);
+                    cy = (long)(cy * reductionPercent);
+                }
             }
 
             Drawing.Transform2D transform2D = new Drawing.Transform2D();
+            
+            long x = 1418626;
+            long y = 1188720;
+
+            if (x + cx > maxCx)
+            {
+                x = 0;
+            }
+
+            if (y + cy > maxCy)
+            {
+                y = 0;
+            }
+
             //Position
-            Drawing.Offset offset = new Drawing.Offset() { X = 1418626, Y = 1188720 };
+            Drawing.Offset offset = new Drawing.Offset() { X = x, Y = y };
             //Size
-            //Drawing.Extents extents = new Drawing.Extents() { Cx = 3810000, Cy = 4829175 };
             Drawing.Extents extents = new Drawing.Extents() { Cx = cx, Cy = cy };
 
             transform2D.Append(offset);
