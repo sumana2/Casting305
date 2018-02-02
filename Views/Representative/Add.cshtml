@@ -1,6 +1,6 @@
 ﻿@model WebApplication1.Models.RepresentativeModel
 @{
-    ViewBag.Title = "Representative";
+    ViewBag.Title = "Agent";
 }
 
 @using (Html.BeginForm()) 
@@ -8,7 +8,7 @@
     @Html.AntiForgeryToken()
     
     <div class="form-horizontal">
-        <h4>Create New Representative</h4>
+        <h4>Create New Agent</h4>
         
          @Html.EditorFor(model => Model)
 

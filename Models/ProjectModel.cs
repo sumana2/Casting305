@@ -25,6 +25,8 @@ namespace WebApplication1.Models
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public Nullable<System.DateTime> DueDate { get; set; }
 
+        public string Notes { get; set; }
+
         public List<ProjectRoleModel> Roles { get; set; }
 
         public ProjectModel()

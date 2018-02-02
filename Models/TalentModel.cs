@@ -32,6 +32,7 @@ namespace WebApplication1.Models
         [Display(Name = "Nationality")]
         public ListItemModel Country { get; set; }
 
+        [Display(Name = "Agent")]
         public ListItemModel Representative { get; set; }
 
         public string RepDisplayName { get; set; }

@@ -1,12 +1,12 @@
 ﻿@model PagedList.IPagedList<WebApplication1.Models.RepresentativeModel>
 @using PagedList.Mvc;  
 @{
-    ViewBag.Title = "Representative";
+    ViewBag.Title = "Agents";
 }
 <link href="~/Content/PagedList.css" rel="stylesheet" />  
 
 <h4>
-    @Html.ActionLink("Add New Representative", "Add")
+    @Html.ActionLink("Add New Agent", "Add")
 </h4>
 @using (Html.BeginForm("Index", "Representative", FormMethod.Get))
 {
