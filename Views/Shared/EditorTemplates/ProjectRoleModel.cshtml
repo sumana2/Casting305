@@ -31,42 +31,68 @@
                 </div>
 
                 <div class="form-group">
-                    @Html.LabelFor(model => model.AgeMin, htmlAttributes: new { @class = "control-label col-md-2" })
+                    @Html.LabelFor(model => model.Rate, htmlAttributes: new { @class = "control-label col-md-2" })
                     <div class="col-md-10">
-                        @Html.EditorFor(model => model.AgeMin, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.AgeMin, "", new { @class = "text-danger" })
+                        @Html.EditorFor(model => model.Rate, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Rate, "", new { @class = "text-danger" })
                     </div>
                 </div>
 
                 <div class="form-group">
-                    @Html.LabelFor(model => model.AgeMax, htmlAttributes: new { @class = "control-label col-md-2" })
+                    @Html.LabelFor(model => model.Gender, htmlAttributes: new { @class = "control-label col-md-2" })
                     <div class="col-md-10">
-                        @Html.EditorFor(model => model.AgeMax, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.EditorFor(model => model.Gender)
+                        @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Age Range", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.AgeMin, new { htmlAttributes = new { @class = "form-controlLine" } })
+                        to
+                        @Html.EditorFor(model => model.AgeMax, new { htmlAttributes = new { @class = "form-controlLine" } })
+                        @Html.ValidationMessageFor(model => model.AgeMin, "", new { @class = "text-danger" })
                         @Html.ValidationMessageFor(model => model.AgeMax, "", new { @class = "text-danger" })
                     </div>
                 </div>
 
                 <div class="form-group">
-                    @Html.LabelFor(model => model.HeightMin, htmlAttributes: new { @class = "control-label col-md-2" })
+                    @Html.Label("Height Range", htmlAttributes: new { @class = "control-label col-md-2" })
                     <div class="col-md-10">
-                        @Html.EditorFor(model => model.HeightMin, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.EditorFor(model => model.HeightMin, new { htmlAttributes = new { @class = "form-controlLine" } })
+                        to
+                        @Html.EditorFor(model => model.HeightMax, new { htmlAttributes = new { @class = "form-controlLine" } })
                         @Html.ValidationMessageFor(model => model.HeightMin, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    @Html.LabelFor(model => model.HeightMax, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.EditorFor(model => model.HeightMax, new { htmlAttributes = new { @class = "form-control" } })
                         @Html.ValidationMessageFor(model => model.HeightMax, "", new { @class = "text-danger" })
                     </div>
                 </div>
 
                 <div class="form-group">
-                    @Html.LabelFor(model => model.HairColor, htmlAttributes: new { @class = "control-label col-md-2" })
+                    @Html.LabelFor(model => model.EthicApperance, htmlAttributes: new { @class = "control-label col-md-2" })
                     <div class="col-md-10">
-                        @Html.EditorFor(model => model.HairColor, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.HairColor, "", new { @class = "text-danger" })
+                        <div class="checkbox">
+                            <label class="checkbox-inline"><input type="checkbox" value="">Any</label>
+                        </div>
+                        <div class="checkbox">
+                            <label class="checkbox-inline cbw"><input type="checkbox" value="">African American</label>
+                            <label class="checkbox-inline"><input type="checkbox" value="">Asian</label>
+                        </div>
+                        <div class="checkbox">
+                            <label class="checkbox-inline cbw"><input type="checkbox" value="">Caucasian</label>
+                            <label class="checkbox-inline"><input type="checkbox" value="">East Indian</label>
+                        </div>
+                        <div class="checkbox">
+                            <label class="checkbox-inline cbw"><input type="checkbox" value="">Hispanic</label>
+                            <label class="checkbox-inline"><input type="checkbox" value="">Middle Eastern</label>
+                        </div>
+                        <div class="checkbox">
+                            <label class="checkbox-inline cbw"><input type="checkbox" value="">Ethnically Ambiguous</label>
+                            <label class="checkbox-inline"><input type="checkbox" value="">Native American</label>
+                        </div>
+                        <div class="checkbox">
+                            <label class="checkbox-inline"><input type="checkbox" value="">Pacific Islander</label>
+                        </div>
                     </div>
                 </div>
             </div>

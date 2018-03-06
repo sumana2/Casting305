@@ -17,7 +17,7 @@ namespace WebApplication1.Models
 
         public bool AllowAdd { get { return List != Lists.Representative; } } 
 
-        public enum Lists { None, Country, Gender, Nationality, EyeColor, HairColor, Ethnicity, Representative };
+        public enum Lists { None, Country, Gender, Nationality, EyeColor, HairColor, Ethnicity, Representative, ProjectType };
 
         public ListItemModel()
         {

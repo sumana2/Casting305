@@ -4,26 +4,37 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using WebApplication1.Helpers;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebApplication1.Models
 {
-    public class ProjectRoleModel
+    public class ProjectRoleModel : BaseModel
     {
         public int ID { get; set; }
     
         public int ProjectID { get; set; }
 
+        [Display(Name = "Role Name")]
         public string Name { get; set; }
+
+        [Display(Name = "Role Rate")]
+        public string Rate { get; set; }
 
         public int AgeMin { get; set; }
 
         public int AgeMax { get; set; }
 
+        [Display(Name = "Height Min")]
         public decimal HeightMin { get; set; }
 
+        [Display(Name = "Height Max")]
         public decimal HeightMax { get; set; }
 
-        public string HairColor { get; set; }
+        [Display(Name = "Role Gender")]
+        public ListItemModel Gender { get; set; }
+
+        [Display(Name = "Ethic Apperance")]
+        public string EthicApperance { get; set; }
 
         public List<TalentModel> Talent { get; set; }
 
@@ -50,7 +61,7 @@ namespace WebApplication1.Models
             pl.Add(DatabaseHelper.CreateSqlParameter("@AgeMax", this.AgeMax));
             pl.Add(DatabaseHelper.CreateSqlParameter("@HeightMin", this.HeightMin));
             pl.Add(DatabaseHelper.CreateSqlParameter("@HeightMax", this.HeightMax));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@HairColor", this.HairColor));
+            //pl.Add(DatabaseHelper.CreateSqlParameter("@HairColor", this.HairColor));
             int r = DatabaseHelper.ExecuteNonQuery(sql, pl);
 
             if (r >= 1)
@@ -77,7 +88,7 @@ namespace WebApplication1.Models
             pl.Add(DatabaseHelper.CreateSqlParameter("@AgeMax", this.AgeMax));
             pl.Add(DatabaseHelper.CreateSqlParameter("@HeightMin", this.HeightMin));
             pl.Add(DatabaseHelper.CreateSqlParameter("@HeightMax", this.HeightMax));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@HairColor", this.HairColor));
+            //pl.Add(DatabaseHelper.CreateSqlParameter("@HairColor", this.HairColor));
             int r = DatabaseHelper.ExecuteNonQuery(sql, pl);
 
             if (r >= 1)
@@ -125,7 +136,7 @@ namespace WebApplication1.Models
                 obj.AgeMax = Convert.ToInt32(row["AgeMax"]);
                 obj.HeightMin = Convert.ToDecimal(row["HeightMin"]);
                 obj.HeightMax = Convert.ToDecimal(row["HeightMax"]);
-                obj.HairColor = Convert.ToString(row["HairColor"]);
+                //obj.Gender = new ListItemModel("");//Convert.ToString(row["ProjectType"]));
 
                 if (loadAllTalent)
                 {
@@ -174,11 +185,12 @@ namespace WebApplication1.Models
                 role.AgeMax = Convert.ToInt32(row["AgeMax"]);
                 role.HeightMin = Convert.ToDecimal(row["HeightMin"]);
                 role.HeightMax = Convert.ToDecimal(row["HeightMax"]);
-                role.HairColor = Convert.ToString(row["HairColor"]);
+                role.Gender = new ListItemModel("");//Convert.ToString(row["ProjectType"]));
 
                 if (row["TalentCount"] != DBNull.Value)
                     role.TalentCount = Convert.ToInt32(row["TalentCount"]);
 
+                role.LoadLists();
                 list.Add(role);
             }
 

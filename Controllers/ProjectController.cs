@@ -63,12 +63,16 @@ public class ProjectController : Controller
 
     public ActionResult Add()
     {
-        return View(new ProjectModel());
+        var model = new ProjectModel();
+        model.LoadLists();
+        return View(model);
     }
 
     [HttpPost]
     public ActionResult Add(ProjectModel project)
     {
+        project.LoadLists();
+
         try
         {
             if (ModelState.IsValid)
@@ -100,6 +104,8 @@ public class ProjectController : Controller
     {
         try
         {
+            obj.LoadLists();
+
             if (ModelState.IsValid)
             {
                 if (!obj.Update())

@@ -7,7 +7,7 @@ using WebApplication1.Helpers;
 
 namespace WebApplication1.Models
 {
-    public class ProjectModel
+    public class ProjectModel : BaseModel
     {
         public int ID { get; set; }
 
@@ -27,6 +27,15 @@ namespace WebApplication1.Models
 
         public string Notes { get; set; }
 
+        [Display(Name = "Project Type")]
+        public ListItemModel ProjectType { get; set; }
+
+        [Display(Name = "Usage/Run")]
+        public string UsageRun { get; set; }
+
+        [Display(Name = "Talent Description")]
+        public string TalentDesc { get; set; }
+
         public List<ProjectRoleModel> Roles { get; set; }
 
         public ProjectModel()
@@ -36,8 +45,8 @@ namespace WebApplication1.Models
 
         public bool Add()
         {
-            string sql = @"INSERT INTO Projects (Title,Company,Email,Phone,DueDate)
-                           VALUES (@Title, @Company, @Email, @Phone, @DueDate); SELECT LAST_INSERT_ID()";
+            string sql = @"INSERT INTO Projects (Title,Company,Email,Phone,DueDate,Notes,ProjectType,UsageRun,TalentDesc)
+                           VALUES (@Title, @Company, @Email, @Phone, @DueDate, @Notes, @ProjectType, @UsageRun, @TalentDesc); SELECT LAST_INSERT_ID()";
 
             this.ID = Convert.ToInt32(DatabaseHelper.ExecuteScalar(sql, GetParams()));
 
@@ -54,7 +63,15 @@ namespace WebApplication1.Models
         public bool Update()
         {
             string sql = @"UPDATE Projects
-                           SET Title = @Title, Company = @Company, Email = @Email, Phone = @Phone, DueDate = @DueDate
+                           SET  Title = @Title, 
+                                Company = @Company,
+                                Email = @Email, 
+                                Phone = @Phone, 
+                                DueDate = @DueDate, 
+                                Notes = @Notes, 
+                                ProjectType = @ProjectType, 
+                                UsageRun = @UsageRun, 
+                                TalentDesc = @TalentDesc
                            WHERE ID = @ID";
 
             int r = DatabaseHelper.ExecuteNonQuery(sql, GetParams());
@@ -101,7 +118,11 @@ namespace WebApplication1.Models
                 project.Company = Convert.ToString(row["Company"]);
                 project.Email = Convert.ToString(row["Email"]);
                 project.Phone = Convert.ToString(row["Phone"]);
-                
+                project.Notes = Convert.ToString(row["Notes"]);
+                project.UsageRun = Convert.ToString(row["UsageRun"]);
+                project.TalentDesc = Convert.ToString(row["TalentDesc"]);
+                project.ProjectType = new ListItemModel(Convert.ToString(row["ProjectType"]));
+
                 if (row["DueDate"] != DBNull.Value)
                     project.DueDate = Convert.ToDateTime(row["DueDate"]);
 
@@ -127,6 +148,10 @@ namespace WebApplication1.Models
                 project.Company = Convert.ToString(row["Company"]);
                 project.Email = Convert.ToString(row["Email"]);
                 project.Phone = Convert.ToString(row["Phone"]);
+                project.Notes = Convert.ToString(row["Notes"]);
+                project.UsageRun = Convert.ToString(row["UsageRun"]);
+                project.TalentDesc = Convert.ToString(row["TalentDesc"]);
+                project.ProjectType = new ListItemModel(Convert.ToString(row["ProjectType"]));
 
                 if (row["DueDate"] != DBNull.Value)
                     project.DueDate = Convert.ToDateTime(row["DueDate"]);
@@ -136,6 +161,7 @@ namespace WebApplication1.Models
                 break;
             }
 
+            project.LoadLists();
             return project;
         }
 
@@ -148,6 +174,10 @@ namespace WebApplication1.Models
             pl.Add(DatabaseHelper.CreateSqlParameter("@Email", this.Email));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Phone", this.Phone));
             pl.Add(DatabaseHelper.CreateSqlParameter("@DueDate", this.DueDate));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Notes", this.Notes));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@UsageRun", this.UsageRun));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@TalentDesc", this.TalentDesc));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@ProjectType", this.ProjectType.Value));
 
             return pl;
         }
