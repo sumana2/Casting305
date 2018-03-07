@@ -111,10 +111,29 @@
             });
             return false;
         });
+
+        $('.ethic-apperance').each(function () {
+            var div = $(this);
+            var values = div.children('input:hidden').val();
+            
+            div.find('input:checkbox').each(function () {
+                if (values.indexOf(this.value) >= 0) {
+                    $(this).prop('checked', true);
+                }
+            });
+        });
     });
 
     function deleteRole(btn) {
         btn.parent().next().remove();
         btn.parent().remove();
+    }
+
+    function updateEthicApperance(div) {
+        var checkedValues = div.find('input:checkbox:checked').map(function () {
+            return this.value;
+        }).get();
+        
+        div.children('input:hidden').val(checkedValues);
     }
 </script>

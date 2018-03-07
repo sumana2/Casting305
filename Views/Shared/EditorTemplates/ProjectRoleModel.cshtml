@@ -70,28 +70,29 @@
 
                 <div class="form-group">
                     @Html.LabelFor(model => model.EthicApperance, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
+                    <div class="col-md-10 ethic-apperance" onclick="updateEthicApperance($(this))">
+                        @Html.HiddenFor(model => model.EthicApperance)
                         <div class="checkbox">
-                            <label class="checkbox-inline"><input type="checkbox" value="">Any</label>
+                            <label class="checkbox-inline"><input type="checkbox" value="A">Any</label>
                         </div>
                         <div class="checkbox">
-                            <label class="checkbox-inline cbw"><input type="checkbox" value="">African American</label>
-                            <label class="checkbox-inline"><input type="checkbox" value="">Asian</label>
+                            <label class="checkbox-inline cbw"><input type="checkbox" value="F">African American</label>
+                            <label class="checkbox-inline"><input type="checkbox" value="S">Asian</label>
                         </div>
                         <div class="checkbox">
-                            <label class="checkbox-inline cbw"><input type="checkbox" value="">Caucasian</label>
-                            <label class="checkbox-inline"><input type="checkbox" value="">East Indian</label>
+                            <label class="checkbox-inline cbw"><input type="checkbox" value="C">Caucasian</label>
+                            <label class="checkbox-inline"><input type="checkbox" value="E">East Indian</label>
                         </div>
                         <div class="checkbox">
-                            <label class="checkbox-inline cbw"><input type="checkbox" value="">Hispanic</label>
-                            <label class="checkbox-inline"><input type="checkbox" value="">Middle Eastern</label>
+                            <label class="checkbox-inline cbw"><input type="checkbox" value="H">Hispanic</label>
+                            <label class="checkbox-inline"><input type="checkbox" value="M">Middle Eastern</label>
                         </div>
                         <div class="checkbox">
-                            <label class="checkbox-inline cbw"><input type="checkbox" value="">Ethnically Ambiguous</label>
-                            <label class="checkbox-inline"><input type="checkbox" value="">Native American</label>
+                            <label class="checkbox-inline cbw"><input type="checkbox" value="X">Ethnically Ambiguous</label>
+                            <label class="checkbox-inline"><input type="checkbox" value="N">Native American</label>
                         </div>
                         <div class="checkbox">
-                            <label class="checkbox-inline"><input type="checkbox" value="">Pacific Islander</label>
+                            <label class="checkbox-inline"><input type="checkbox" value="P">Pacific Islander</label>
                         </div>
                     </div>
                 </div>

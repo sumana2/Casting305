@@ -148,7 +148,9 @@ public class ProjectController : Controller
 
     public ActionResult AddRole(string count)
     {
-        return PartialView("~/Views/Shared/EditorTemplates/ProjectRoleModel.cshtml", new ProjectRoleModel() { Name = "NewRole" + count });
+        var role = new ProjectRoleModel() { Name = "NewRole" + count };
+        role.LoadLists();
+        return PartialView("~/Views/Shared/EditorTemplates/ProjectRoleModel.cshtml", role);
     }
 
     public ActionResult RoleTalent(int id, bool? searchMode, string search, string filterValue, int? pageNo)
