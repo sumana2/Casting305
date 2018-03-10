@@ -12,17 +12,14 @@
             <tbody>
                 <tr>
                     <td width="80" rowspan="2"><img src="@Html.DisplayFor(model => talent.ProfilePicture)" height="60" width="60" /></td>
-                    <td colspan="3"><b>@string.Format("{0} {1}", talent.FirstName, talent.LastName)</b></td>
-                </tr>
-                <tr>
+                    <td><b>@string.Format("{0} {1}", talent.FirstName, talent.LastName)</b></td>
                     <td>Height: @Html.DisplayFor(model => talent.Height)</td>
-                    <td>Waist Size: @Html.DisplayFor(model => talent.WaistSize)</td>
-                    <td>Eye Color: @Html.DisplayFor(model => talent.EyeColor.Value)</td>
+                    <td>Bust: @Html.DisplayFor(model => talent.BustSize)</td>
                 </tr>
                 <tr>
-                    <td colspan="2">Agent: @Html.DisplayFor(model => talent.RepDisplayName)</td>
-                    <td>Email: @Html.DisplayFor(model => talent.Email)</td>
-                    <td>Phone: @Html.DisplayFor(model => talent.Phone)</td>
+                    <td>Waist: @Html.DisplayFor(model => talent.WaistSize)</td>
+                    <td>Hip: @Html.DisplayFor(model => talent.HipSize)</td>
+                    <td>Shoe: @Html.DisplayFor(model => talent.ShoeSize)</td>
                 </tr>
             </tbody>
         </table>

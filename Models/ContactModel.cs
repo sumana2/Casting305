@@ -30,6 +30,9 @@ namespace WebApplication1.Models
 
         public string Phone { get; set; }
 
+        [Display(Name = "Job Title")]
+        public string JobTitle { get; set; }
+
         public ContactModel() { }
 
         public string FullName { get { return string.Format("{0} {1}", FirstName, LastName); } }
@@ -45,12 +48,13 @@ namespace WebApplication1.Models
             this.Phone = Convert.ToString(row["Phone"]);
             this.FirstName = Convert.ToString(row["FirstName"]);
             this.LastName = Convert.ToString(row["LastName"]);
+            this.JobTitle = Convert.ToString(row["JobTitle"]);
         }
 
         public bool Add()
         {
-            string sql = @"INSERT INTO Contacts(SourceID,Type,Email,Phone,FirstName,LastName)
-                           VALUES (@SourceID,@Type,@Email,@Phone,@FirstName,@LastName)";
+            string sql = @"INSERT INTO Contacts(SourceID,Type,Email,Phone,FirstName,LastName,JobTitle)
+                           VALUES (@SourceID,@Type,@Email,@Phone,@FirstName,@LastName,@JobTitle)";
 
             int r = DatabaseHelper.ExecuteNonQuery(sql, GetParams());
 
@@ -74,6 +78,7 @@ namespace WebApplication1.Models
             pl.Add(DatabaseHelper.CreateSqlParameter("@LastName", this.LastName));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Email", this.Email));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Phone", this.Phone));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@JobTitle", this.JobTitle));
 
             return pl;
         }
@@ -86,7 +91,8 @@ namespace WebApplication1.Models
                             ,FirstName = @FirstName
                             ,LastName = @LastName
                             ,Email = @Email
-                            ,Phone = @Phone";
+                            ,Phone = @Phone
+                            ,JobTitle = @JobTitle";
 
             int r = DatabaseHelper.ExecuteNonQuery(sql, GetParams());
 

@@ -317,9 +317,9 @@ public class ProjectController : Controller
 
                 foreach (var talent in role.Talent)
                 {
-                    string info = string.Format("{1} {2}{0}Height: {3}{0}Waist Size: {4}{0}Eye Color: {5}{0}Representative: {6}{0}Email: {7}{0}Phone: {8}", 
-                        Environment.NewLine, talent.FirstName, talent.LastName, talent.Height, talent.WaistSize, 
-                        talent.EyeColor.Value, talent.RepDisplayName, talent.Email, talent.Phone);
+                    string info = string.Format("{1} {2}{0}Height: {3}{0}Bust: {4}{0}Waist: {5}{0}Hip: {6}{0}Shoe: {7}", 
+                        Environment.NewLine, talent.FirstName, talent.LastName, talent.Height, talent.BustSize, talent.WaistSize, 
+                        talent.HipSize, talent.ShoeSize);
 
                     PowerPointHelper.InsertNewSlide(presentationDocument, slideNo++, "", info, talent.ProfilePicture, Server.MapPath("/Templates"));
 

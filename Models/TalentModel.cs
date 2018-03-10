@@ -47,14 +47,17 @@ namespace WebApplication1.Models
 
         public ListItemModel Ethnicity { get; set; }
 
-        [Display(Name = "Shoe Size")]
+        [Display(Name = "Shoe")]
         public string ShoeSize { get; set; }
 
-        [Display(Name = "Waist Size")]
+        [Display(Name = "Waist")]
         public string WaistSize { get; set; }
 
-        [Display(Name = "Shirt Size")]
-        public string ShirtSize { get; set; }
+        [Display(Name = "Bust")]
+        public string BustSize { get; set; }
+
+        [Display(Name = "Hip")]
+        public string HipSize { get; set; }
 
         public string Instagram { get; set; }
 
@@ -97,7 +100,8 @@ namespace WebApplication1.Models
             this.ProfilePicture = Convert.ToString(row["ProfilePicture"]);
             this.ShoeSize = Convert.ToString(row["ShoeSize"]);
             this.WaistSize = Convert.ToString(row["WaistSize"]);
-            this.ShirtSize = Convert.ToString(row["ShirtSize"]);
+            this.HipSize = Convert.ToString(row["HipSize"]);
+            this.BustSize = Convert.ToString(row["BustSize"]);
             this.Notes = Convert.ToString(row["Notes"]);
 
             this.Country = new ListItemModel(Convert.ToString(row["Nationality"]));
@@ -114,9 +118,9 @@ namespace WebApplication1.Models
         public bool Add()
         {
             string sql = @"INSERT INTO Talent(FirstName,LastName,Gender,DateOfBirth,Nationality,Representative,Height,EyeColor
-                                           ,HairColor,Ethnicity,ShoeSize,WaistSize,ShirtSize,Instagram,Phone,Email,Notes)
+                                           ,HairColor,Ethnicity,ShoeSize,WaistSize,HipSize,BustSize,Instagram,Phone,Email,Notes)
                         VALUES (@FirstName, @LastName, @Gender, @DateOfBirth, @Nationality, @Representative, @Height, @EyeColor
-                              , @HairColor, @Ethnicity, @ShoeSize, @WaistSize, @ShirtSize, @Instagram, @Phone, @Email, @Notes); SELECT LAST_INSERT_ID()";
+                              , @HairColor, @Ethnicity, @ShoeSize, @WaistSize, @HipSize, BustSize, @Instagram, @Phone, @Email, @Notes); SELECT LAST_INSERT_ID()";
 
             this.ID = Convert.ToInt32(DatabaseHelper.ExecuteScalar(sql, GetParams()));
 
@@ -145,7 +149,8 @@ namespace WebApplication1.Models
                               ,Ethnicity = @Ethnicity
                               ,ShoeSize = @ShoeSize
                               ,WaistSize = @WaistSize
-                              ,ShirtSize = @ShirtSize
+                              ,HipSize = @HipSize
+                              ,BustSize = @BustSize
                               ,Instagram = @Instagram
                               ,Phone = @Phone
                               ,Email = @Email
@@ -441,7 +446,8 @@ namespace WebApplication1.Models
             pl.Add(DatabaseHelper.CreateSqlParameter("@Ethnicity", this.Ethnicity.Value));
             pl.Add(DatabaseHelper.CreateSqlParameter("@ShoeSize", this.ShoeSize));
             pl.Add(DatabaseHelper.CreateSqlParameter("@WaistSize", this.WaistSize));
-            pl.Add(DatabaseHelper.CreateSqlParameter("@ShirtSize", this.ShirtSize));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@HipSize", this.HipSize));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@BustSize", this.BustSize));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Instagram", this.Instagram));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Phone", this.Phone));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Email", this.Email));

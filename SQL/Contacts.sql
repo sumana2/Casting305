@@ -8,3 +8,5 @@ CREATE TABLE CastingLand.Contacts (
 	Email   		VARCHAR(100) NULL,
 	Phone           VARCHAR(20) NULL
 )
+
+ALTER TABLE CastingLand.Contacts ADD COLUMN JobTitle VARCHAR(100) AFTER Phone;

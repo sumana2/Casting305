@@ -20,3 +20,10 @@ CREATE TABLE CastingLand.Talent (
 	Notes   			VARCHAR(5000) NULL,
 	ProfilePicture   	VARCHAR(500) NULL
 )
+
+ALTER TABLE CastingLand.Talent ADD COLUMN BustSize VARCHAR(100) AFTER WaistSize;
+ALTER TABLE CastingLand.Talent CHANGE ShirtSize HipSize VARCHAR(100) NULL;
+ALTER TABLE CastingLand.Talent CHANGE Height Height VARCHAR(100) NULL;
+ALTER TABLE CastingLand.Talent CHANGE ShoeSize ShoeSize VARCHAR(100) NULL;
+ALTER TABLE CastingLand.Talent CHANGE WaistSize WaistSize VARCHAR(100) NULL;
+ALTER TABLE CastingLand.Talent CHANGE Height Height VARCHAR(100) NULL;
