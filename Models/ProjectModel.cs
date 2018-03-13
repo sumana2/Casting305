@@ -36,6 +36,22 @@ namespace WebApplication1.Models
         [Display(Name = "Talent Description")]
         public string TalentDesc { get; set; }
 
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [Display(Name = "Shooting Date")]
+        public DateTime ShootingDate { get; set; }
+
+        public string Place { get; set; }
+
+        [Display(Name = "Traveling Dates")]
+        public string TravelingDates { get; set; }
+
+        public string Casting { get; set; }
+
+        public string Callback { get; set; }
+
+        public string Fitting { get; set; }
+
         public List<ProjectRoleModel> Roles { get; set; }
 
         public ProjectModel()
@@ -45,8 +61,8 @@ namespace WebApplication1.Models
 
         public bool Add()
         {
-            string sql = @"INSERT INTO Projects (Title,Company,Email,Phone,DueDate,Notes,ProjectType,UsageRun,TalentDesc)
-                           VALUES (@Title, @Company, @Email, @Phone, @DueDate, @Notes, @ProjectType, @UsageRun, @TalentDesc); SELECT LAST_INSERT_ID()";
+            string sql = @"INSERT INTO Projects (Title,Company,Email,Phone,DueDate,Notes,ProjectType,UsageRun,TalentDesc,ShootingDate,Place,TravelingDates,Casting,Callback,Fitting)
+                           VALUES (@Title, @Company, @Email, @Phone, @DueDate, @Notes, @ProjectType, @UsageRun, @TalentDesc, @ShootingDate, @Place, @TravelingDates, @Casting, @Callback, @Fitting); SELECT LAST_INSERT_ID()";
 
             this.ID = Convert.ToInt32(DatabaseHelper.ExecuteScalar(sql, GetParams()));
 
@@ -71,7 +87,13 @@ namespace WebApplication1.Models
                                 Notes = @Notes, 
                                 ProjectType = @ProjectType, 
                                 UsageRun = @UsageRun, 
-                                TalentDesc = @TalentDesc
+                                TalentDesc = @TalentDesc,
+                                ShootingDate = @ShootingDate, 
+                                Place = @Place, 
+                                TravelingDates = @TravelingDates, 
+                                Casting = @Casting, 
+                                Callback = @Callback, 
+                                Fitting = @Fitting
                            WHERE ID = @ID";
 
             int r = DatabaseHelper.ExecuteNonQuery(sql, GetParams());
@@ -122,9 +144,17 @@ namespace WebApplication1.Models
                 project.UsageRun = Convert.ToString(row["UsageRun"]);
                 project.TalentDesc = Convert.ToString(row["TalentDesc"]);
                 project.ProjectType = new ListItemModel(Convert.ToString(row["ProjectType"]));
+                project.Place = Convert.ToString(row["Place"]);
+                project.TravelingDates = Convert.ToString(row["TravelingDates"]);
+                project.Casting = Convert.ToString(row["Casting"]);
+                project.Callback = Convert.ToString(row["Callback"]);
+                project.Fitting = Convert.ToString(row["Fitting"]);
 
                 if (row["DueDate"] != DBNull.Value)
                     project.DueDate = Convert.ToDateTime(row["DueDate"]);
+
+                if (row["ShootingDate"] != DBNull.Value)
+                    project.ShootingDate = Convert.ToDateTime(row["ShootingDate"]);
 
                 list.Add(project);
             }
@@ -152,9 +182,17 @@ namespace WebApplication1.Models
                 project.UsageRun = Convert.ToString(row["UsageRun"]);
                 project.TalentDesc = Convert.ToString(row["TalentDesc"]);
                 project.ProjectType = new ListItemModel(Convert.ToString(row["ProjectType"]));
+                project.Place = Convert.ToString(row["Place"]);
+                project.TravelingDates = Convert.ToString(row["TravelingDates"]);
+                project.Casting = Convert.ToString(row["Casting"]);
+                project.Callback = Convert.ToString(row["Callback"]);
+                project.Fitting = Convert.ToString(row["Fitting"]);
 
                 if (row["DueDate"] != DBNull.Value)
                     project.DueDate = Convert.ToDateTime(row["DueDate"]);
+
+                if (row["ShootingDate"] != DBNull.Value)
+                    project.ShootingDate = Convert.ToDateTime(row["ShootingDate"]);
 
                 project.Roles = ProjectRoleModel.GetByProject(project.ID);
 
@@ -178,6 +216,12 @@ namespace WebApplication1.Models
             pl.Add(DatabaseHelper.CreateSqlParameter("@UsageRun", this.UsageRun));
             pl.Add(DatabaseHelper.CreateSqlParameter("@TalentDesc", this.TalentDesc));
             pl.Add(DatabaseHelper.CreateSqlParameter("@ProjectType", this.ProjectType.Value));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@ShootingDate", this.ShootingDate));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Place", this.Place));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@TravelingDates", this.TravelingDates));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Casting", this.Casting));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Callback", this.Callback));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Fitting", this.Fitting));
 
             return pl;
         }
