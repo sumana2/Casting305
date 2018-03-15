@@ -283,7 +283,7 @@ public class ProjectController : Controller
 
         string zip = Server.MapPath("/Zips/") + project.Title + ".zip";
         System.IO.File.Delete(zip);
-        System.IO.Compression.ZipFile.CreateFromDirectory(root, zip);
+        System.IO.Compression.ZipFile.CreateFromDirectory(root, zip, System.IO.Compression.CompressionLevel.Fastest, false, new ZipEncoder());
 
         try
         {
