@@ -12,7 +12,7 @@ using WebApplication1.Models;
 [Authorize]
 public class ProjectController : Controller
 {
-    private int Size_Of_Page = 4;
+    private int Size_Of_Page = 24;
 
     public ActionResult Index(string sortOrder, string sortDirection, string search, string filterValue, int? pageNo)
     {

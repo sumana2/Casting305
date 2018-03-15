@@ -120,7 +120,7 @@ namespace WebApplication1.Models
             string sql = @"INSERT INTO Talent(FirstName,LastName,Gender,DateOfBirth,Nationality,Representative,Height,EyeColor
                                            ,HairColor,Ethnicity,ShoeSize,WaistSize,HipSize,BustSize,Instagram,Phone,Email,Notes)
                         VALUES (@FirstName, @LastName, @Gender, @DateOfBirth, @Nationality, @Representative, @Height, @EyeColor
-                              , @HairColor, @Ethnicity, @ShoeSize, @WaistSize, @HipSize, BustSize, @Instagram, @Phone, @Email, @Notes); SELECT LAST_INSERT_ID()";
+                              , @HairColor, @Ethnicity, @ShoeSize, @WaistSize, @HipSize, @BustSize, @Instagram, @Phone, @Email, @Notes); SELECT LAST_INSERT_ID()";
 
             this.ID = Convert.ToInt32(DatabaseHelper.ExecuteScalar(sql, GetParams()));
 

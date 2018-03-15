@@ -39,7 +39,7 @@ namespace WebApplication1.Models
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = "Shooting Date")]
-        public DateTime ShootingDate { get; set; }
+        public Nullable<System.DateTime> ShootingDate { get; set; }
 
         public string Place { get; set; }
 

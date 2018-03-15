@@ -11,7 +11,7 @@ using WebApplication1.Models;
 [Authorize]
 public class TalentController : Controller
 {
-    private int Size_Of_Page = 4;
+    private int Size_Of_Page = 24;
 
     public ActionResult Index(string sortOrder, string sortDirection, string search, string filterValue, int? pageNo)
     {
@@ -30,8 +30,20 @@ public class TalentController : Controller
 
         if (!String.IsNullOrEmpty(search))
         {
-            clients = clients.Where(x => x.FirstName.ToUpper().Contains(search.ToUpper())
-                || x.LastName.ToUpper().Contains(search.ToUpper())).ToList();
+            string query = search.ToUpper();
+
+            clients = clients.Where(x => x.FirstName.ToUpper().Contains(query)
+                || x.LastName.ToUpper().Contains(query)
+                || x.Height.ToUpper().Contains(query)
+                || x.BustSize.ToUpper().Contains(query)
+                || x.WaistSize.ToUpper().Contains(query)
+                || x.HipSize.ToUpper().Contains(query)
+                || x.ShoeSize.ToUpper().Contains(query)
+                || x.RepDisplayName.ToUpper().Contains(query)
+                || (x.DateOfBirth.HasValue && x.DateOfBirth.Value.ToShortDateString().Contains(query))
+                || x.Country.Value.ToUpper().Contains(query)
+                || x.EyeColor.Value.ToUpper().Contains(query)
+                || x.HairColor.Value.ToUpper().Contains(query)).ToList();
         }
 
         int No_Of_Page = (pageNo ?? 1);
