@@ -79,6 +79,14 @@
 </div>
 
 <div class="form-group">
+    @Html.LabelFor(model => model.Talent, htmlAttributes: new { @class = "control-label col-md-2" })
+    <div class="col-md-10">
+        @Html.EditorFor(model => model.Talent)
+        @Html.ValidationMessageFor(model => model.Talent, "", new { @class = "text-danger" })
+    </div>
+</div>
+
+<div class="form-group">
     @Html.LabelFor(model => model.Height, htmlAttributes: new { @class = "control-label col-md-2" })
     <div class="col-md-10">
         @Html.EditorFor(model => model.Height, new { htmlAttributes = new { @class = "form-control" } })

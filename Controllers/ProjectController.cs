@@ -2,6 +2,7 @@
 using PagedList;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Web.Mvc;
@@ -327,8 +328,12 @@ public class ProjectController : Controller
                     if (!string.IsNullOrEmpty(talent.BookPictures))
                     {
                         string[] images = talent.BookPictures.Split(',');
-                        for (int i = 0; i < Math.Min(4, images.Length); i++)
-                            PowerPointHelper.InsertNewSlide(presentationDocument, slideNo++, "", "", images[i], Server.MapPath("/Templates"));
+                        
+                        using (LayoutHelper layout = new LayoutHelper(images, 0, 3))
+                        {
+                            layout.ComputeFixedPartition();
+                            PowerPointHelper.InsertNewSlide(presentationDocument, slideNo++, "", "", "", Server.MapPath("/Templates"), layout);
+                        }                        
                     }
                 }
             }

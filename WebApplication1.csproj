@@ -243,6 +243,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Globals.cs" />
+    <Compile Include="Helpers\LayoutHelper.cs" />
     <Compile Include="Helpers\PowerPointHelper.cs" />
     <Compile Include="Helpers\DatabaseHelper.cs" />
     <Compile Include="Helpers\ZipEncoder.cs" />

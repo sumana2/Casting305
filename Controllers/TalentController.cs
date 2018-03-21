@@ -26,13 +26,13 @@ public class TalentController : Controller
 
         ViewBag.FilterValue = search;
 
-        var clients = TalentModel.Get();
+        var talent = TalentModel.Get();
 
         if (!String.IsNullOrEmpty(search))
         {
             string query = search.ToUpper();
 
-            clients = clients.Where(x => x.FirstName.ToUpper().Contains(query)
+            talent = talent.Where(x => x.FirstName.ToUpper().Contains(query)
                 || x.LastName.ToUpper().Contains(query)
                 || x.Height.ToUpper().Contains(query)
                 || x.BustSize.ToUpper().Contains(query)
@@ -43,11 +43,12 @@ public class TalentController : Controller
                 || (x.DateOfBirth.HasValue && x.DateOfBirth.Value.ToShortDateString().Contains(query))
                 || x.Country.Value.ToUpper().Contains(query)
                 || x.EyeColor.Value.ToUpper().Contains(query)
-                || x.HairColor.Value.ToUpper().Contains(query)).ToList();
+                || x.HairColor.Value.ToUpper().Contains(query)
+                || x.Talent.Value.ToUpper().Contains(query)).ToList();
         }
 
         int No_Of_Page = (pageNo ?? 1);
-        return View(clients.ToPagedList(No_Of_Page, Size_Of_Page));
+        return View(talent.OrderBy(x => x.LastName).ToPagedList(No_Of_Page, Size_Of_Page));
     }
   
     public ActionResult Add()

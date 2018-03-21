@@ -35,6 +35,8 @@ namespace WebApplication1.Models
         [Display(Name = "Agent")]
         public ListItemModel Representative { get; set; }
 
+        public ListItemModel Talent { get; set; }
+
         public string RepDisplayName { get; set; }
 
         public string Height { get; set; }
@@ -106,6 +108,7 @@ namespace WebApplication1.Models
 
             this.Country = new ListItemModel(Convert.ToString(row["Nationality"]));
             this.Representative = new ListItemModel(Convert.ToString(row["Representative"]));
+            this.Talent = new ListItemModel(Convert.ToString(row["Talent"]));
             this.Ethnicity = new ListItemModel(Convert.ToString(row["Ethnicity"]));
             this.HairColor = new ListItemModel(Convert.ToString(row["HairColor"]));
             this.EyeColor = new ListItemModel(Convert.ToString(row["EyeColor"]));
@@ -117,9 +120,9 @@ namespace WebApplication1.Models
 
         public bool Add()
         {
-            string sql = @"INSERT INTO Talent(FirstName,LastName,Gender,DateOfBirth,Nationality,Representative,Height,EyeColor
+            string sql = @"INSERT INTO Talent(FirstName,LastName,Gender,DateOfBirth,Nationality,Representative,Talent,Height,EyeColor
                                            ,HairColor,Ethnicity,ShoeSize,WaistSize,HipSize,BustSize,Instagram,Phone,Email,Notes)
-                        VALUES (@FirstName, @LastName, @Gender, @DateOfBirth, @Nationality, @Representative, @Height, @EyeColor
+                        VALUES (@FirstName, @LastName, @Gender, @DateOfBirth, @Nationality, @Representative, @Talent, @Height, @EyeColor
                               , @HairColor, @Ethnicity, @ShoeSize, @WaistSize, @HipSize, @BustSize, @Instagram, @Phone, @Email, @Notes); SELECT LAST_INSERT_ID()";
 
             this.ID = Convert.ToInt32(DatabaseHelper.ExecuteScalar(sql, GetParams()));
@@ -143,6 +146,7 @@ namespace WebApplication1.Models
                               ,DateOfBirth = @DateOfBirth
                               ,Nationality = @Nationality
                               ,Representative = @Representative
+                              ,Talent = @Talent
                               ,Height = @Height
                               ,EyeColor = @EyeColor
                               ,HairColor = @HairColor

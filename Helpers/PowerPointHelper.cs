@@ -41,7 +41,7 @@ namespace WebApplication1.Helpers
         }
 
         // Insert the specified slide into the presentation at the specified position.
-        public static void InsertNewSlide(PresentationDocument presentationDocument, int position, string slideTitle, string content, string imageName, string serverPath)
+        public static void InsertNewSlide(PresentationDocument presentationDocument, int position, string slideTitle, string content, string imageName, string serverPath, LayoutHelper layout = null)
         {
 
             if (presentationDocument == null)
@@ -151,6 +151,14 @@ namespace WebApplication1.Helpers
             {
                 //InsertImageInLastSlide(slidePart.Slide, Path.Combine(serverPath, imageName), "image/png");
                 InsertImageInLastSlide(slidePart.Slide, imageName, "image/png");
+            }
+
+            if (layout != null)
+            {
+                for (int i = 0; i < layout.Elements.Count; i++)
+                {
+                    InsertImageInLastSlide(slidePart.Slide, layout.Paths[i], layout.Positions[i], i, "image/png");
+                }
             }
 
             // Modify the slide ID list in the presentation part.
@@ -336,6 +344,76 @@ namespace WebApplication1.Helpers
                 imagePart.FeedData(stream);
             }
             
+        }
+
+        public static void InsertImageInLastSlide(Slide slide, string imagePath, System.Drawing.Rectangle position, int imageCount, string imageExt)
+        {
+            // Creates a Picture instance and adds its children.
+            Picture picture = new Picture();
+            string embedId = string.Empty;
+            embedId = "rId" + (imageCount + 915).ToString();
+            NonVisualPictureProperties nonVisualPictureProperties = new NonVisualPictureProperties(
+                new NonVisualDrawingProperties() { Id = (DocumentFormat.OpenXml.UInt32Value)4U, Name = "Picture 5" },
+                new NonVisualPictureDrawingProperties(new Drawing.PictureLocks() { NoChangeAspect = true }),
+                new ApplicationNonVisualDrawingProperties());
+
+            BlipFill blipFill = new BlipFill();
+            Drawing.Blip blip = new Drawing.Blip() { Embed = embedId };
+
+            // Creates a BlipExtensionList instance and adds its children
+            Drawing.BlipExtensionList blipExtensionList = new Drawing.BlipExtensionList();
+            Drawing.BlipExtension blipExtension = new Drawing.BlipExtension() { Uri = "{28A0092B-C50C-407E-A947-70E740481C1C}" };
+
+            DocumentFormat.OpenXml.Office2010.Drawing.UseLocalDpi useLocalDpi = new DocumentFormat.OpenXml.Office2010.Drawing.UseLocalDpi() { Val = false };
+            useLocalDpi.AddNamespaceDeclaration("a14", "http://schemas.microsoft.com/office/drawing/2010/main");
+
+            blipExtension.Append(useLocalDpi);
+            blipExtensionList.Append(blipExtension);
+            blip.Append(blipExtensionList);
+
+            Drawing.Stretch stretch = new Drawing.Stretch();
+            Drawing.FillRectangle fillRectangle = new Drawing.FillRectangle();
+            stretch.Append(fillRectangle);
+
+            blipFill.Append(blip);
+            blipFill.Append(stretch);
+
+            // Creates a ShapeProperties instance and adds its children.
+            ShapeProperties shapeProperties = new ShapeProperties();
+
+            Drawing.Transform2D transform2D = new Drawing.Transform2D();
+
+            //Position
+            Drawing.Offset offset = new Drawing.Offset() { X = position.X, Y = position.Y };
+            //Size
+            Drawing.Extents extents = new Drawing.Extents() { Cx = position.Width, Cy = position.Height };
+
+            transform2D.Append(offset);
+            transform2D.Append(extents);
+
+            Drawing.PresetGeometry presetGeometry = new Drawing.PresetGeometry() { Preset = Drawing.ShapeTypeValues.Rectangle };
+            Drawing.AdjustValueList adjustValueList = new Drawing.AdjustValueList();
+
+            presetGeometry.Append(adjustValueList);
+
+            shapeProperties.Append(transform2D);
+            shapeProperties.Append(presetGeometry);
+
+            picture.Append(nonVisualPictureProperties);
+            picture.Append(blipFill);
+            picture.Append(shapeProperties);
+
+            slide.CommonSlideData.ShapeTree.AppendChild(picture);
+
+            // Generates content of imagePart.
+            ImagePart imagePart = slide.SlidePart.AddNewPart<ImagePart>(imageExt, embedId);
+
+            WebRequest req = HttpWebRequest.Create(HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + imagePath);
+            using (Stream stream = req.GetResponse().GetResponseStream())
+            {
+                imagePart.FeedData(stream);
+            }
+
         }
 
         // Delete the specified slide from the presentation.
