@@ -44,6 +44,7 @@ public class TalentController : Controller
                 || x.Country.Value.ToUpper().Contains(query)
                 || x.EyeColor.Value.ToUpper().Contains(query)
                 || x.HairColor.Value.ToUpper().Contains(query)
+                || x.Ethnicity.Value.ToUpper().Contains(query)
                 || x.Talent.Value.ToUpper().Contains(query)).ToList();
         }
 
