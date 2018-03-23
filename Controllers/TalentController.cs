@@ -60,28 +60,28 @@ public class TalentController : Controller
     }
 
     [HttpPost]
-    public ActionResult Add(TalentModel talent)
+    public ActionResult Add(TalentModel model)
     {
-        talent.LoadLists();
+        model.LoadLists();
 
         try
         {
             if (ModelState.IsValid)
             {
-                if (!talent.Add())
+                if (!model.Add())
                 {
                     ViewBag.Message = "Unable to add";
-                    return View(talent);
+                    return View(model);
                 }
                 return RedirectToAction("Index");
             }
 
-            return View(talent);
+            return View(model);
         }
         catch(Exception e)
         {
             ViewBag.Message = e.Message;
-            return View(talent);
+            return View(model);
         }
     }
 

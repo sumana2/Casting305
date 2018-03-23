@@ -444,6 +444,7 @@ namespace WebApplication1.Models
             pl.Add(DatabaseHelper.CreateSqlParameter("@DateOfBirth", this.DateOfBirth));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Nationality", this.Country.Value));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Representative", this.Representative.Value));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Talent", this.Talent.Value));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Height", this.Height));
             pl.Add(DatabaseHelper.CreateSqlParameter("@EyeColor", this.EyeColor.Value));
             pl.Add(DatabaseHelper.CreateSqlParameter("@HairColor", this.HairColor.Value));
