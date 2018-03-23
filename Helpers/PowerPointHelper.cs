@@ -41,7 +41,7 @@ namespace WebApplication1.Helpers
         }
 
         // Insert the specified slide into the presentation at the specified position.
-        public static void InsertNewSlide(PresentationDocument presentationDocument, int position, string slideTitle, string content, string imageName, string serverPath, LayoutHelper layout = null)
+        public static void InsertNewSlide(PresentationDocument presentationDocument, int position, string slideTitle, string Name, string Details, string imageName, string serverPath, LayoutHelper layout = null)
         {
 
             if (presentationDocument == null)
@@ -106,14 +106,8 @@ namespace WebApplication1.Helpers
                         new Drawing.Paragraph(new Drawing.ParagraphProperties() { Alignment = Drawing.TextAlignmentTypeValues.Center }, new Drawing.Run(new Drawing.Text() { Text = slideTitle })));
             }
 
-            if (!string.IsNullOrEmpty(content))
+            if (!string.IsNullOrEmpty(Name))
             {
-                long cx;
-                using (System.Drawing.Image img = System.Drawing.Image.FromFile(HostingEnvironment.MapPath(imageName)))
-                {
-                    cx = (long)img.Width * (long)((float)914400 / img.HorizontalResolution);
-                }
-
                 // Declare and instantiate the body shape of the new slide.
                 Shape bodyShape = slide.CommonSlideData.ShapeTree.AppendChild(new Shape());
 
@@ -127,18 +121,20 @@ namespace WebApplication1.Helpers
 
                 Drawing.Transform2D transform2D = new Drawing.Transform2D();
                 //position
-                Drawing.Offset offset = new Drawing.Offset() { X = 1418626 + cx, Y = 1188720 };
+                Drawing.Offset offset = new Drawing.Offset() { X = 0, Y = 6265335 };
                 //size
-                Drawing.Extents extents = new Drawing.Extents() { Cx = 6665831, Cy = 3270248 };
+                Drawing.Extents extents = new Drawing.Extents() { Cx = 12192000, Cy = 592665 };
                 transform2D.Append(offset);
                 transform2D.Append(extents);
 
                 bodyShape.ShapeProperties.Transform2D = transform2D;
 
                 //Specify the text of the body shape.
-                bodyShape.TextBody = new TextBody(new Drawing.BodyProperties(),
+                bodyShape.TextBody = new TextBody(new Drawing.BodyProperties() { Anchor = Drawing.TextAnchoringTypeValues.Bottom },
                        new Drawing.ListStyle(),
-                       new Drawing.Paragraph(new Drawing.Run(new Drawing.Text() { Text = content })));
+                       new Drawing.Paragraph(new Drawing.ParagraphProperties() { Alignment = Drawing.TextAlignmentTypeValues.Center }, 
+                                             new Drawing.Run(new Drawing.RunProperties() { Bold = true }, new Drawing.Text() { Text = Name }),
+                                             new Drawing.Run(new Drawing.RunProperties() { FontSize = 1600 }, new Drawing.Text() { Text = Details })));
             }
 
             // Create the slide part for the new slide.

@@ -181,12 +181,25 @@ public class ProjectController : Controller
 
         if (!String.IsNullOrEmpty(search))
         {
-            model.Talent = model.Talent.Where(x => x.FirstName.ToUpper().Contains(search.ToUpper())
-                || x.LastName.ToUpper().Contains(search.ToUpper())).ToList();
+            string query = search.ToUpper();
+
+            model.Talent = model.Talent.Where(x => x.FirstName.ToUpper().Contains(query)
+                || x.LastName.ToUpper().Contains(query)
+                || x.Height.ToUpper().Contains(query)
+                || x.BustSize.ToUpper().Contains(query)
+                || x.WaistSize.ToUpper().Contains(query)
+                || x.HipSize.ToUpper().Contains(query)
+                || x.ShoeSize.ToUpper().Contains(query)
+                || x.RepDisplayName.ToUpper().Contains(query)
+                || (x.DateOfBirth.HasValue && x.DateOfBirth.Value.ToShortDateString().Contains(query))
+                || x.Country.Value.ToUpper().Contains(query)
+                || x.EyeColor.Value.ToUpper().Contains(query)
+                || x.HairColor.Value.ToUpper().Contains(query)
+                || x.Talent.Value.ToUpper().Contains(query)).ToList();
         }
 
         int No_Of_Page = (pageNo ?? 1);
-        model.TalentPagedList = model.Talent.ToPagedList(No_Of_Page, Size_Of_Page);
+        model.TalentPagedList = model.Talent.OrderBy(x => x.LastName).ToPagedList(No_Of_Page, Size_Of_Page);
 
         return View(model);
     }
@@ -309,7 +322,7 @@ public class ProjectController : Controller
 
             foreach (var role in project.Roles)
             {
-                PowerPointHelper.InsertNewSlide(presentationDocument, slideNo++, string.Format("Role: {0}", role.Name), "", "", Server.MapPath("/Templates"));
+                PowerPointHelper.InsertNewSlide(presentationDocument, slideNo++, string.Format("Role: {0}", role.Name), "", "", "", Server.MapPath("/Templates"));
 
                 if (role.TalentCount > 0)
                 {
@@ -318,21 +331,23 @@ public class ProjectController : Controller
 
                 foreach (var talent in role.Talent)
                 {
-                    string info = string.Format("{1} {2}{0}Height: {3}{0}Bust: {4}{0}Waist: {5}{0}Hip: {6}{0}Shoe: {7}", 
-                        Environment.NewLine, talent.FirstName, talent.LastName, talent.Height, talent.BustSize, talent.WaistSize, 
-                        talent.HipSize, talent.ShoeSize);
+                    string name = string.Format("{0} {1}  ", talent.FirstName, talent.LastName);
 
-                    PowerPointHelper.InsertNewSlide(presentationDocument, slideNo++, "", info, talent.ProfilePicture, Server.MapPath("/Templates"));
+                    string details = string.Format("Height: {0} Bust: {1} Waist: {2} Hip: {3} Shoe: {4}", 
+                        talent.Height, talent.BustSize, talent.WaistSize, talent.HipSize, talent.ShoeSize);
 
                     talent.GetImages();
-                    if (!string.IsNullOrEmpty(talent.BookPictures))
+
+                    string imagesStr = string.Join(",", talent.ProfilePicture ?? string.Empty, talent.BookPictures ?? string.Empty);
+
+                    if (!string.IsNullOrEmpty(imagesStr))
                     {
-                        string[] images = talent.BookPictures.Split(',');
-                        
+                        List<string> images = imagesStr.Split(',').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+
                         using (LayoutHelper layout = new LayoutHelper(images, 0, 3))
                         {
                             layout.ComputeFixedPartition();
-                            PowerPointHelper.InsertNewSlide(presentationDocument, slideNo++, "", "", "", Server.MapPath("/Templates"), layout);
+                            PowerPointHelper.InsertNewSlide(presentationDocument, slideNo++, "", name, details, "", Server.MapPath("/Templates"), layout);
                         }                        
                     }
                 }
