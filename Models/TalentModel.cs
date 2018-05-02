@@ -61,6 +61,10 @@ namespace WebApplication1.Models
         [Display(Name = "Hip")]
         public string HipSize { get; set; }
 
+        public int AgeMin { get; set; }
+
+        public int AgeMax { get; set; }
+
         public string Instagram { get; set; }
 
         public string Phone { get; set; }
@@ -116,14 +120,20 @@ namespace WebApplication1.Models
 
             if (row["DateOfBirth"] != DBNull.Value)
                 this.DateOfBirth = Convert.ToDateTime(row["DateOfBirth"]);
+
+            if (row["AgeMin"] != DBNull.Value)
+                this.AgeMin = Convert.ToInt32(row["AgeMin"]);
+
+            if (row["AgeMax"] != DBNull.Value)
+                this.AgeMax = Convert.ToInt32(row["AgeMax"]);
         }
 
         public bool Add()
         {
             string sql = @"INSERT INTO Talent(FirstName,LastName,Gender,DateOfBirth,Nationality,Representative,Talent,Height,EyeColor
-                                           ,HairColor,Ethnicity,ShoeSize,WaistSize,HipSize,BustSize,Instagram,Phone,Email,Notes)
+                                           ,HairColor,Ethnicity,ShoeSize,WaistSize,HipSize,BustSize,Instagram,Phone,Email,Notes,AgeMin,AgeMax)
                         VALUES (@FirstName, @LastName, @Gender, @DateOfBirth, @Nationality, @Representative, @Talent, @Height, @EyeColor
-                              , @HairColor, @Ethnicity, @ShoeSize, @WaistSize, @HipSize, @BustSize, @Instagram, @Phone, @Email, @Notes); SELECT LAST_INSERT_ID()";
+                              , @HairColor, @Ethnicity, @ShoeSize, @WaistSize, @HipSize, @BustSize, @Instagram, @Phone, @Email, @Notes, @AgeMin, @AgeMax); SELECT LAST_INSERT_ID()";
 
             this.ID = Convert.ToInt32(DatabaseHelper.ExecuteScalar(sql, GetParams()));
 
@@ -159,6 +169,8 @@ namespace WebApplication1.Models
                               ,Phone = @Phone
                               ,Email = @Email
                               ,Notes = @Notes
+                              ,AgeMin = @AgeMin
+                              ,AgeMax = @AgeMax
                          WHERE ID = @ID";
 
             
@@ -457,6 +469,8 @@ namespace WebApplication1.Models
             pl.Add(DatabaseHelper.CreateSqlParameter("@Phone", this.Phone));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Email", this.Email));
             pl.Add(DatabaseHelper.CreateSqlParameter("@Notes", this.Notes));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@AgeMin", this.AgeMin));
+            pl.Add(DatabaseHelper.CreateSqlParameter("@AgeMax", this.AgeMax));
 
             return pl;
         }

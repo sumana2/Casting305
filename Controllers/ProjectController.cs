@@ -319,7 +319,7 @@ public class ProjectController : Controller
 
         using (PresentationDocument presentationDocument = PresentationDocument.Open(Server.MapPath("/Templates/PresentationCopy.pptx"), true))
         {
-            int slideNo = 2;
+            int slideNo = 1;
 
             foreach (var role in project.Roles)
             {
@@ -353,8 +353,6 @@ public class ProjectController : Controller
                     }
                 }
             }
-
-            PowerPointHelper.DeleteSlide(presentationDocument, 1);
         }
 
         return File(Server.MapPath("/Templates/PresentationCopy.pptx"), "application/vnd.openxmlformats-officedocument.presentationml.presentation", project.Title + ".pptx");

@@ -63,6 +63,17 @@
 </div>
 
 <div class="form-group">
+    @Html.Label("Age Range", htmlAttributes: new { @class = "control-label col-md-2" })
+    <div class="col-md-10">
+        @Html.EditorFor(model => model.AgeMin, new { htmlAttributes = new { @class = "form-controlLine" } })
+        to
+        @Html.EditorFor(model => model.AgeMax, new { htmlAttributes = new { @class = "form-controlLine" } })
+        @Html.ValidationMessageFor(model => model.AgeMin, "", new { @class = "text-danger" })
+        @Html.ValidationMessageFor(model => model.AgeMax, "", new { @class = "text-danger" })
+    </div>
+</div>
+
+<div class="form-group">
     @Html.LabelFor(model => model.Country, htmlAttributes: new { @class = "control-label col-md-2" })
     <div class="col-md-10">
         @Html.EditorFor(model => model.Country)
