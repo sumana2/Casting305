@@ -11,7 +11,9 @@
         <table class="table table-bordered">
             <tbody>
                 <tr>
-                    <td width="80" rowspan="2"><img src="@Html.DisplayFor(model => talent.ProfilePicture)" height="60" width="60" /></td>
+                    <td width="80" rowspan="2" align="center" style="padding:0px; vertical-align:middle;">
+                        <img class="printoutImg" src="@Html.DisplayFor(model => talent.ProfilePicture)"/>
+                    </td>
                     <td><b>@string.Format("{0} {1}", talent.FirstName, talent.LastName)</b></td>
                     <td>Height: @Html.DisplayFor(model => talent.Height)</td>
                     <td>Bust: @Html.DisplayFor(model => talent.BustSize)</td>

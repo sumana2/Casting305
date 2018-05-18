@@ -254,6 +254,7 @@
     <Compile Include="Models\ListItemModel.cs" />
     <Compile Include="Models\ProjectRoleModel.cs" />
     <Compile Include="Models\ProjectModel.cs" />
+    <Compile Include="Models\SearchModel.cs" />
     <Compile Include="Models\TalentModel.cs" />
     <Compile Include="Models\ClientModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />

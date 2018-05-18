@@ -24,9 +24,7 @@ textarea {
 }
 
 .tile{
-    padding-bottom:5px;
-    max-width: 290px;
-    min-width: 290px;
+    max-width: 234px;
 }
 
 .tileHeight {
@@ -34,12 +32,13 @@ textarea {
 }
 
 .photoHeight {
-    height: 215px;
+    max-width: 100%;
+    max-height: 100%;
 }
 
 .tileImage {
-    max-width: 250px;
-    max-height: 205px;
+    max-width: 100%;
+    max-height: 100%;
 }
 
 .tileTitle {
@@ -48,7 +47,11 @@ textarea {
 }
 
 .tileImageDiv {
-    height: 260px;
+    height: 230px;
+    display:flex;
+    justify-content: center;
+    align-items: baseline;
+    overflow: hidden;
 }
 
 .role li.active {
@@ -97,4 +100,9 @@ textarea {
 
 .cbw {
     width: 155px;
+}
+
+.printoutImg {
+    max-width:100%;
+    max-height:80px;
 }

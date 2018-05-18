@@ -28,3 +28,6 @@ ALTER TABLE CastingLand.Talent CHANGE ShoeSize ShoeSize VARCHAR(100) NULL;
 ALTER TABLE CastingLand.Talent CHANGE WaistSize WaistSize VARCHAR(100) NULL;
 ALTER TABLE CastingLand.Talent CHANGE Height Height VARCHAR(100) NULL;
 ALTER TABLE CastingLand.Talent ADD COLUMN Talent VARCHAR(100) AFTER Representative;
+
+ALTER TABLE CastingLand.Talent ADD COLUMN AgeMin INT AFTER Talent;
+ALTER TABLE CastingLand.Talent ADD COLUMN AgeMax INT AFTER AgeMin;

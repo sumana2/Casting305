@@ -9,11 +9,44 @@
 <h4>
     @Html.ActionLink("Add New Talent", "Add")
 </h4>
-@using (Html.BeginForm("Index", "Talent", FormMethod.Get))
+@using (Html.BeginForm("Index", "Talent", FormMethod.Get, new { id = "form" }))
 {
     <p>
-        @Html.TextBox("search", ViewBag.FilterValue as string, new { placeholder = "Search" })
-        <input type="submit" value="Find" />
+        @Html.Hidden("search", ViewBag.FilterValue as string)
+
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="input-group" style="white-space: nowrap;">
+                    <div class="input-group-btn">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span id="searchType">FirstName</span> <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">FirstName</a></li>
+                            <li><a href="#">LastName</a></li>
+                            <li><a href="#">Height</a></li>
+                            <li><a href="#">BustSize</a></li>
+                            <li><a href="#">WaistSize</a></li>
+                            <li><a href="#">HipSize</a></li>
+                            <li><a href="#">ShoeSize</a></li>
+                            <li><a href="#">RepName</a></li>
+                            <li><a href="#">DateOfBirth</a></li>
+                            <li><a href="#">Country</a></li>
+                            <li><a href="#">EyeColor</a></li>
+                            <li><a href="#">ShoeSize</a></li>
+                            <li><a href="#">HairColor</a></li>
+                            <li><a href="#">Ethnicity</a></li>
+                            <li><a href="#">Talent</a></li>    
+                        </ul>    
+                    </div><!-- /btn-group -->
+                    @Html.TextBox("Value", "", new { placeholder = "Search", @class = "form-control", @style = "width:80%" })
+                    <span>
+                        <input class="btn btn-default" type="submit" value="Go"/>
+                    </span>
+                </div><!-- /input-group -->
+            </div><!-- /.col-lg-6 -->
+        </div><!-- /.row -->
+        <h4 id="searchList" style="line-height: inherit;"></h4>
     </p>
 }  
 
@@ -26,3 +59,47 @@
 
 @Html.PagedListPager(Model, pageNo => Url.Action("Index", new { pageNo, sortOrder = ViewBag.CurrentSortOrder, sortDirection = ViewBag.CurrentsortDirection, filterValue = ViewBag.FilterValue }))
 
+<script>
+    var searchOptions = {};
+    var colors = ['default', 'primary', 'success', 'info', 'warning', 'danger'];
+
+    $(document).ready(function () {
+        var json = $('#search').val()
+        if (json != '') {
+            searchOptions = JSON.parse(json);
+        }
+
+        var i = 0;
+        for (var prop in searchOptions) {
+            $('#searchList').append('<span style="margin-right:5px;white-space: inherit;" class="label label-' + colors[i] + '">' + prop + ':' + searchOptions[prop] + '<span id="remove' + prop + '" style="top: 3px;left: 5px;" class="removeSearch glyphicon glyphicon-remove" aria-hidden="true"></span></span>');
+            i++;
+            if (i > colors.length-1) {
+                i = 0;
+            }
+        }
+
+        $("#form").submit(function (event) {
+            var type = $("#searchType").text();
+            var value = $("#Value").val();
+
+            if (value) {
+                searchOptions[type] = value;
+            }
+            
+            $('#search').val(JSON.stringify(searchOptions));
+        });
+
+        $(".dropdown-menu li a").click(function () {
+            $("#searchType").text($(this).text());
+        });
+
+        $(".removeSearch").click(function () {
+            var prop = this.id.replace('remove', '');
+            delete searchOptions[prop];
+
+            $('#search').val(JSON.stringify(searchOptions));
+
+            $("#form").submit();
+        });
+    });
+</script>
