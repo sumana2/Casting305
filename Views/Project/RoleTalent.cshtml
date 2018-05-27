@@ -4,6 +4,11 @@
     ViewBag.Title = "Project";
 }
 
+
+<link href="~/Content/bootstrap-toggle.min.css" rel="stylesheet" />  
+<script src="~/Scripts/bootstrap-toggle.min.js" type="text/javascript"></script>
+<script src="~/Scripts/TalentSearch.js" type="text/javascript"></script>
+
 <div>
     <h4>Project Talent</h4>
     <hr />
@@ -44,12 +49,50 @@
         </div>
     </div>
 
-    @using (Html.BeginForm("RoleTalent", "Project", FormMethod.Get))
+    @using (Html.BeginForm("RoleTalent", "Project", FormMethod.Get, new { id = "form" }))
     {
         <p>
+            @Html.Hidden("search", ViewBag.FilterValue as string)
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="input-group" style="white-space: nowrap;">
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span id="searchType">FirstName</span> <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">FirstName</a></li>
+                                <li><a href="#">LastName</a></li>
+                                <li><a href="#">Height</a></li>
+                                <li><a href="#">BustSize</a></li>
+                                <li><a href="#">WaistSize</a></li>
+                                <li><a href="#">HipSize</a></li>
+                                <li><a href="#">ShoeSize</a></li>
+                                <li><a href="#">RepName</a></li>
+                                <li><a href="#">DateOfBirth</a></li>
+                                <li><a href="#">Country</a></li>
+                                <li><a href="#">EyeColor</a></li>
+                                <li><a href="#">ShoeSize</a></li>
+                                <li><a href="#">HairColor</a></li>
+                                <li><a href="#">Ethnicity</a></li>
+                                <li><a href="#">Talent</a></li>
+                            </ul>
+                        </div><!-- /btn-group -->
+                        @Html.TextBox("Value", "", new { placeholder = "Search", @class = "form-control", @style = "width:80%" })
+                        <span>
+                            <input class="btn btn-default" type="submit" value="Go" />
+                            @Html.CheckBox("searchMode", (bool)ViewBag.searchMode)
+                        </span>
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+            </div><!-- /.row -->
+            <h4 id="searchList" style="line-height: inherit;"></h4>
+        </p>
+        @*<p>
             @Html.TextBox("search", ViewBag.FilterValue as string, new { placeholder = "Search" }) @Html.CheckBox("searchMode", (bool)ViewBag.searchMode) Search All
             <input type="submit" value="Find" />
-        </p>
+        </p>*@
     }  
     <div class="row">
         @foreach (var item in Model.TalentPagedList)
@@ -65,6 +108,11 @@
 
 <script>
     $(function () {
+        $('#searchMode').bootstrapToggle({
+            on: 'All Talent',
+            off: 'Project Only'
+        });
+
         $(".tileCheck").click(function () {
             var action = "";
             var tileCheck = $(this);

@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
+using Newtonsoft.Json;
 using PagedList;
 using System;
 using System.Collections.Generic;
@@ -181,22 +182,24 @@ public class ProjectController : Controller
 
         if (!String.IsNullOrEmpty(search))
         {
-            string query = search.ToUpper();
+            var searchObj = JsonConvert.DeserializeObject<SearchModel>(search);
 
-            model.Talent = model.Talent.Where(x => x.FirstName.ToUpper().Contains(query)
-                || x.LastName.ToUpper().Contains(query)
-                || x.Height.ToUpper().Contains(query)
-                || x.BustSize.ToUpper().Contains(query)
-                || x.WaistSize.ToUpper().Contains(query)
-                || x.HipSize.ToUpper().Contains(query)
-                || x.ShoeSize.ToUpper().Contains(query)
-                || x.RepDisplayName.ToUpper().Contains(query)
-                || (x.DateOfBirth.HasValue && x.DateOfBirth.Value.ToShortDateString().Contains(query))
-                || x.Country.Value.ToUpper().Contains(query)
-                || x.EyeColor.Value.ToUpper().Contains(query)
-                || x.HairColor.Value.ToUpper().Contains(query)
-                || x.Ethnicity.Value.ToUpper().Contains(query)
-                || x.Talent.Value.ToUpper().Contains(query)).ToList();
+            model.Talent = model.Talent.Where(x =>
+                   (searchObj.FirstName == null || x.FirstName.ToUpper().Contains(searchObj.FirstName.ToUpper()))
+                && (searchObj.LastName == null || x.LastName.ToUpper().Contains(searchObj.LastName.ToUpper()))
+                && (searchObj.Height == null || x.Height.ToUpper().Contains(searchObj.Height.ToUpper()))
+                && (searchObj.BustSize == null || x.BustSize.ToUpper().Contains(searchObj.BustSize.ToUpper()))
+                && (searchObj.WaistSize == null || x.WaistSize.ToUpper().Contains(searchObj.WaistSize.ToUpper()))
+                && (searchObj.HipSize == null || x.HipSize.ToUpper().Contains(searchObj.HipSize.ToUpper()))
+                && (searchObj.ShoeSize == null || x.ShoeSize.ToUpper().Contains(searchObj.ShoeSize.ToUpper()))
+                && (searchObj.RepName == null || x.RepDisplayName.ToUpper().Contains(searchObj.RepName.ToUpper()))
+                && (searchObj.DateOfBirth == null || (x.DateOfBirth.HasValue && x.DateOfBirth.Value.ToShortDateString().Contains(searchObj.DateOfBirth)))
+                && (searchObj.Country == null || x.Country.Value.ToUpper().Contains(searchObj.Country.ToUpper()))
+                && (searchObj.EyeColor == null || x.EyeColor.Value.ToUpper().Contains(searchObj.EyeColor.ToUpper()))
+                && (searchObj.HairColor == null || x.HairColor.Value.ToUpper().Contains(searchObj.HairColor.ToUpper()))
+                && (searchObj.Ethnicity == null || x.Ethnicity.Value.ToUpper().Contains(searchObj.Ethnicity.ToUpper()))
+                && (searchObj.Talent == null || x.Talent.Value.ToUpper().Contains(searchObj.Talent.ToUpper()))
+                ).ToList();
         }
 
         int No_Of_Page = (pageNo ?? 1);
