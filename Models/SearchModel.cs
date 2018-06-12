@@ -21,5 +21,6 @@ namespace WebApplication1.Models
         public string HairColor { get; set; }
         public string Ethnicity { get; set; }
         public string Talent { get; set; }
+        public string Gender { get; set; }
     }
 }

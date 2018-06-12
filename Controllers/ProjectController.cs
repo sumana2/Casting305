@@ -199,6 +199,7 @@ public class ProjectController : Controller
                 && (searchObj.HairColor == null || x.HairColor.Value.ToUpper().Contains(searchObj.HairColor.ToUpper()))
                 && (searchObj.Ethnicity == null || x.Ethnicity.Value.ToUpper().Contains(searchObj.Ethnicity.ToUpper()))
                 && (searchObj.Talent == null || x.Talent.Value.ToUpper().Contains(searchObj.Talent.ToUpper()))
+                && (searchObj.Gender == null || x.Gender.Value.ToUpper().Equals(searchObj.Gender.ToUpper()))
                 ).ToList();
         }
 
