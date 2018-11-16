@@ -52,6 +52,11 @@ namespace WebApplication1.Controllers
             }
         }
 
+        public JsonResult KeepSessionAlive()
+        {
+            return Json(string.Empty, JsonRequestBehavior.AllowGet);
+        }
+
         //
         // GET: /Account/Login
         [AllowAnonymous]

@@ -34,6 +34,12 @@
                         <li>@Html.ActionLink("Agents ", "Index", "Representative")</li>
                     
                     </ul>
+
+                    <script>
+                        $(document).ready(function () {
+                            setInterval(function () { $.get("Account/KeepSessionAlive"); }, 120000);
+                        });
+                    </script>
                 }
                 @Html.Partial("_LoginPartial")
             </div>
@@ -98,6 +104,6 @@
                 btn.next().addClass('hide');
             }
         }
-    </script>
+                    </script>
 </body>
 </html>
