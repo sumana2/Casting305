@@ -34,7 +34,7 @@ namespace WebApplication1.Models
 
         public List<ContactModel> Contacts { get; set; }
 
-        public string RecordType { get { return "Representative"; } }
+        public static string RecordType { get { return "Representative"; } }
 
         public RepresentativeModel()
         {
@@ -136,7 +136,7 @@ namespace WebApplication1.Models
 
             var model = new RepresentativeModel(dt.Rows[0]);
 
-            model.Contacts = ContactModel.GetBySource(id);
+            model.Contacts = ContactModel.GetBySource(id, RecordType);
             model.LoadLists();
 
             return model;

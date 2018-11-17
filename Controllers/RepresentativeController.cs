@@ -10,6 +10,7 @@ public class RepresentativeController : Controller
 {
     private int Size_Of_Page = 24;
 
+    [OutputCache(Duration = 10, VaryByParam = "*")]
     public ActionResult Index(string sortOrder, string sortDirection, string search, string filterValue, int? pageNo)
     {
         ViewBag.CurrentSortOrder = sortOrder;
@@ -90,6 +91,7 @@ public class RepresentativeController : Controller
         }
     }
 
+    [OutputCache(Duration = 10, VaryByParam = "*")]
     public ActionResult Edit(int id)
     {
         return View(RepresentativeModel.GetByID(id));

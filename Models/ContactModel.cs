@@ -37,7 +37,7 @@ namespace WebApplication1.Models
 
         public string FullName { get { return string.Format("{0} {1}", FirstName, LastName); } }
 
-        public string FullNameNoSpace { get { return string.Format("{0}{1}", FirstName, LastName); } }
+        public string FullNameNoSpace { get { return string.Format("{0}{1}", FirstName.Trim(), LastName); } }
 
         public ContactModel(DataRow row)
         {
@@ -83,29 +83,6 @@ namespace WebApplication1.Models
             return pl;
         }
 
-        public bool Update()
-        {
-            string sql = @"UPDATE Contacts SET   
-                             SourceID = @SourceID
-                            ,Type = @Type
-                            ,FirstName = @FirstName
-                            ,LastName = @LastName
-                            ,Email = @Email
-                            ,Phone = @Phone
-                            ,JobTitle = @JobTitle";
-
-            int r = DatabaseHelper.ExecuteNonQuery(sql, GetParams());
-
-            if (r >= 1)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
         public static bool DeleteBySource(int id, string type)
         {
             var pl = new List<MySqlParameter>();
@@ -116,13 +93,14 @@ namespace WebApplication1.Models
             return true;
         }
 
-        public static List<ContactModel> GetBySource(int id)
+        public static List<ContactModel> GetBySource(int id, string type)
         {
             List<ContactModel> list = new List<ContactModel>();
 
             var pl = new List<MySqlParameter>();
             pl.Add(DatabaseHelper.CreateSqlParameter("@ID", id));
-            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM Contacts WHERE SourceID = @ID", pl);
+            pl.Add(DatabaseHelper.CreateSqlParameter("@Type", type));
+            DataTable dt = DatabaseHelper.ExecuteQuery("SELECT * FROM Contacts WHERE SourceID = @ID AND Type = @Type", pl);
 
             foreach (DataRow row in dt.Rows)
             {

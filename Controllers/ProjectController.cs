@@ -16,6 +16,7 @@ public class ProjectController : Controller
 {
     private int Size_Of_Page = 25;
 
+    [OutputCache(Duration = 10, VaryByParam = "*")]
     public ActionResult Index(string sortOrder, string sortDirection, string search, string filterValue, int? pageNo)
     {
         ViewBag.CurrentSortOrder = sortOrder;
@@ -96,6 +97,7 @@ public class ProjectController : Controller
         }
     }
 
+    [OutputCache(Duration = 10, VaryByParam = "*")]
     public ActionResult Edit(int id)
     {
         return View(ProjectModel.GetByID(id));
@@ -155,6 +157,7 @@ public class ProjectController : Controller
         return PartialView("~/Views/Shared/EditorTemplates/ProjectRoleModel.cshtml", role);
     }
 
+    [OutputCache(Duration = 10, VaryByParam = "*")]
     public ActionResult RoleTalent(int id, bool? searchMode, string search, string filterValue, int? pageNo)
     {
         ProjectRoleModel model;

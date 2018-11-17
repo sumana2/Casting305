@@ -7,7 +7,7 @@
         </div>
         <div class="caption">
             <div>
-                <h3 class="tileTitle">@Html.ActionLink(string.Format("{0} {1}", Model.FirstName, Model.LastName), "Edit", new { id = Model.ID })</h3>
+                <h3 class="tileTitle">@Html.ActionLink(string.Format("{0} {1}", Model.FirstName, Model.LastName), "Edit", "Talent", new { id = Model.ID }, null)</h3>
                 @if (Model.ShowCheck)
                 {
                     <span class="glyphicon @Model.CheckClass tileCheck" aria-hidden="true">

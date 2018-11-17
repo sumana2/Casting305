@@ -14,6 +14,7 @@ public class TalentController : Controller
 {
     private int Size_Of_Page = 25;
 
+    [OutputCache(Duration = 10, VaryByParam = "*")]
     public ActionResult Index(string sortOrder, string sortDirection, string search, string filterValue, int? pageNo)
     {
         if (search != null)
@@ -89,6 +90,7 @@ public class TalentController : Controller
         }
     }
 
+    [OutputCache(Duration = 10, VaryByParam = "*")]
     public ActionResult Edit(int id)
     {
         return View(TalentModel.GetByID(id));
