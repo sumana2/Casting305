@@ -7,6 +7,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Web.Mvc;
+using System.Web.UI;
 using WebApplication1;
 using WebApplication1.Helpers;
 using WebApplication1.Models;
@@ -16,7 +17,7 @@ public class ProjectController : Controller
 {
     private int Size_Of_Page = 25;
 
-    [OutputCache(Duration = 10, VaryByParam = "*")]
+    [OutputCache(Duration = int.MaxValue, Location = OutputCacheLocation.Server, VaryByParam = "*")]
     public ActionResult Index(string sortOrder, string sortDirection, string search, string filterValue, int? pageNo)
     {
         ViewBag.CurrentSortOrder = sortOrder;
@@ -85,6 +86,7 @@ public class ProjectController : Controller
                     ViewBag.Message = "Unable to add";
                     return View(project);
                 }
+                Response.RemoveOutputCacheItem(Url.Action("Index", "Project"));
                 return RedirectToAction("Index");
             }
 
@@ -97,7 +99,7 @@ public class ProjectController : Controller
         }
     }
 
-    [OutputCache(Duration = 10, VaryByParam = "*")]
+    [OutputCache(Duration = int.MaxValue, VaryByParam = "*")]
     public ActionResult Edit(int id)
     {
         return View(ProjectModel.GetByID(id));
@@ -117,6 +119,8 @@ public class ProjectController : Controller
                     ViewBag.Message = "Unable to update";
                     return View(obj);
                 }
+                Response.RemoveOutputCacheItem(Url.Action("Edit", "Project"));
+                Response.RemoveOutputCacheItem(Url.Action("Index", "Project"));
                 return RedirectToAction("Index");
             }
 
@@ -140,6 +144,7 @@ public class ProjectController : Controller
                 ViewBag.Message = "Unable to delete";
                 return View("Edit", model);
             }
+            Response.RemoveOutputCacheItem(Url.Action("Index", "Project"));
             return RedirectToAction("Index");
 
         }
@@ -157,9 +162,11 @@ public class ProjectController : Controller
         return PartialView("~/Views/Shared/EditorTemplates/ProjectRoleModel.cshtml", role);
     }
 
-    [OutputCache(Duration = 10, VaryByParam = "*")]
+    [OutputCache(Duration = int.MaxValue, Location = OutputCacheLocation.Server, VaryByParam = "*")]
     public ActionResult RoleTalent(int id, bool? searchMode, string search, string filterValue, int? pageNo)
     {
+        Globals.CachedRoleTalentIds.Add(id.ToString());
+
         ProjectRoleModel model;
         ViewBag.SearchMode = searchMode.HasValue && searchMode.Value;
 
@@ -212,15 +219,19 @@ public class ProjectController : Controller
         return View(model);
     }
 
-    public JsonResult AddTalent(int projectRoleID, int talentID)
+    public JsonResult AddTalent(int projectID, int projectRoleID, int talentID)
     {
         ProjectRoleModel.AddTalent(projectRoleID, talentID);
+        Response.RemoveOutputCacheItem(Url.Action("RoleTalent", "Project", new { id = projectRoleID }));
+        Response.RemoveOutputCacheItem(Url.Action("Edit", "Project", new { id = projectID }));
         return Json("");
     }
 
-    public JsonResult RemoveTalent(int projectRoleID, int talentID)
+    public JsonResult RemoveTalent(int projectID, int projectRoleID, int talentID)
     {
         ProjectRoleModel.RemoveTalent(projectRoleID, talentID);
+        Response.RemoveOutputCacheItem(Url.Action("RoleTalent", "Project", new { id = projectRoleID }));
+        Response.RemoveOutputCacheItem(Url.Action("Edit", "Project", new { id = projectID }));
         return Json("");
     }
 

@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Web.Mvc;
+using System.Web.UI;
 using WebApplication1;
 using WebApplication1.Models;
 
@@ -10,7 +11,7 @@ public class ClientController : Controller
 {
     private int Size_Of_Page = 24;
 
-    [OutputCache(Duration = 10, VaryByParam = "*")]
+    [OutputCache(Duration = int.MaxValue, Location = OutputCacheLocation.Server, VaryByParam = "*")]
     public ActionResult Index(string sortOrder, string sortDirection, string search, string filterValue, int? pageNo)
     {
         ViewBag.CurrentSortOrder = sortOrder;
@@ -79,6 +80,7 @@ public class ClientController : Controller
                     ViewBag.Message = "Unable to add";
                     return View(client);
                 }
+                Response.RemoveOutputCacheItem(Url.Action("Index", "Client"));
                 return RedirectToAction("Index");
             }
 
@@ -91,7 +93,7 @@ public class ClientController : Controller
         }
     }
 
-    [OutputCache(Duration = 10, VaryByParam = "*")]
+    [OutputCache(Duration = int.MaxValue, Location = OutputCacheLocation.Server, VaryByParam = "*")]
     public ActionResult Edit(int id)
     {
         return View(ClientModel.GetByID(id));
@@ -111,6 +113,8 @@ public class ClientController : Controller
                     ViewBag.Message = "Unable to update";
                     return View(obj);
                 }
+                Response.RemoveOutputCacheItem(Url.Action("Edit", "Client"));
+                Response.RemoveOutputCacheItem(Url.Action("Index", "Client"));
                 return RedirectToAction("Index");
             }
 
@@ -134,6 +138,7 @@ public class ClientController : Controller
                 ViewBag.Message = "Unable to delete";
                 return View("Edit", model);
             }
+            Response.RemoveOutputCacheItem(Url.Action("Index", "Client"));
             return RedirectToAction("Index");
 
         }

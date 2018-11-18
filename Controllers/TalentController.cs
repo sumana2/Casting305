@@ -8,13 +8,15 @@ using System.Linq;
 using System.Web.Mvc;
 using WebApplication1.Models;
 using Newtonsoft.Json;
+using System.Web.UI;
+using WebApplication1;
 
 [Authorize]
 public class TalentController : Controller
 {
     private int Size_Of_Page = 25;
 
-    [OutputCache(Duration = 10, VaryByParam = "*")]
+    [OutputCache(Duration = int.MaxValue, Location = OutputCacheLocation.Server, VaryByParam = "*")]
     public ActionResult Index(string sortOrder, string sortDirection, string search, string filterValue, int? pageNo)
     {
         if (search != null)
@@ -78,6 +80,14 @@ public class TalentController : Controller
                     ViewBag.Message = "Unable to add";
                     return View(model);
                 }
+                Response.RemoveOutputCacheItem(Url.Action("Index", "Talent"));
+
+                foreach (string cacheId in Globals.CachedRoleTalentIds)
+                {
+                    Response.RemoveOutputCacheItem(Url.Action("RoleTalent", "Project") + "/" + cacheId);
+                }
+                Globals.CachedRoleTalentIds.Clear();
+
                 return RedirectToAction("Index");
             }
 
@@ -90,7 +100,7 @@ public class TalentController : Controller
         }
     }
 
-    [OutputCache(Duration = 10, VaryByParam = "*")]
+    [OutputCache(Duration = int.MaxValue, Location = OutputCacheLocation.Server, VaryByParam = "*")]
     public ActionResult Edit(int id)
     {
         return View(TalentModel.GetByID(id));
@@ -110,6 +120,15 @@ public class TalentController : Controller
                     ViewBag.Message = "Unable to update";
                     return View(obj);
                 }
+                Response.RemoveOutputCacheItem(Url.Action("Edit", "Talent"));
+                Response.RemoveOutputCacheItem(Url.Action("Index", "Talent"));
+
+                foreach (string cacheId in Globals.CachedRoleTalentIds)
+                {
+                    Response.RemoveOutputCacheItem(Url.Action("RoleTalent", "Project") + "/" + cacheId);
+                }
+                Globals.CachedRoleTalentIds.Clear();
+
                 return RedirectToAction("Index");
             }
 
@@ -133,6 +152,7 @@ public class TalentController : Controller
                 ViewBag.Message = "Unable to delete";
                 return View("Edit", model);
             }
+            Response.RemoveOutputCacheItem(Url.Action("Index", "Talent"));
             return RedirectToAction("Index");
 
         }

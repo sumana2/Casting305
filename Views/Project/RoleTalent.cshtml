@@ -128,7 +128,7 @@
 
             $.ajax({
                 url: action,
-                data: { projectRoleID: @Model.ID, talentID: talentID },
+                data: { projectID: @Model.ProjectID, projectRoleID: @Model.ID, talentID: talentID },
                 method:"POST",
                 success: function () {
                     if (unchecked) {
